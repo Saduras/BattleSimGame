@@ -1,6 +1,6 @@
 # Ignore binary outputs
-bin/
-bin-int/
+/bin/*
+/bin-int/*
 
 # Ignore Visual Studio hidden path
 .vs/
