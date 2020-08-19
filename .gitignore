@@ -1,8 +1,12 @@
-
-.vs/
-
+# Ignore binary outputs
 bin/
-
 bin-int/
 
+# Ignore Visual Studio hidden path
+.vs/
+
+# Ignore Visual Studio solution files
+*.sln
+*.vcxproj
+*.filters
 *.user
