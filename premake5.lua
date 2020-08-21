@@ -10,6 +10,12 @@ workspace "BattleSimGame"
 
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+-- Inlcude directories relative to the root folder (solution directory)
+IncludeDir = {}
+IncludeDir["GLFW"] = "Engine/vendor/GLFW/include"
+
+include "Engine/vendor/GLFW"
+
 project "BattleSimGame"
 	location "BattleSimGame"
 	kind "ConsoleApp"
@@ -27,7 +33,7 @@ project "BattleSimGame"
 	includedirs
 	{
 		"Engine/vendor/spdlog/include",
-		"Engine/src"
+		"Engine/src",
 	}
 
 	links 
@@ -77,7 +83,14 @@ project "Engine"
 	includedirs
 	{
 		"%{prj.name}/vendor/spdlog/include",
-		"%{prj.name}/src"
+		"%{prj.name}/src",
+		"%{IncludeDir.GLFW}",
+	}
+
+	links 
+	{
+		"GLFW",
+		"opengl32.lib",
 	}
 
 	filter "system:windows"
@@ -97,7 +110,7 @@ project "Engine"
 		}
 	
 	filter "configurations:Debug"
-		defines "ENG_DEBUG"
+		defines "ENG_DEBUG;ENG_ENABLE_ASSERTS"
 		symbols "On"
 
 	filter "configurations:Release"
