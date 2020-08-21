@@ -65,6 +65,9 @@ project "Engine"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "epch.h"
+	pchsource "Engine/src/epch.cpp"
+
 	files 
 	{
 		"%{prj.name}/src/**.h",
