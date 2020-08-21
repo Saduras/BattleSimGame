@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 	ENG_CORE_FATAL("Testing Fatal");
 	ENG_CORE_WARN("Initialized Log!");
 	int a = 5;
-	ENG_CLIENT_INFO("Hello Var={0}", a);
+	ENG_INFO("Hello Var={0}", a);
 
 	auto app = Engine::CreateApplication();
 	app->Run();
