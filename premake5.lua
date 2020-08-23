@@ -53,14 +53,17 @@ project "BattleSimGame"
 	
 	filter "configurations:Debug"
 		defines "ENG_DEBUG"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "ENG_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "ENG_DIST"
+		buildoptions "/MD"
 		optimize "On"
 
 project "Engine"
@@ -111,12 +114,15 @@ project "Engine"
 	
 	filter "configurations:Debug"
 		defines "ENG_DEBUG;ENG_ENABLE_ASSERTS"
+		buildoptions "/MDd"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "ENG_RELEASE"
+		buildoptions "/MD"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "ENG_DIST"
+		buildoptions "/MD"
 		optimize "On"
