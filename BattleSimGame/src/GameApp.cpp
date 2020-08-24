@@ -25,6 +25,7 @@ public:
 	BattleSimGame()
 	{
 		PushLayer(new ExampleLayer());
+		PushOverlay(new Engine::ImGuiLayer());
 	}
 
 	~BattleSimGame()
