@@ -105,13 +105,13 @@ namespace Engine
 			switch (action) {
 			case GLFW_PRESS:
 			{
-				MouseButtonPressed event(button);
+				MouseButtonPressedEvent event(button);
 				data.EventCallback(event);
 				break;
 			}
 			case GLFW_RELEASE:
 			{
-				MouseButtonReleased event(button);
+				MouseButtonReleasedEvent event(button);
 				data.EventCallback(event);
 				break;
 			}

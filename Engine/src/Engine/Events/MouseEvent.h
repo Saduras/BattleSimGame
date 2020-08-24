@@ -62,10 +62,10 @@ namespace Engine
 		int m_Button;
 	};
 
-	class ENGINE_API MouseButtonPressed : public MouseButtonEvent
+	class ENGINE_API MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonPressed(int button)
+		MouseButtonPressedEvent(int button)
 			: MouseButtonEvent(button) { }
 
 		std::string ToString() const override
@@ -78,10 +78,10 @@ namespace Engine
 		EVENT_CLASS_TYPE(MouseButtonPressed)
 	};
 
-	class ENGINE_API MouseButtonReleased : public MouseButtonEvent
+	class ENGINE_API MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		MouseButtonReleased(int button)
+		MouseButtonReleasedEvent(int button)
 			: MouseButtonEvent(button) { }
 
 		std::string ToString() const override
