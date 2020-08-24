@@ -2,6 +2,9 @@
 /bin/*
 /bin-int/*
 
+/Engine/vendor/Glad/bin/*
+/Engine/vendor/Glad/bin-int/*
+
 # Ignore Visual Studio hidden path
 .vs/
 
