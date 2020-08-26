@@ -10,12 +10,13 @@ public:
 
 	void OnUpdate() override
 	{
-		ENG_INFO("ExampleLayer::Update");
+		if (Engine::Input::IsKeyPressed(ENG_KEY_TAB))
+			ENG_TRACE("Tab key is pressed!");
 	}
 
 	void OnEvent(Engine::Event& event) override
 	{
-		ENG_TRACE("{0}", event);
+		//ENG_TRACE("{0}", event);
 	}
 };
 
