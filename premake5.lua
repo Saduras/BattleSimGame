@@ -1,5 +1,6 @@
 workspace "BattleSimGame"
 	architecture "x64"
+	startproject "BattleSimGame"
 
 	configurations 
 	{
@@ -16,14 +17,18 @@ IncludeDir["GLFW"] = "Engine/vendor/GLFW/include"
 IncludeDir["Glad"] = "Engine/vendor/Glad/include"
 IncludeDir["ImGui"] = "Engine/vendor/imgui/"
 
-include "Engine/vendor/GLFW"
-include "Engine/vendor/Glad"
-include "Engine/vendor/imgui"
+group "Dependencies"
+	include "Engine/vendor/GLFW"
+	include "Engine/vendor/Glad"
+	include "Engine/vendor/imgui"
+
+group ""
 
 project "BattleSimGame"
 	location "BattleSimGame"
 	kind "ConsoleApp"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -47,7 +52,6 @@ project "BattleSimGame"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -57,23 +61,24 @@ project "BattleSimGame"
 	
 	filter "configurations:Debug"
 		defines "ENG_DEBUG"
-		buildoptions "/MDd"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "ENG_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "ENG_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 project "Engine"
 	location "Engine"
 	kind "SharedLib"
 	language "C++"
+	staticruntime "off"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -106,7 +111,6 @@ project "Engine"
 
 	filter "system:windows"
 		cppdialect "C++17"
-		staticruntime "On"
 		systemversion "latest"
 
 		defines
@@ -119,20 +123,20 @@ project "Engine"
 
 		postbuildcommands
 		{
-			("{COPY} %{cfg.buildtarget.relpath} ../bin/" .. outputdir .. "/BattleSimGame")
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/BattleSimGame/\"")
 		}
 	
 	filter "configurations:Debug"
-		defines "ENG_DEBUG;ENG_ENABLE_ASSERTS"
-		buildoptions "/MDd"
+		defines "ENG_DEBUG"
+		runtime "Debug"
 		symbols "On"
 
 	filter "configurations:Release"
 		defines "ENG_RELEASE"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
 
 	filter "configurations:Dist"
 		defines "ENG_DIST"
-		buildoptions "/MD"
+		runtime "Release"
 		optimize "On"
