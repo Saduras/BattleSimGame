@@ -21,12 +21,24 @@ project "Glad"
 		systemversion "latest"
 		staticruntime "On"
 
+	filter "system:macosx"
+		systemversion "latest"
+		staticruntime "On"
+		xcodebuildsettings { ["ALWAYS_SEARCH_USER_PATHS"] = "YES" }
+
+		links
+		{
+			"Cocoa.framework",
+			"IOKit.framework",
+			"QuartzCore.framework",
+		}
+
 	filter "configurations:Debug"
 		runtime "Debug"
-		symbols "on"
-		buildoptions "/MT"
+		symbols "On"
+		runtime "Debug"
 
 	filter "configurations:Release"
 		runtime "Release"
-		optimize "on"
-		buildoptions "/MT"
+		optimize "On"
+		runtime "Release"

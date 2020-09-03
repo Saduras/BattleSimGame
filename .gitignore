@@ -14,3 +14,8 @@
 *.filters
 *.user
 BattleSimGame/imgui.ini
+
+# Ignore XCode project files
+*.pbxproj
+*.xcodeproj/
+*.xcworkspace/

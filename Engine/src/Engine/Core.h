@@ -6,8 +6,10 @@
 	#else
 		#define ENGINE_API __declspec(dllimport)
 	#endif
+#elif ENG_PLATFORM_MAC
+    #define ENGINE_API
 #else
-	#error Engine only supports Windows!	
+	#error Engine only supports Windows and Mac!
 #endif
 
 #ifdef HZ_DEBUG

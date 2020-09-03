@@ -61,6 +61,15 @@ project "BattleSimGame"
 			"ENG_PLATFORM_WINDOWS"
 		}
 	
+	filter "system:macosx"
+		cppdialect "C++17"
+		systemversion "latest"
+
+		defines
+		{
+			"ENG_PLATFORM_WINDOWS"
+		}
+
 	filter "configurations:Debug"
 		defines "ENG_DEBUG"
 		runtime "Debug"
@@ -85,9 +94,6 @@ project "Engine"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
-	pchheader "epch.h"
-	pchsource "Engine/src/epch.cpp"
-
 	files 
 	{
 		"%{prj.name}/src/**.h",
@@ -111,16 +117,49 @@ project "Engine"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib",
 	}
 
 	filter "system:windows"
 		cppdialect "C++17"
 		systemversion "latest"
+		pchheader "epch.h"
+		pchsource "Engine/src/epch.cpp"
+
+		links
+		{
+			"opengl32.lib",
+		}
 
 		defines
 		{
 			"ENG_PLATFORM_WINDOWS",
+			"ENG_BUILD_DLL",
+			"GLFW_INCLUDE_NONE",
+			"IMGUI_IMPL_OPENGL_LOADER_GLAD",
+		}
+
+		postbuildcommands
+		{
+			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/BattleSimGame/\"")
+		}
+	
+	filter "system:macosx"
+		cppdialect "C++17"
+		systemversion "latest"
+		xcodebuildsettings { ["ALWAYS_SEARCH_USER_PATHS"] = "YES" }
+		pchheader "src/epch.h"
+		pchsource "Engine/src/epch.cpp"
+
+		links
+		{
+			"Cocoa.framework",
+			"IOKit.framework",
+			"QuartzCore.framework",
+		}
+
+		defines
+		{
+			"ENG_PLATFORM_MAC",
 			"ENG_BUILD_DLL",
 			"GLFW_INCLUDE_NONE",
 			"IMGUI_IMPL_OPENGL_LOADER_GLAD",
