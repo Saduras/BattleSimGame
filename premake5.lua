@@ -29,7 +29,8 @@ project "BattleSimGame"
 	location "BattleSimGame"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -53,7 +54,6 @@ project "BattleSimGame"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
@@ -64,23 +64,24 @@ project "BattleSimGame"
 	filter "configurations:Debug"
 		defines "ENG_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "ENG_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "ENG_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 project "Engine"
 	location "Engine"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
@@ -113,9 +114,13 @@ project "Engine"
 		"ImGui",
 		"opengl32.lib",
 	}
+	
+	defines
+	{
+		"_CRT_SECURE_NO_WARNINGS"
+	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 
 		defines
@@ -126,22 +131,17 @@ project "Engine"
 			"IMGUI_IMPL_OPENGL_LOADER_GLAD",
 		}
 
-		postbuildcommands
-		{
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputdir .. "/BattleSimGame/\"")
-		}
-	
 	filter "configurations:Debug"
 		defines "ENG_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "ENG_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "ENG_DIST"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
