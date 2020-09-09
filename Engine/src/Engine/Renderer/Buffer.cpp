@@ -11,9 +11,9 @@ namespace Engine
 	{
 		switch (Renderer::GetAPI()) 
 		{
-			case RendererAPI::OpenGL:
+		case RendererAPI::API::OpenGL:
 				return new OpenGLVertexBuffer(verticies, size);
-			case RendererAPI::None:
+		case RendererAPI::API::None:
 				ENG_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 				return nullptr;
 		}
@@ -25,9 +25,9 @@ namespace Engine
 	IndexBuffer* IndexBuffer::Create(uint32_t* indicies, uint32_t count)
 	{
 		switch (Renderer::GetAPI()) {
-			case RendererAPI::OpenGL:
+		case RendererAPI::API::OpenGL:
 				return new OpenGLIndexBuffer(indicies, count);
-			case RendererAPI::None:
+		case RendererAPI::API::None:
 				ENG_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");
 				return nullptr;
 		}
