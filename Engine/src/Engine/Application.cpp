@@ -22,9 +22,9 @@ namespace Engine
 		m_VertexArray.reset(VertexArray::Create());
 
 		float verticies[3 * 7] = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-			 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			 0.0f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+			100.0f, 100.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+			200.0f, 100.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+			150.0f, 200.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
 		};
 
 		std::shared_ptr<VertexBuffer> vertexBuffer;
@@ -55,11 +55,13 @@ namespace Engine
 			out vec3 v_Position; 
 			out vec4 v_Color;
 
+			uniform mat4 u_PV;
+
 			void main()
 			{
 				v_Position = a_Position;
 				v_Color = a_Color;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position = u_PV * vec4(a_Position, 1.0);
 			}
 		)";
 		std::string fragmentSrc = R"(
@@ -79,10 +81,10 @@ namespace Engine
 		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
 
 		float squareVerticies[3 * 4] = {
-			-0.5f, -0.5f, 0.0f, 
-			 0.5f, -0.5f, 0.0f, 
-			 0.5f,  0.5f, 0.0f, 
-			-0.5f,  0.5f, 0.0f, 
+			400.0f, 400.0f, 0.0f,
+			600.0f, 400.0f, 0.0f,
+			600.0f, 600.0f, 0.0f,
+			400.0f, 600.0f, 0.0f,
 		};
 
 		m_SquareVA.reset(VertexArray::Create());
@@ -108,10 +110,12 @@ namespace Engine
 
 			out vec3 v_Position; 
 
+			uniform mat4 u_PV;
+
 			void main()
 			{
 				v_Position = a_Position;
-				gl_Position = vec4(a_Position, 1.0);
+				gl_Position =  u_PV * vec4(a_Position, 1.0);;
 			}
 		)";
 		std::string blueShaderFragmentSrc = R"(
@@ -128,6 +132,12 @@ namespace Engine
 		)";
 
 		m_BlueShader.reset(new Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
+
+		m_Camera.reset(new OrthographicCamera(
+			{0.0f, 0.0f, 0.0f}, 
+			(float)m_Window->GetWidth(), 
+			(float)m_Window->GetHeight()
+		));
 	}
 
 	Application::~Application()
@@ -163,11 +173,12 @@ namespace Engine
 			RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 			RenderCommand::Clear();
 
-			Renderer::BeginScene();
-			m_BlueShader->Bind();
+			Renderer::BeginScene(m_Camera);
+
+			Renderer::SetShader(m_BlueShader);
 			Renderer::Submit(m_SquareVA);
 
-			m_Shader->Bind();
+			Renderer::SetShader(m_Shader);
 			Renderer::Submit(m_VertexArray);
 
 			Renderer::EndScene();

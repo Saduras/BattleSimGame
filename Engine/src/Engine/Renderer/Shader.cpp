@@ -119,4 +119,25 @@ namespace Engine
 	{
 		glUseProgram(0);
 	}
+	
+	void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+	{
+		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
+	}
+
+	int Shader::GetUniformLocation(const std::string& name)
+	{
+		if (m_UniformLocationCache.find(name) != m_UniformLocationCache.end()) {
+			return m_UniformLocationCache[name];
+		}
+
+		int location = glGetUniformLocation(m_RendererID, name.c_str());
+		if (location == -1) {
+			ENG_CORE_WARN("Uniform {0} doesn't exist!", name);
+		}
+
+		m_UniformLocationCache[name] = location;
+		return location;
+	}
+
 }
