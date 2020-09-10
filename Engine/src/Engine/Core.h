@@ -14,8 +14,8 @@
 	#error Engine only supports Windows!	
 #endif
 
-#ifdef HZ_DEBUG
-	#define HZ_ENABLE_ASSERTS
+#ifdef ENG_DEBUG
+	#define ENG_ENABLE_ASSERTS
 #endif
 
 #ifdef ENG_ENABLE_ASSERTS

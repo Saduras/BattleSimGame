@@ -16,8 +16,6 @@ namespace Engine
 	
 	void Renderer::SetShader(const std::shared_ptr<Shader>& shader)
 	{
-		ENG_CORE_ASSERT(s_Camera, "Renderer::BeginScene must be called be for a shader can be set!");
-
 		shader->Bind();
 		shader->SetUniformMat4f("u_PV", s_SceneData->ViewProjectionMatrix);
 	}
