@@ -1,20 +1,28 @@
 #include "epch.h"
 #include "Shader.h"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Engine
 {
-	Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
+	Shader::Shader(const std::string& filepath)
+		: m_FilePath(filepath), m_RendererID(0)
 	{
+		ShaderProgramSource source = ParseShader(filepath);
+		ENG_CORE_ASSERT(!source.VertexSource.empty(), "Failed to parse vertex shader!");
+		ENG_CORE_ASSERT(!source.FragmentSource.empty(), "Failed to parse fragment shader!");
+
 		// Create an empty vertex shader handle
 		GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
 		// Send the vertex shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		const GLchar* source = vertexSrc.c_str();
-		glShaderSource(vertexShader, 1, &source, 0);
+		const GLchar* vertexSource = source.VertexSource.c_str();
+		glShaderSource(vertexShader, 1, &vertexSource, 0);
 
 		// Compile the vertex shader
 		glCompileShader(vertexShader);
@@ -42,8 +50,8 @@ namespace Engine
 
 		// Send the fragment shader source code to GL
 		// Note that std::string's .c_str is NULL character terminated.
-		source = fragmentSrc.c_str();
-		glShaderSource(fragmentShader, 1, &source, 0);
+		const GLchar*  fragmentSource = source.FragmentSource.c_str();
+		glShaderSource(fragmentShader, 1, &fragmentSource, 0);
 
 		// Compile the fragment shader
 		glCompileShader(fragmentShader);
@@ -124,6 +132,38 @@ namespace Engine
 	void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
 	{
 		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	ShaderProgramSource Shader::ParseShader(const std::string& filepath)
+	{
+		std::ifstream stream(filepath);
+
+		enum class ShaderType
+		{
+			NONE = -1,
+			VERTEX = 0,
+			FRAGMENT = 1
+		};
+
+		std::string line;
+		std::stringstream ss[2];
+		ShaderType type = ShaderType::NONE;
+		while (getline(stream, line)) {
+			// npos means it didn't find the substring
+			if (line.find("#shader") != std::string::npos) {
+				if (line.find("vertex") != std::string::npos) {
+					type = ShaderType::VERTEX;
+				}
+				else if (line.find("fragment") != std::string::npos) {
+					type = ShaderType::FRAGMENT;
+				}
+			}
+			else {
+				ss[(int)type] << line << '\n';
+			}
+		}
+
+		return { ss[0].str(), ss[1].str() };
 	}
 
 	int Shader::GetUniformLocation(const std::string& name)

@@ -46,39 +46,7 @@ namespace Engine
 		indexBuffer.reset(IndexBuffer::Create(indicies, sizeof(indicies) / sizeof(uint32_t)));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 
-		std::string vertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec4 a_Color;
-
-			out vec3 v_Position; 
-			out vec4 v_Color;
-
-			uniform mat4 u_PV;
-
-			void main()
-			{
-				v_Position = a_Position;
-				v_Color = a_Color;
-				gl_Position = u_PV * vec4(a_Position, 1.0);
-			}
-		)";
-		std::string fragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-			in vec4 v_Color;
-
-			void main()
-			{
-				color = v_Color;
-			}
-		)";
-
-		m_Shader.reset(new Shader(vertexSrc, fragmentSrc));
+		m_Shader.reset(new Shader("res/shader/basic.shader"));
 
 		float squareVerticies[3 * 4] = {
 			400.0f, 400.0f, 0.0f,
@@ -103,35 +71,7 @@ namespace Engine
 		squareIB.reset(IndexBuffer::Create(squareIndicies, sizeof(squareIndicies) / sizeof(uint32_t)));
 		m_SquareVA->SetIndexBuffer(squareIB);
 
-		std::string blueShaderVertexSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) in vec3 a_Position;
-
-			out vec3 v_Position; 
-
-			uniform mat4 u_PV;
-
-			void main()
-			{
-				v_Position = a_Position;
-				gl_Position =  u_PV * vec4(a_Position, 1.0);;
-			}
-		)";
-		std::string blueShaderFragmentSrc = R"(
-			#version 330 core
-			
-			layout(location = 0) out vec4 color;
-
-			in vec3 v_Position;
-
-			void main()
-			{
-				color = vec4(0.2, 0.3, 0.8, 1.0);
-			}
-		)";
-
-		m_BlueShader.reset(new Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
+		m_BlueShader.reset(new Shader("res/shader/blue.shader"));
 
 		m_Camera = OrthographicCamera(
 			{0.0f, 0.0f, 0.0f}, 
