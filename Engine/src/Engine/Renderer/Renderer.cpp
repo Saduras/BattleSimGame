@@ -3,11 +3,11 @@
 
 namespace Engine
 {
-	std::shared_ptr<Camera> Renderer::s_Camera = nullptr;
+	Renderer::SceneData* Renderer::s_SceneData = new SceneData;
 
-	void Renderer::BeginScene(std::shared_ptr<Camera> camera)
+	void Renderer::BeginScene(Camera& camera)
 	{
-		s_Camera = camera;
+		s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
 	}
 	
 	void Renderer::EndScene()
@@ -19,7 +19,7 @@ namespace Engine
 		ENG_CORE_ASSERT(s_Camera, "Renderer::BeginScene must be called be for a shader can be set!");
 
 		shader->Bind();
-		shader->SetUniformMat4f("u_PV", s_Camera->GetPV());
+		shader->SetUniformMat4f("u_PV", s_SceneData->ViewProjectionMatrix);
 	}
 
 	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)

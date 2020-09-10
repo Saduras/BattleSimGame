@@ -9,7 +9,7 @@ namespace Engine
 	class Renderer
 	{
 	public:
-		static void BeginScene(const std::shared_ptr<Camera> camera);
+		static void BeginScene(Camera& camera);
 		static void EndScene();
 
 		static void SetShader(const std::shared_ptr<Shader>& shader);
@@ -17,7 +17,12 @@ namespace Engine
 
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	private:
-		static std::shared_ptr<Camera> s_Camera;
+		struct SceneData
+		{
+			glm::mat4 ViewProjectionMatrix;
+		};
+
+		static SceneData* s_SceneData;
 	};
 
 }

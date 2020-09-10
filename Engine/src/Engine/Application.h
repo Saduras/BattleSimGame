@@ -29,7 +29,7 @@ namespace Engine
 		void PushOverlay(Layer* overlay);
 
 		inline Window& GetWindow() { return *m_Window; }
-		inline Camera& GetCamera() { return *m_Camera; }
+		inline Camera& GetCamera() { return m_Camera; }
 
 		inline static Application& Get() { return *s_Instance; }
 	private:
@@ -39,7 +39,7 @@ namespace Engine
 		bool m_Running = true;
 		LayerStack m_LayerStack;
 
-		std::shared_ptr<Camera> m_Camera;
+		Camera m_Camera;
 
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<VertexArray> m_VertexArray;

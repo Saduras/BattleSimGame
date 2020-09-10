@@ -133,11 +133,11 @@ namespace Engine
 
 		m_BlueShader.reset(new Shader(blueShaderVertexSrc, blueShaderFragmentSrc));
 
-		m_Camera.reset(new OrthographicCamera(
+		m_Camera = OrthographicCamera(
 			{0.0f, 0.0f, 0.0f}, 
 			(float)m_Window->GetWidth(), 
 			(float)m_Window->GetHeight()
-		));
+		);
 	}
 
 	Application::~Application()

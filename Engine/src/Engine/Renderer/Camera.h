@@ -13,7 +13,7 @@ namespace Engine
 		void SetPosition(glm::vec3 position);
 		inline glm::vec3 GetPosition() const { return m_Position; }
 
-		inline glm::mat4 GetPV() { return m_Proj * m_View; }
+		inline glm::mat4 GetViewProjectionMatrix() { return m_Proj * m_View; }
 	protected:
 		glm::vec3 m_Position;
 		glm::mat4 m_View;
