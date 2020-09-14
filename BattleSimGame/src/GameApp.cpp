@@ -3,7 +3,7 @@
 class ExampleLayer : public Engine::Layer
 {
 private:
-	Engine::Camera m_Camera;
+	Engine::Components::Camera* m_Camera;
 	std::shared_ptr<Engine::Shader> m_Shader;
 	std::shared_ptr<Engine::VertexArray> m_VertexArray;
 	std::shared_ptr<Engine::Shader> m_BlueShader;
@@ -66,11 +66,17 @@ public:
 
 		m_BlueShader.reset(new Engine::Shader("res/shader/blue.shader"));
 
-		m_Camera = Engine::OrthographicCamera(
-			{ 0.0f, 0.0f, 0.0f },
-			(float)1280,
-			(float)720
+		Engine::Entity* cameraEntity = CreateEntity();
+		cameraEntity->AddComponent(new Engine::Components::Transform(
+			{ 0.0f, 0.0f, 0.0f }, // position
+			{ 0.0f, 0.0f, 0.0f }, // rotation
+			{ 1.0f, 1.0f, 1.0f }  // scale
+		));
+		m_Camera = new Engine::Components::OrthographicCamera(
+			(float)1280, // width
+			(float)720   // height
 		);
+		cameraEntity->AddComponent(m_Camera);
 	}
 
 	void OnUpdate() override
@@ -78,7 +84,7 @@ public:
 		Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Engine::RenderCommand::Clear();
 
-		Engine::Renderer::BeginScene(m_Camera);
+		Engine::Renderer::BeginScene(*m_Camera);
 
 		Engine::Renderer::SetShader(m_BlueShader);
 		Engine::Renderer::Submit(m_SquareVA);

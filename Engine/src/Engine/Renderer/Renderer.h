@@ -1,7 +1,7 @@
 #pragma once
 
 #include "RenderCommand.h"
-#include "Camera.h"
+#include "Engine/ECS/Components/Camera.h"
 #include "Shader.h"
 
 namespace Engine 
@@ -9,7 +9,7 @@ namespace Engine
 	class Renderer
 	{
 	public:
-		static void BeginScene(Camera& camera);
+		static void BeginScene(Components::Camera& camera);
 		static void EndScene();
 
 		static void SetShader(const std::shared_ptr<Shader>& shader);

@@ -17,7 +17,12 @@
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Buffer.h"
-#include "Engine/Renderer/Camera.h"
+#include "Engine/ECS/Components/Camera.h"
+// --------------------------------------
+
+// ---Components-------------------------
+#include "Engine/ECS/Entity.h"
+#include "Engine/ECS/Components/Transform.h"
 // --------------------------------------
 
 // ---Entry Point------------------------

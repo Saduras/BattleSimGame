@@ -1,13 +1,20 @@
 #include "epch.h"
 #include "Renderer.h"
 
+#include <glm/gtc/matrix_inverse.hpp>
+
+#include "Engine/ECS/Components/Transform.h"
+
 namespace Engine
 {
 	Renderer::SceneData* Renderer::s_SceneData = new SceneData;
 
-	void Renderer::BeginScene(Camera& camera)
+	void Renderer::BeginScene(Components::Camera& camera)
 	{
-		s_SceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+		auto transform = camera.GetEntity()->GetComponent<Components::Transform*>(typeid(Components::Transform*));
+		auto viewMat = glm::inverse(transform->GetTransformationMatrix());
+
+		s_SceneData->ViewProjectionMatrix = camera.GetProjectionMatrix() * viewMat;
 	}
 	
 	void Renderer::EndScene()
