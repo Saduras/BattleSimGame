@@ -78,13 +78,6 @@ namespace Engine
 		static bool show = true;
 		ImGui::ShowDemoWindow(&show);
 
-
-		ImGui::Begin("Camera");
-		auto pos = app.GetCamera().GetPosition();
-		ImGui::SliderFloat3("Pos", &pos.x, -100.0f, 100.0f);
-		app.GetCamera().SetPosition(pos);
-		ImGui::End();
-
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	}
