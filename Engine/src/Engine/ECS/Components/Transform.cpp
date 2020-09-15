@@ -22,11 +22,11 @@ namespace Engine::Components
 	glm::mat4 Transform::GetTransformationMatrix() const
 	{
 		glm::mat4 transformMat(1.0f);
-		glm::translate(transformMat, m_Position);
-		glm::rotate(transformMat, glm::radians(m_Rotation.x), glm::vec3({ 1.0f, 0.0f, 0.0f }));
-		glm::rotate(transformMat, glm::radians(m_Rotation.y), glm::vec3({ 0.0f, 1.0f, 0.0f }));
-		glm::rotate(transformMat, glm::radians(m_Rotation.z), glm::vec3({ 0.0f, 0.0f, 1.0f }));
-		glm::scale(transformMat, m_Scale);
+		transformMat = glm::translate(transformMat, m_Position);
+		transformMat = glm::rotate(transformMat, glm::radians(m_Rotation.x), glm::vec3({ 1.0f, 0.0f, 0.0f }));
+		transformMat = glm::rotate(transformMat, glm::radians(m_Rotation.y), glm::vec3({ 0.0f, 1.0f, 0.0f }));
+		transformMat = glm::rotate(transformMat, glm::radians(m_Rotation.z), glm::vec3({ 0.0f, 0.0f, 1.0f }));
+		transformMat = glm::scale(transformMat, m_Scale);
 		return transformMat;
 	}
 }
