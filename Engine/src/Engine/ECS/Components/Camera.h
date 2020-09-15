@@ -20,10 +20,12 @@ namespace Engine::Components
 	class OrthographicCamera : public Camera
 	{
 	public:
-		OrthographicCamera(float width, float height, float zNear = -5.0f, float zFar = 5.0f); 
+		OrthographicCamera(float left, float right, float bottom, float top, float zNear = -5.0f, float zFar = 5.0f);
 	private:
-		float m_Width;
-		float m_Height;
+		float m_Left;
+		float m_Right;
+		float m_Bottom;
+		float m_Top;
 		float m_ZNear;
 		float m_ZFar;
 	};
