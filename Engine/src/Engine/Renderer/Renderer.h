@@ -12,8 +12,8 @@ namespace Engine
 		static void BeginScene(Components::Camera& camera);
 		static void EndScene();
 
-		static void SetShader(const std::shared_ptr<Shader>& shader);
-		static void Submit(const std::shared_ptr<VertexArray>& vertexArray);
+		static void SetShader(Shader* shader);
+		static void Submit(const VertexArray* vertexArray);
 
 		inline static RendererAPI::API GetAPI() { return RendererAPI::GetAPI(); }
 	private:

@@ -21,13 +21,13 @@ namespace Engine
 	{
 	}
 	
-	void Renderer::SetShader(const std::shared_ptr<Shader>& shader)
+	void Renderer::SetShader(Shader* shader)
 	{
 		shader->Bind();
 		shader->SetUniformMat4f("u_PV", s_SceneData->ViewProjectionMatrix);
 	}
 
-	void Renderer::Submit(const std::shared_ptr<VertexArray>& vertexArray)
+	void Renderer::Submit(const VertexArray* vertexArray)
 	{
 		vertexArray->Bind();
 		RenderCommand::DrawIndexed(vertexArray);

@@ -23,6 +23,8 @@
 // ---Components-------------------------
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/Components/Transform.h"
+#include "Engine/ECS/Components/Mesh.h"
+#include "Engine/ECS/Components/Material.h"
 // --------------------------------------
 
 // ---Entry Point------------------------

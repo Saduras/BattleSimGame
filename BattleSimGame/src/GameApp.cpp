@@ -4,67 +4,18 @@ class ExampleLayer : public Engine::Layer
 {
 private:
 	Engine::Components::Camera* m_Camera;
-	std::shared_ptr<Engine::Shader> m_Shader;
-	std::shared_ptr<Engine::VertexArray> m_VertexArray;
-	std::shared_ptr<Engine::Shader> m_BlueShader;
-	std::shared_ptr<Engine::VertexArray> m_SquareVA;
 public:
 	ExampleLayer()
 		: Layer("Example")
 	{
-		m_VertexArray.reset(Engine::VertexArray::Create());
-
-		float verticies[3 * 7] = {
-			100.0f, 100.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f,
-			200.0f, 100.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-			150.0f, 200.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		};
-
-		std::shared_ptr<Engine::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(Engine::VertexBuffer::Create(verticies, sizeof(verticies)));
-
-		{
-			Engine::BufferLayout layout = {
-				{ Engine::ShaderDataType::Float3, "a_Position" },
-				{ Engine::ShaderDataType::Float4, "a_Color" }
-			};
-
-			vertexBuffer->SetLayout(layout);
-		}
-		m_VertexArray->AddVertexBuffer(vertexBuffer);
-
-
-		unsigned int indicies[3] = { 0, 1, 2 };
-		std::shared_ptr<Engine::IndexBuffer> indexBuffer;
-		indexBuffer.reset(Engine::IndexBuffer::Create(indicies, sizeof(indicies) / sizeof(uint32_t)));
-		m_VertexArray->SetIndexBuffer(indexBuffer);
-
-		m_Shader.reset(new Engine::Shader("res/shader/basic.shader"));
-
-		float squareVerticies[3 * 4] = {
-			400.0f, 400.0f, 0.0f,
-			600.0f, 400.0f, 0.0f,
-			600.0f, 600.0f, 0.0f,
-			400.0f, 600.0f, 0.0f,
-		};
-
-		m_SquareVA.reset(Engine::VertexArray::Create());
-		std::shared_ptr<Engine::VertexBuffer> squareVB;
-		squareVB.reset(Engine::VertexBuffer::Create(squareVerticies, sizeof(squareVerticies)));
-		squareVB->SetLayout({
-			{ Engine::ShaderDataType::Float3, "a_Position" },
-			});
-		m_SquareVA->AddVertexBuffer(squareVB);
-
-		unsigned int squareIndicies[6] = {
-			0, 1, 2,
-			2, 3, 0,
-		};
-		std::shared_ptr<Engine::IndexBuffer> squareIB;
-		squareIB.reset(Engine::IndexBuffer::Create(squareIndicies, sizeof(squareIndicies) / sizeof(uint32_t)));
-		m_SquareVA->SetIndexBuffer(squareIB);
-
-		m_BlueShader.reset(new Engine::Shader("res/shader/blue.shader"));
+		Engine::Entity* e1 = CreateEntity();
+		e1->AddComponent(new Engine::Components::Transform(
+			{ 0.0f, 0.0f, 0.0f }, // position
+			{ 0.0f, 0.0f, 0.0f }, // rotation
+			{ 100.0f, 100.0f, 1.0f }  // scale
+		));
+		e1->AddComponent(new Engine::Components::Mesh(Engine::PrimitiveMesh::Quad));
+		e1->AddComponent(new Engine::Components::Material("res/shader/default.shader"));
 
 		Engine::Entity* cameraEntity = CreateEntity();
 		cameraEntity->AddComponent(new Engine::Components::Transform(
@@ -73,8 +24,10 @@ public:
 			{ 1.0f, 1.0f, 1.0f }  // scale
 		));
 		m_Camera = new Engine::Components::OrthographicCamera(
-			(float)1280, // width
-			(float)720   // height
+			(float)-1280/2, // left
+			(float) 1280/2, // right
+			(float) -720/2, // bottom
+			(float)  720/2  // top
 		);
 		cameraEntity->AddComponent(m_Camera);
 	}
@@ -86,11 +39,22 @@ public:
 
 		Engine::Renderer::BeginScene(*m_Camera);
 
-		Engine::Renderer::SetShader(m_BlueShader);
-		Engine::Renderer::Submit(m_SquareVA);
+		for (const auto& entity : m_Entities) {
+			if (entity->HasComponent<Engine::Components::Mesh*>(typeid(Engine::Components::Mesh*))
+				&& entity->HasComponent<Engine::Components::Material*>(typeid(Engine::Components::Material*))
+				&& entity->HasComponent<Engine::Components::Transform*>(typeid(Engine::Components::Transform*)))
+			{
+				auto material = entity->GetComponent<Engine::Components::Material*>(typeid(Engine::Components::Material*));
+				auto shader = material->GetShader();
+				Engine::Renderer::SetShader(shader);
+				auto transform = entity->GetComponent<Engine::Components::Transform*>(typeid(Engine::Components::Transform*));
+				auto modelMatrix = transform->GetTransformationMatrix();
+				shader->SetUniformMat4f("u_Model", modelMatrix);
 
-		Engine::Renderer::SetShader(m_Shader);
-		Engine::Renderer::Submit(m_VertexArray);
+				auto mesh = entity->GetComponent<Engine::Components::Mesh*>(typeid(Engine::Components::Mesh*));
+				Engine::Renderer::Submit(mesh->GetVertexArray());
+			}
+		}
 
 		Engine::Renderer::EndScene();
 	}
