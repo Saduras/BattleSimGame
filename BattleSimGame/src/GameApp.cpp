@@ -32,7 +32,7 @@ public:
 		cameraEntity->AddComponent(m_Camera);
 	}
 
-	void OnUpdate() override
+	void OnUpdate(float deltaTime) override
 	{
 		Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		Engine::RenderCommand::Clear();

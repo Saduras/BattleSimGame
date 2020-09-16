@@ -6,6 +6,7 @@
 #include "Engine/Input.h"
 
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Time.h"
 
 namespace Engine
 {
@@ -49,8 +50,12 @@ namespace Engine
 	void Application::Run()
 	{
 		while (m_Running) {
+			float newTime = Time::GetTime();
+			float deltaTime = newTime - m_LastFrameTime;
+			m_LastFrameTime = newTime;
+
 			for (Layer* layer: m_LayerStack)
-				layer->OnUpdate();
+				layer->OnUpdate(deltaTime);
 
 			m_Window->OnUpdate();
 		}

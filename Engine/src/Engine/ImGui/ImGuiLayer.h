@@ -15,7 +15,7 @@ namespace Engine
 
 		void OnAttach();
 		void OnDetach();
-		void OnUpdate();
+		void OnUpdate(float deltaTime);
 		void OnEvent(Event& event);
 	private:
 		bool OnMousePressedEvent(MouseButtonPressedEvent& e);

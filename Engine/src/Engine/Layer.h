@@ -14,7 +14,7 @@ namespace Engine
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(float deltaTime) {}
 		virtual void OnEvent(Event& event) {}
 
 		Entity* CreateEntity();

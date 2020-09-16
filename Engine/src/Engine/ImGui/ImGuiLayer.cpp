@@ -62,7 +62,7 @@ namespace Engine
 	{
 	}
 
-	void ImGuiLayer::OnUpdate()
+	void ImGuiLayer::OnUpdate(float deltaTime)
 	{
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
