@@ -7,6 +7,11 @@ namespace Engine::Components
 	{
 		m_Shader.reset(new Shader(shaderPath));
 	}
+
+	Material::Material(const Material& material)
+	{
+		m_Shader.reset(new Shader(material.m_Shader->GetFilePath()));
+	}
 	
 	Material::~Material()
 	{

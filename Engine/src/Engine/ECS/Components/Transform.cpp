@@ -6,12 +6,12 @@
 namespace Engine::Components
 {
 	Transform::Transform()
-		: m_Position({ 0.0f, 0.0f, 0.0f }), m_Rotation({ 0.0f, 0.0f, 0.0f }), m_Scale({ 1.0f, 1.0f, 1.0f })
+		: Position({ 0.0f, 0.0f, 0.0f }), Rotation({ 0.0f, 0.0f, 0.0f }), Scale({ 1.0f, 1.0f, 1.0f })
 	{
 	}
 
 	Transform::Transform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale)
-		: m_Position(pos), m_Rotation(rot), m_Scale(scale)
+		: Position(pos), Rotation(rot), Scale(scale)
 	{
 	}
 
@@ -22,11 +22,11 @@ namespace Engine::Components
 	glm::mat4 Transform::GetTransformationMatrix() const
 	{
 		glm::mat4 transformMat(1.0f);
-		transformMat = glm::translate(transformMat, m_Position);
-		transformMat = glm::rotate(transformMat, glm::radians(m_Rotation.x), glm::vec3({ 1.0f, 0.0f, 0.0f }));
-		transformMat = glm::rotate(transformMat, glm::radians(m_Rotation.y), glm::vec3({ 0.0f, 1.0f, 0.0f }));
-		transformMat = glm::rotate(transformMat, glm::radians(m_Rotation.z), glm::vec3({ 0.0f, 0.0f, 1.0f }));
-		transformMat = glm::scale(transformMat, m_Scale);
+		transformMat = glm::translate(transformMat, Position);
+		transformMat = glm::rotate(transformMat, glm::radians(Rotation.x), glm::vec3({ 1.0f, 0.0f, 0.0f }));
+		transformMat = glm::rotate(transformMat, glm::radians(Rotation.y), glm::vec3({ 0.0f, 1.0f, 0.0f }));
+		transformMat = glm::rotate(transformMat, glm::radians(Rotation.z), glm::vec3({ 0.0f, 0.0f, 1.0f }));
+		transformMat = glm::scale(transformMat, Scale);
 		return transformMat;
 	}
 }

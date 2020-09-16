@@ -9,7 +9,7 @@ namespace Engine
 	class Renderer
 	{
 	public:
-		static void BeginScene(Components::Camera& camera);
+		static void BeginScene(glm::mat4 projectionViewMatrix);
 		static void EndScene();
 
 		static void SetShader(Shader* shader);

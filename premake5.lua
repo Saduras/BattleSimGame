@@ -17,6 +17,7 @@ IncludeDir["GLFW"] = "Engine/vendor/GLFW/include"
 IncludeDir["Glad"] = "Engine/vendor/Glad/include"
 IncludeDir["ImGui"] = "Engine/vendor/imgui/"
 IncludeDir["glm"] = "Engine/vendor/glm"
+IncludeDir["entt"] = "Engine/vendor/entt/src"
 
 group "Dependencies"
 	include "Engine/vendor/GLFW"
@@ -46,6 +47,7 @@ project "BattleSimGame"
 		"Engine/vendor/spdlog/include",
 		"Engine/src",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}",
 	}
 
 	links 
@@ -105,6 +107,7 @@ project "Engine"
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}",
 	}
 
 	links 

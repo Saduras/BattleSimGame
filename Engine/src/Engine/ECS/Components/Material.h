@@ -8,7 +8,10 @@ namespace Engine::Components
     {
     public:
         Material(std::string shaderPath);
+        Material(const Material& material);
         ~Material();
+
+        Material& operator=(const Material&) { return *this; }
 
         inline Shader* GetShader() const { return m_Shader.get(); }
     private:

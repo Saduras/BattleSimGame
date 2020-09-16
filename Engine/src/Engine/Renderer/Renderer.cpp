@@ -9,12 +9,9 @@ namespace Engine
 {
 	Renderer::SceneData* Renderer::s_SceneData = new SceneData;
 
-	void Renderer::BeginScene(Components::Camera& camera)
+	void Renderer::BeginScene(glm::mat4 projectionViewMatrix)
 	{
-		auto transform = camera.GetEntity()->GetComponent<Components::Transform*>(typeid(Components::Transform*));
-		auto viewMat = glm::inverse(transform->GetTransformationMatrix());
-
-		s_SceneData->ViewProjectionMatrix = camera.GetProjectionMatrix() * viewMat;
+		s_SceneData->ViewProjectionMatrix = projectionViewMatrix;
 	}
 	
 	void Renderer::EndScene()

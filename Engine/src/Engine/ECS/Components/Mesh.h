@@ -21,16 +21,18 @@ namespace Engine::Components
 		std::vector<float> Verticies;
 		BufferLayout Layout;
 		std::vector<uint32_t> Indicies;
-
 	};
 
 	class Mesh : public Component
 	{
 	public:
+		Mesh();
 		Mesh(MeshData data);
 		Mesh(const Mesh& mesh);
 		Mesh(PrimitiveMesh primitive);
 		~Mesh();
+
+		Mesh& operator=(const Mesh&) { return *this; }
 
 		inline VertexArray* GetVertexArray() const { return m_VertexArray.get(); }
 		inline MeshData GetMeshData() const { return m_MeshData; }

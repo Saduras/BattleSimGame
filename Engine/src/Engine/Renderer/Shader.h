@@ -15,12 +15,14 @@ namespace Engine
 	{
 	public:
 		Shader(const std::string& filepath);
+		Shader(const Shader& shader);
 		~Shader();
 
 		void Bind() const;
 		void Unbind() const;
 
 		void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
+		inline std::string GetFilePath() { return m_FilePath; }
 	private:
 		ShaderProgramSource ParseShader(const std::string& filepath);
 		int GetUniformLocation(const std::string& name);
