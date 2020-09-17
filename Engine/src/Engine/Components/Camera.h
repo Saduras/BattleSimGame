@@ -1,13 +1,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-
-#include "Engine/ECS/Component.h"
 
 namespace Engine::Components
 {
-	class Camera : public Component
+	class Camera
 	{
 	public:
 		virtual ~Camera() {};

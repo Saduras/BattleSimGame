@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/ECS/Component.h"
+#include "Engine/Assets/Asset.h"
 #include "Engine/Renderer/Buffer.h"
 #include "Engine/Renderer/VertexArray.h"
 
@@ -12,10 +12,7 @@ namespace Engine
 		Quad,
 		Triangle,
 	};
-}
 
-namespace Engine::Components
-{
 	struct MeshData
 	{
 		std::vector<float> Verticies;
@@ -23,7 +20,7 @@ namespace Engine::Components
 		std::vector<uint32_t> Indicies;
 	};
 
-	class Mesh : public Component
+	class Mesh : public Asset
 	{
 	public:
 		Mesh();

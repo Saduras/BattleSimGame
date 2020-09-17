@@ -1,6 +1,8 @@
 #include "epch.h"
 #include "Camera.h"
 
+#include <glm/gtc/matrix_transform.hpp>
+
 namespace Engine::Components
 {
 	OrthographicCamera::OrthographicCamera(float left, float right, float bottom, float top, float zNear, float zFar)

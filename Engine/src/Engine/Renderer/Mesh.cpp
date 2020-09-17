@@ -1,7 +1,7 @@
 #include "epch.h"
 #include "Mesh.h"
 
-namespace Engine::Components
+namespace Engine
 {
 	Mesh::Mesh(MeshData data)
 		: m_MeshData(data)

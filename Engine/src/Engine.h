@@ -11,22 +11,23 @@
 #include "Engine/MouseButtonCodes.h"
 #include "Engine/KeyCodes.h"
 
+#include "Engine/Assets/AssetRegistry.h"
+
 // ---Rendering--------------------------
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/RenderCommand.h"
 #include "Engine/Renderer/Shader.h"
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Buffer.h"
-#include "Engine/ECS/Components/Camera.h"
+#include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Material.h"
 // --------------------------------------
 
 // ---Components-------------------------
-#include "Engine/ECS/Entity.h"
-#include "Engine/ECS/Components/Transform.h"
-#include "Engine/ECS/Components/Mesh.h"
-#include "Engine/ECS/Components/Material.h"
+#include "Engine/Components/Transform.h"
+#include "Engine/Components/Camera.h"
 // --------------------------------------
 
 // ---Entry Point------------------------
-#include "Engine/EntryPoint.h"
+//#include "Engine/EntryPoint.h"
 // --------------------------------------

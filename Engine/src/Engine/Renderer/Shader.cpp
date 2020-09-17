@@ -113,6 +113,11 @@ namespace Engine
 		glDetachShader(m_RendererID, vertexShader);
 		glDetachShader(m_RendererID, fragmentShader);
 	}
+
+	Shader::Shader(const Shader& shader)
+		: Shader(shader.m_FilePath)
+	{
+	}
 	
 	Shader::~Shader()
 	{
@@ -132,6 +137,11 @@ namespace Engine
 	void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
 	{
 		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
+	void Shader::SetUniform4f(const std::string& name, const glm::vec4 values)
+	{
+		glUniform4f(GetUniformLocation(name), values.x, values.y, values.z, values.w);
 	}
 
 	ShaderProgramSource Shader::ParseShader(const std::string& filepath)
