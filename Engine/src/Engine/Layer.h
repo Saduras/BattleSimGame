@@ -2,7 +2,6 @@
 
 #include "Engine/Core.h"
 #include "Engine/Events/Event.h"
-#include "Engine/ECS/Entity.h"
 
 namespace Engine
 {
@@ -17,12 +16,8 @@ namespace Engine
 		virtual void OnUpdate(float deltaTime) {}
 		virtual void OnEvent(Event& event) {}
 
-		Entity* CreateEntity();
-		void DeleteEntity(Entity* entity);
-
 		inline const std::string& GetName() const { return m_DebugName; }
 	protected:
 		std::string m_DebugName;
-		std::vector<Entity*> m_Entities;
 	};
 }

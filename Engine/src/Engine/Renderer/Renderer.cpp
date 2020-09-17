@@ -1,10 +1,6 @@
 #include "epch.h"
 #include "Renderer.h"
 
-#include <glm/gtc/matrix_inverse.hpp>
-
-#include "Engine/ECS/Components/Transform.h"
-
 namespace Engine
 {
 	Renderer::SceneData* Renderer::s_SceneData = new SceneData;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "RenderCommand.h"
-#include "Engine/ECS/Components/Camera.h"
 #include "Shader.h"
 
 namespace Engine 
