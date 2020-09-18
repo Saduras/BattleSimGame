@@ -11,6 +11,9 @@ public:
 	~TowerBattleLayer();
 
 	void OnUpdate(float deltaTime) override;
+	void OnEvent(Engine::Event& event) override;
+
+	bool OnMouseButtonPressed(Engine::MouseButtonPressedEvent& event);
 private:
 	entt::registry m_Registry;
 	entt::entity m_CameraEntity;
