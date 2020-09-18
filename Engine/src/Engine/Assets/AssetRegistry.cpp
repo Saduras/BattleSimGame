@@ -5,9 +5,9 @@ namespace Engine
 {
 	AssetRegistry* AssetRegistry::s_Instance = new AssetRegistry();
 
-	void AssetRegistry::Add(const std::string& id, Asset asset)
+	void AssetRegistry::Add(const std::string& id, Asset* asset)
 	{
-		s_Instance->m_AssetMap[id] = std::make_unique<Asset>(asset);
+		s_Instance->m_AssetMap.emplace(id, asset);
 	}
 
 	void AssetRegistry::Delete(const std::string& id)
