@@ -26,6 +26,7 @@
 // ---Components-------------------------
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Camera.h"
+#include "Engine/Components/Renderable.h"
 // --------------------------------------
 
 // ---Entry Point------------------------
