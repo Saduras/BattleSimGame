@@ -10,6 +10,9 @@ static std::string GetFactionMaterialID(Faction faction, bool selected)
 	case Faction::None:
 		return selected ? "material/tower/none/selected" : "material/tower/none/unselected";
 	}
+
+	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
+	return "";
 }
 
 struct QuadCollider
