@@ -9,6 +9,15 @@ enum class Faction
 	None, Red, Blue
 };
 
+struct Tower
+{
+	Faction Faction = Faction::None;
+	unsigned int Units = 0;
+	unsigned int MaxUnits = 10;
+	float ProductionIntervall = 1.0f;
+	float NextProductionTime = 0.0f;
+};
+
 class TowerBattleLayer : public Engine::Layer
 {
 public:
@@ -20,6 +29,7 @@ public:
 
 	bool OnMouseButtonPressed(Engine::MouseButtonPressedEvent& event);
 	void OnTowerClick(entt::entity tower);
+	void UpdateTower(Tower& tower, float deltaTime);
 	void Attack(entt::entity source, entt::entity target);
 private:
 	entt::registry m_Registry;

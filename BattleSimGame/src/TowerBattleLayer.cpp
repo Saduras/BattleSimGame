@@ -12,11 +12,6 @@ static std::string GetFactionMaterialID(Faction faction, bool selected)
 	}
 }
 
-struct Tower
-{
-	Faction faction;
-};
-
 struct QuadCollider
 {
 	glm::vec2 Center;
@@ -101,6 +96,9 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	auto renderView = m_Registry.view<Transform, Renderable>();
 	renderView.each(RenderRenerable);
 
+	auto towerView = m_Registry.view<Tower>();
+	towerView.each([&deltaTime, this](Tower& tower) { this->UpdateTower(tower, deltaTime); });
+
 	Engine::Renderer::EndScene();
 }
 
@@ -146,17 +144,31 @@ void TowerBattleLayer::OnTowerClick(entt::entity towerEntity)
 	if (m_SourceTower == entt::null) {
 		ENG_TRACE("Selected {0}", towerEntity);
 		m_SourceTower = towerEntity;
-		renderable.MaterialID = GetFactionMaterialID(tower.faction, true);
+		renderable.MaterialID = GetFactionMaterialID(tower.Faction, true);
 	} else {
 		if (m_SourceTower == towerEntity) {
 			ENG_TRACE("Deselected {0}", towerEntity);
 			m_SourceTower = entt::null;
-			renderable.MaterialID = GetFactionMaterialID(tower.faction, false);
+			renderable.MaterialID = GetFactionMaterialID(tower.Faction, false);
 		}
 		else {
 			Attack(m_SourceTower, towerEntity);
 			m_SourceTower = entt::null;
 		}
+	}
+}
+
+void TowerBattleLayer::UpdateTower(Tower& tower, float deltaTime)
+{
+	if (tower.Units >= tower.MaxUnits) {
+		return;
+	}
+
+	tower.NextProductionTime -= deltaTime;
+	if (tower.NextProductionTime <= 0 ) {
+		tower.NextProductionTime += tower.ProductionIntervall;
+		tower.Units += 1;
+		ENG_TRACE("Faction {0} got one unit. Currently {1}/{2}", tower.Faction, tower.Units, tower.MaxUnits);
 	}
 }
 
@@ -166,7 +178,7 @@ void TowerBattleLayer::Attack(entt::entity source, entt::entity target)
 	ENG_TRACE("Deselected {0}", source);
 	auto& srcRenderable = m_Registry.get<Engine::Components::Renderable>(source);
 	auto& srcTower = m_Registry.get<Tower>(source);
-	srcRenderable.MaterialID = GetFactionMaterialID(srcTower.faction, false);
+	srcRenderable.MaterialID = GetFactionMaterialID(srcTower.Faction, false);
 }
 
 entt::entity TowerBattleLayer::CreateTower(glm::vec3 position, Faction faction)
@@ -180,7 +192,7 @@ entt::entity TowerBattleLayer::CreateTower(glm::vec3 position, Faction faction)
 		glm::vec3(50.0f, 100.0f, 1.0f)  // scale
 	);
 	m_Registry.emplace<Renderable>(tower, GetFactionMaterialID(faction, false), "mesh/quad");
-	m_Registry.emplace<Tower>(tower, faction);
+	m_Registry.emplace<Tower>(tower, faction, (unsigned int)0, (unsigned int)10, 1.0f, 0.0f);
 	m_Registry.emplace<QuadCollider>(tower,
 		glm::vec2{ position.x, position.y },
 		50.0f, // width
