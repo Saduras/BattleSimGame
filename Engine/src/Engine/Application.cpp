@@ -13,6 +13,7 @@ namespace Engine
 	Application* Application::s_Instance = nullptr;
 
 	Application::Application()
+		: m_LastFrameTime(0.0f), m_Running(true)
 	{
 		ENG_CORE_ASSERT(!s_Instance, "Application already exists.");
 		s_Instance = this;
@@ -49,6 +50,7 @@ namespace Engine
 
 	void Application::Run()
 	{
+		m_LastFrameTime = Time::GetTime();
 		while (m_Running) {
 			float newTime = Time::GetTime();
 			float deltaTime = newTime - m_LastFrameTime;
