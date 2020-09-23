@@ -1,9 +1,7 @@
 #include "TowerBattleLayer.h"
 
-
 struct Tower
 {
-	bool Selected;
 	std::string SelectedMaterial;
 	std::string UnselectedMaterial;
 };
@@ -27,7 +25,7 @@ struct QuadCollider
 };
 
 TowerBattleLayer::TowerBattleLayer()
-	: Layer("TowerBattle")
+	: Layer("TowerBattle"), m_SourceTower(entt::null)
 {
 	// Prepare assets
 	auto mat = new Engine::Material("res/shader/default.shader");
@@ -94,27 +92,52 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 		float x = Engine::Input::GetMouseX();
 		float y = Engine::Input::GetMouseY();
 		
+		// Translate sceen position to world position
 		auto camera = m_Registry.get<OrthographicCamera>(m_CameraEntity);
 		float screenWidth = (float)Engine::Application::Get().GetWindow().GetWidth();
 		float screenHeight = (float)Engine::Application::Get().GetWindow().GetHeight();
 		glm::vec4 worldPos = camera.ScreenToWorld({ x, y }, screenWidth, screenHeight);
 
-		ENG_TRACE("Mouse click at {0} {1}", worldPos.x, worldPos.y);
-
-		m_Registry.view<QuadCollider, Tower, Renderable>().each([&worldPos](auto& collider, auto& tower, auto& renderable) {
+		// Check collision
+		m_Registry.view<QuadCollider, Tower, Renderable>().each([&worldPos, this](const entt::entity entity, auto& collider, auto& tower, auto& renderable) {
 			ENG_TRACE("Hit {0}", collider.IsInside({ worldPos.x, worldPos.y }));
 			if (collider.IsInside({ worldPos.x, worldPos.y })) {
-				tower.Selected = !tower.Selected;
-				if (tower.Selected)
-					renderable.MaterialID = tower.SelectedMaterial;
-				else
-					renderable.MaterialID = tower.UnselectedMaterial;
+				this->OnTowerClick(entity);
 			}
-
 		});
 	}
 
 	return true;
+}
+
+void TowerBattleLayer::OnTowerClick(entt::entity towerEntity)
+{
+	using namespace Engine::Components;
+
+	auto& renderable = m_Registry.get<Renderable>(towerEntity);
+	auto& tower = m_Registry.get<Tower>(towerEntity);
+
+	if (m_SourceTower == entt::null) {
+		ENG_TRACE("Selected {0}", towerEntity);
+		m_SourceTower = towerEntity;
+		renderable.MaterialID = tower.SelectedMaterial;
+	} else {
+		if (m_SourceTower == towerEntity) {
+			ENG_TRACE("Deselected {0}", towerEntity);
+			m_SourceTower = entt::null;
+			renderable.MaterialID = tower.UnselectedMaterial;
+		}
+		else {
+			auto& oldRenderable = m_Registry.get<Renderable>(m_SourceTower);
+			auto& oldTower = m_Registry.get<Tower>(m_SourceTower);
+			oldRenderable.MaterialID = oldTower.UnselectedMaterial;
+			ENG_TRACE("Deselected {0}", m_SourceTower)
+
+			ENG_TRACE("Selected {0}", towerEntity);
+			m_SourceTower = towerEntity;
+			renderable.MaterialID = tower.SelectedMaterial;
+		}
+	}
 }
 
 
