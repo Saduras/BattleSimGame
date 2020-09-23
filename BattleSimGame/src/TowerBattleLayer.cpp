@@ -1,5 +1,7 @@
 #include "TowerBattleLayer.h"
 
+#include <algorithm> 
+
 static std::string GetFactionMaterialID(Faction faction, bool selected)
 {
 	switch (faction) {
@@ -163,7 +165,7 @@ void TowerBattleLayer::OnTowerClick(entt::entity towerEntity)
 
 void TowerBattleLayer::UpdateTower(Tower& tower, float deltaTime)
 {
-	if (tower.Units >= tower.MaxUnits) {
+	if (tower.Units >= tower.MaxUnits || tower.Faction == Faction::None) {
 		return;
 	}
 
@@ -175,6 +177,7 @@ void TowerBattleLayer::UpdateTower(Tower& tower, float deltaTime)
 	}
 }
 
+// TODO add visualisation of attack
 void TowerBattleLayer::Attack(entt::entity source, entt::entity target)
 {
 	ENG_TRACE("Attack from {0} to {1}", source, target);
@@ -182,6 +185,29 @@ void TowerBattleLayer::Attack(entt::entity source, entt::entity target)
 	auto& srcRenderable = m_Registry.get<Engine::Components::Renderable>(source);
 	auto& srcTower = m_Registry.get<Tower>(source);
 	srcRenderable.MaterialID = GetFactionMaterialID(srcTower.Faction, false);
+
+	// take units from source tower
+	unsigned int units = std::min(srcTower.Units, (unsigned int)5);
+	srcTower.Units -= units;
+	ENG_TRACE("{0} units move from source (Faction: {1}, Units: {2})", units, srcTower.Faction, srcTower.Units);
+
+	auto& targetTower = m_Registry.get<Tower>(target);
+	if (targetTower.Faction == srcTower.Faction) {
+		// Add to target if same faction
+		targetTower.Units += units;
+	} else {
+		int diff = (int)targetTower.Units - (int)units;
+		if (diff >= 0) {
+			targetTower.Units -= units;
+		} else {
+			// tower conquered
+			targetTower.Faction = srcTower.Faction;
+			targetTower.Units = (unsigned int)(-1 * diff);
+			auto& targetRenderable = m_Registry.get<Engine::Components::Renderable>(target);
+			targetRenderable.MaterialID = GetFactionMaterialID(targetTower.Faction, false);
+		}
+	}
+	ENG_TRACE("{0} units reached target (Faction: {1}, Units {2})", units, targetTower.Faction, targetTower.Units);
 }
 
 entt::entity TowerBattleLayer::CreateTower(glm::vec3 position, Faction faction)
