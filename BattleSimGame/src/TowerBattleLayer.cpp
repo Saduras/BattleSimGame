@@ -69,7 +69,6 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 	Engine::RenderCommand::Clear();
 
-	// For simplicity assume the first camera is the main camera
 	auto proj = m_Registry.get<OrthographicCamera>(m_CameraEntity).GetProjectionMatrix();
 	auto view = glm::inverse(m_Registry.get<Transform>(m_CameraEntity).GetTransformationMatrix());
 	Engine::Renderer::BeginScene(proj * view);
@@ -95,13 +94,14 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 		float x = Engine::Input::GetMouseX();
 		float y = Engine::Input::GetMouseY();
 		
-
-		// TODO create util to convert from screen space to world space
-		glm::vec4 worldPos = glm::vec4(x - 1280/2, -(y - 720/2), 0.0f, 1.0f);
+		auto camera = m_Registry.get<OrthographicCamera>(m_CameraEntity);
+		float screenWidth = (float)Engine::Application::Get().GetWindow().GetWidth();
+		float screenHeight = (float)Engine::Application::Get().GetWindow().GetHeight();
+		glm::vec4 worldPos = camera.ScreenToWorld({ x, y }, screenWidth, screenHeight);
 
 		ENG_TRACE("Mouse click at {0} {1}", worldPos.x, worldPos.y);
 
-		m_Registry.view<QuadCollider,Tower, Renderable>().each([&worldPos](auto& collider, auto& tower, auto& renderable) {
+		m_Registry.view<QuadCollider, Tower, Renderable>().each([&worldPos](auto& collider, auto& tower, auto& renderable) {
 			ENG_TRACE("Hit {0}", collider.IsInside({ worldPos.x, worldPos.y }));
 			if (collider.IsInside({ worldPos.x, worldPos.y })) {
 				tower.Selected = !tower.Selected;
@@ -116,7 +116,6 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 
 	return true;
 }
-
 
 
 entt::entity TowerBattleLayer::CreateTower(glm::vec3 position)

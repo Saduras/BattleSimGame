@@ -10,8 +10,13 @@ namespace Engine::Components
 		virtual ~Camera() {};
 
 		inline glm::mat4 GetProjectionMatrix() { return m_Proj; }
+		inline glm::mat4 GetProjectionMatrixInverse() { return m_ProjInverse; }
+		glm::vec4 ScreenToView(glm::vec2 screenPoint, float screenWidth, float screenHeight);
+		glm::vec4 ViewToWorld(glm::vec4 viewPoint);
+		glm::vec4 ScreenToWorld(glm::vec2 screenPoint, float screenWidth, float screenHeight);
 	protected:
 		glm::mat4 m_Proj;
+		glm::mat4 m_ProjInverse;
 	};
 
 	class OrthographicCamera : public Camera

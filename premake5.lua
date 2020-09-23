@@ -148,3 +148,56 @@ project "Engine"
 		defines "ENG_DIST"
 		runtime "Release"
 		optimize "on"
+
+project "EngineUnitTests"
+	location "EngineUnitTests"
+	kind "SharedLib"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files 
+	{
+		"%{prj.name}/src/**.h",
+		"%{prj.name}/src/**.cpp",
+	}
+
+	includedirs
+	{
+		"Engine/vendor/spdlog/include",
+		"Engine/src",
+		"EngineUnitTests/src",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.entt}",
+	}
+
+	links 
+	{
+		"Engine"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+		defines
+		{
+			"ENG_PLATFORM_WINDOWS"
+		}
+	
+	filter "configurations:Debug"
+		defines "ENG_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "ENG_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "ENG_DIST"
+		runtime "Release"
+		optimize "on"
