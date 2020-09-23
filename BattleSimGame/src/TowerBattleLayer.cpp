@@ -1,9 +1,20 @@
 #include "TowerBattleLayer.h"
 
+static std::string GetFactionMaterialID(Faction faction, bool selected)
+{
+	switch (faction) {
+	case Faction::Red: 
+		return selected ? "material/tower/red/selected" : "material/tower/red/unselected";
+	case Faction::Blue:
+		return selected ? "material/tower/blue/selected" : "material/tower/blue/unselected";
+	case Faction::None:
+		return selected ? "material/tower/none/selected" : "material/tower/none/unselected";
+	}
+}
+
 struct Tower
 {
-	std::string SelectedMaterial;
-	std::string UnselectedMaterial;
+	Faction faction;
 };
 
 struct QuadCollider
@@ -28,19 +39,34 @@ TowerBattleLayer::TowerBattleLayer()
 	: Layer("TowerBattle"), m_SourceTower(entt::null)
 {
 	// Prepare assets
-	auto mat = new Engine::Material("res/shader/default.shader");
-	mat->SetColor({0.4f, 0.4f, 0.4f, 1.0f});
-	Engine::AssetRegistry::Add("material/tower", mat);
-	auto selectedMat = new Engine::Material("res/shader/default.shader");
-	selectedMat->SetColor({ 0.6f, 0.6f, 0.6f, 1.0f });
-	Engine::AssetRegistry::Add("material/tower/selected", selectedMat);
 	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::Quad));
+
+	auto matNoneBase = new Engine::Material("res/shader/default.shader");
+	matNoneBase->SetColor({0.4f, 0.4f, 0.4f, 1.0f});
+	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::None, false), matNoneBase);
+	auto matNoneSelect = new Engine::Material("res/shader/default.shader");
+	matNoneSelect->SetColor({ 0.6f, 0.6f, 0.6f, 1.0f });
+	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::None, true), matNoneSelect);
+
+	auto matRedBase = new Engine::Material("res/shader/default.shader");
+	matRedBase->SetColor({ 0.7f, 0.2f, 0.2f, 1.0f });
+	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Red, false), matRedBase);
+	auto matRedSelect = new Engine::Material("res/shader/default.shader");
+	matRedSelect->SetColor({ 0.8f, 0.4f, 0.4f, 1.0f });
+	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Red, true), matRedSelect);
+
+	auto matBlueBase = new Engine::Material("res/shader/default.shader");
+	matBlueBase->SetColor({ 0.2f, 0.2f, 0.7f, 1.0f });
+	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, false), matBlueBase);
+	auto matBlueSelect = new Engine::Material("res/shader/default.shader");
+	matBlueSelect->SetColor({ 0.4f, 0.4f, 0.8f, 1.0f });
+	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, true), matBlueSelect);
 
 	m_CameraEntity = CreateCamera();
 
-	CreateTower({ 100.0f, 0.0f, 0.0f });
-	CreateTower({ 200.0f, 50.0f, 0.0f });
-	CreateTower({ -50.0f, 75.0f, 0.0f });
+	CreateTower({ 100.0f, 0.0f, 0.0f }, Faction::None);
+	CreateTower({ 200.0f, 50.0f, 0.0f }, Faction::Red);
+	CreateTower({ -50.0f, 75.0f, 0.0f }, Faction::Blue);
 }
 
 TowerBattleLayer::~TowerBattleLayer()
@@ -120,45 +146,47 @@ void TowerBattleLayer::OnTowerClick(entt::entity towerEntity)
 	if (m_SourceTower == entt::null) {
 		ENG_TRACE("Selected {0}", towerEntity);
 		m_SourceTower = towerEntity;
-		renderable.MaterialID = tower.SelectedMaterial;
+		renderable.MaterialID = GetFactionMaterialID(tower.faction, true);
 	} else {
 		if (m_SourceTower == towerEntity) {
 			ENG_TRACE("Deselected {0}", towerEntity);
 			m_SourceTower = entt::null;
-			renderable.MaterialID = tower.UnselectedMaterial;
+			renderable.MaterialID = GetFactionMaterialID(tower.faction, false);
 		}
 		else {
-			auto& oldRenderable = m_Registry.get<Renderable>(m_SourceTower);
-			auto& oldTower = m_Registry.get<Tower>(m_SourceTower);
-			oldRenderable.MaterialID = oldTower.UnselectedMaterial;
-			ENG_TRACE("Deselected {0}", m_SourceTower)
-
-			ENG_TRACE("Selected {0}", towerEntity);
-			m_SourceTower = towerEntity;
-			renderable.MaterialID = tower.SelectedMaterial;
+			Attack(m_SourceTower, towerEntity);
+			m_SourceTower = entt::null;
 		}
 	}
 }
 
+void TowerBattleLayer::Attack(entt::entity source, entt::entity target)
+{
+	ENG_TRACE("Attack from {0} to {1}", source, target);
+	ENG_TRACE("Deselected {0}", source);
+	auto& srcRenderable = m_Registry.get<Engine::Components::Renderable>(source);
+	auto& srcTower = m_Registry.get<Tower>(source);
+	srcRenderable.MaterialID = GetFactionMaterialID(srcTower.faction, false);
+}
 
-entt::entity TowerBattleLayer::CreateTower(glm::vec3 position)
+entt::entity TowerBattleLayer::CreateTower(glm::vec3 position, Faction faction)
 {
 	using namespace Engine::Components;
-
+	
 	auto tower = m_Registry.create();
 	m_Registry.emplace<Transform>(tower,
 		position,
 		glm::vec3(0.0f, 0.0f, 0.0f), // rotation
 		glm::vec3(50.0f, 100.0f, 1.0f)  // scale
 	);
-	m_Registry.emplace<Renderable>(tower, "material/tower", "mesh/quad");
-	m_Registry.emplace<Tower>(tower, false, "material/tower/selected", "material/tower");
+	m_Registry.emplace<Renderable>(tower, GetFactionMaterialID(faction, false), "mesh/quad");
+	m_Registry.emplace<Tower>(tower, faction);
 	m_Registry.emplace<QuadCollider>(tower,
 		glm::vec2{ position.x, position.y },
 		50.0f, // width
 		100.0f // height
 	);
-
+	
 	return tower;
 }
 
