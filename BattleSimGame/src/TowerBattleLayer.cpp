@@ -2,6 +2,9 @@
 
 #include <algorithm> 
 
+#include <Engine/Renderer/Material.h>
+#include <Engine/Renderer/Mesh.h>
+
 static std::string GetFactionMaterialID(Faction faction, bool selected)
 {
 	switch (faction) {
@@ -75,8 +78,8 @@ TowerBattleLayer::~TowerBattleLayer()
 
 void RenderRenerable(const Engine::Components::Transform& transform, const Engine::Components::Renderable& renderable)
 {
-	auto& material = Engine::AssetRegistry::GetMaterial(renderable.MaterialID);
-	auto& mesh = Engine::AssetRegistry::GetMesh(renderable.MeshID);
+	auto& material = Engine::AssetRegistry::Get<Engine::Material>(renderable.MaterialID);
+	auto& mesh = Engine::AssetRegistry::Get<Engine::Mesh>(renderable.MeshID);
 
 	auto shader = material.GetShader();
 	Engine::Renderer::SetShader(shader);
