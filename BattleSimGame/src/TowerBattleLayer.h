@@ -32,8 +32,6 @@ public:
 	void UpdateTower(Tower& tower, float deltaTime);
 	void Attack(entt::entity source, entt::entity target);
 private:
-	entt::registry m_Registry;
-	entt::entity m_CameraEntity;
 	entt::entity m_SourceTower;
 
 	entt::entity CreateTower(glm::vec3 position, Faction faction);

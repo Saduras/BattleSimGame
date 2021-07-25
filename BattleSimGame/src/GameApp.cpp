@@ -70,6 +70,7 @@ public:
 	{
 		//PushLayer(new ExampleLayer());
 		PushLayer(new TowerBattleLayer());
+		PushLayer(new Engine::RenderLayer());
 		//PushOverlay(new Engine::ImGuiLayer());
 	}
 

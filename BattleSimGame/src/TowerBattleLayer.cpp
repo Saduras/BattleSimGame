@@ -65,7 +65,7 @@ TowerBattleLayer::TowerBattleLayer()
 	matBlueSelect->SetColor({ 0.4f, 0.4f, 0.8f, 1.0f });
 	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, true), matBlueSelect);
 
-	m_CameraEntity = CreateCamera();
+	CreateCamera();
 
 	CreateTower({ 100.0f, 0.0f, 0.0f }, Faction::None);
 	CreateTower({ 200.0f, 50.0f, 0.0f }, Faction::Red);
@@ -76,38 +76,10 @@ TowerBattleLayer::~TowerBattleLayer()
 {
 }
 
-void RenderRenerable(const Engine::Components::Transform& transform, const Engine::Components::Renderable& renderable)
-{
-	auto& material = Engine::AssetRegistry::Get<Engine::Material>(renderable.MaterialID);
-	auto& mesh = Engine::AssetRegistry::Get<Engine::Mesh>(renderable.MeshID);
-
-	auto shader = material.GetShader();
-	Engine::Renderer::SetShader(shader);
-	auto modelMatrix = transform.GetTransformationMatrix();
-	shader->SetUniformMat4f("u_Model", modelMatrix);
-	shader->SetUniform4f("u_Color", material.GetColor());
-	Engine::Renderer::Submit(mesh.GetVertexArray());
-}
-
 void TowerBattleLayer::OnUpdate(float deltaTime)
 {
-	using namespace Engine::Components;
-
-	Engine::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-	Engine::RenderCommand::Clear();
-
-	auto proj = m_Registry.get<OrthographicCamera>(m_CameraEntity).GetProjectionMatrix();
-	auto view = glm::inverse(m_Registry.get<Transform>(m_CameraEntity).GetTransformationMatrix());
-	Engine::Renderer::BeginScene(proj * view);
-
-	// Render all entities with transform, mesh and material
-	auto renderView = m_Registry.view<Transform, Renderable>();
-	renderView.each(RenderRenerable);
-
-	auto towerView = m_Registry.view<Tower>();
+	auto towerView = Engine::EntityRegistry::View<Tower>();
 	towerView.each([&deltaTime, this](Tower& tower) { this->UpdateTower(tower, deltaTime); });
-
-	Engine::Renderer::EndScene();
 }
 
 void TowerBattleLayer::OnEvent(Engine::Event& event)
@@ -124,18 +96,20 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 		float x = Engine::Input::GetMouseX();
 		float y = Engine::Input::GetMouseY();
 		
-		// Translate sceen position to world position
-		auto camera = m_Registry.get<OrthographicCamera>(m_CameraEntity);
-		float screenWidth = (float)Engine::Application::Get().GetWindow().GetWidth();
-		float screenHeight = (float)Engine::Application::Get().GetWindow().GetHeight();
-		glm::vec4 worldPos = camera.ScreenToWorld({ x, y }, screenWidth, screenHeight);
+		auto cameras = Engine::EntityRegistry::View<OrthographicCamera>();
+		cameras.each([x, y, this](OrthographicCamera& camera) {
+			// Translate screen position to world position
+			float screenWidth = (float)Engine::Application::Get().GetWindow().GetWidth();
+			float screenHeight = (float)Engine::Application::Get().GetWindow().GetHeight();
+			glm::vec4 worldPos = camera.ScreenToWorld({ x, y }, screenWidth, screenHeight);
 
-		// Check collision
-		m_Registry.view<QuadCollider, Tower, Renderable>().each([&worldPos, this](const entt::entity entity, auto& collider, auto& tower, auto& renderable) {
-			ENG_TRACE("Hit {0}", collider.IsInside({ worldPos.x, worldPos.y }));
-			if (collider.IsInside({ worldPos.x, worldPos.y })) {
-				this->OnTowerClick(entity);
-			}
+			// Check collision
+			Engine::EntityRegistry::View<QuadCollider, Tower, Renderable>().each([&worldPos, this](const entt::entity entity, auto& collider, auto& tower, auto& renderable) {
+				ENG_TRACE("Hit {0}", collider.IsInside({ worldPos.x, worldPos.y }));
+				if (collider.IsInside({ worldPos.x, worldPos.y })) {
+					this->OnTowerClick(entity);
+				}
+			});
 		});
 	}
 
@@ -146,8 +120,8 @@ void TowerBattleLayer::OnTowerClick(entt::entity towerEntity)
 {
 	using namespace Engine::Components;
 
-	auto& renderable = m_Registry.get<Renderable>(towerEntity);
-	auto& tower = m_Registry.get<Tower>(towerEntity);
+	auto& renderable = Engine::EntityRegistry::Get<Renderable>(towerEntity);
+	auto& tower = Engine::EntityRegistry::Get<Tower>(towerEntity);
 
 	if (m_SourceTower == entt::null) {
 		ENG_TRACE("Selected {0}", towerEntity);
@@ -180,13 +154,13 @@ void TowerBattleLayer::UpdateTower(Tower& tower, float deltaTime)
 	}
 }
 
-// TODO add visualisation of attack
+// TODO add visualization of attack
 void TowerBattleLayer::Attack(entt::entity source, entt::entity target)
 {
 	ENG_TRACE("Attack from {0} to {1}", source, target);
 	ENG_TRACE("Deselected {0}", source);
-	auto& srcRenderable = m_Registry.get<Engine::Components::Renderable>(source);
-	auto& srcTower = m_Registry.get<Tower>(source);
+	auto& srcRenderable = Engine::EntityRegistry::Get<Engine::Components::Renderable>(source);
+	auto& srcTower = Engine::EntityRegistry::Get<Tower>(source);
 	srcRenderable.MaterialID = GetFactionMaterialID(srcTower.Faction, false);
 
 	// take units from source tower
@@ -194,7 +168,7 @@ void TowerBattleLayer::Attack(entt::entity source, entt::entity target)
 	srcTower.Units -= units;
 	ENG_TRACE("{0} units move from source (Faction: {1}, Units: {2})", units, srcTower.Faction, srcTower.Units);
 
-	auto& targetTower = m_Registry.get<Tower>(target);
+	auto& targetTower = Engine::EntityRegistry::Get<Tower>(target);
 	if (targetTower.Faction == srcTower.Faction) {
 		// Add to target if same faction
 		targetTower.Units += units;
@@ -206,7 +180,7 @@ void TowerBattleLayer::Attack(entt::entity source, entt::entity target)
 			// tower conquered
 			targetTower.Faction = srcTower.Faction;
 			targetTower.Units = (unsigned int)(-1 * diff);
-			auto& targetRenderable = m_Registry.get<Engine::Components::Renderable>(target);
+			auto& targetRenderable = Engine::EntityRegistry::Get<Engine::Components::Renderable>(target);
 			targetRenderable.MaterialID = GetFactionMaterialID(targetTower.Faction, false);
 		}
 	}
@@ -217,15 +191,15 @@ entt::entity TowerBattleLayer::CreateTower(glm::vec3 position, Faction faction)
 {
 	using namespace Engine::Components;
 	
-	auto tower = m_Registry.create();
-	m_Registry.emplace<Transform>(tower,
+	auto tower = Engine::EntityRegistry::Create();
+	Engine::EntityRegistry::Emplace<Transform>(tower,
 		position,
 		glm::vec3(0.0f, 0.0f, 0.0f), // rotation
 		glm::vec3(50.0f, 100.0f, 1.0f)  // scale
 	);
-	m_Registry.emplace<Renderable>(tower, GetFactionMaterialID(faction, false), "mesh/quad");
-	m_Registry.emplace<Tower>(tower, faction, (unsigned int)0, (unsigned int)10, 1.0f, 0.0f);
-	m_Registry.emplace<QuadCollider>(tower,
+	Engine::EntityRegistry::Emplace<Renderable>(tower, GetFactionMaterialID(faction, false), "mesh/quad");
+	Engine::EntityRegistry::Emplace<Tower>(tower, faction, (unsigned int)0, (unsigned int)10, 1.0f, 0.0f);
+	Engine::EntityRegistry::Emplace<QuadCollider>(tower,
 		glm::vec2{ position.x, position.y },
 		50.0f, // width
 		100.0f // height
@@ -236,13 +210,13 @@ entt::entity TowerBattleLayer::CreateTower(glm::vec3 position, Faction faction)
 
 entt::entity TowerBattleLayer::CreateCamera()
 {
-	auto camera = m_Registry.create();
-	m_Registry.emplace<Engine::Components::Transform>(camera,
+	auto camera = Engine::EntityRegistry::Create();
+	Engine::EntityRegistry::Emplace<Engine::Components::Transform>(camera,
 		glm::vec3(0.0f, 0.0f, 0.0f), // position
 		glm::vec3(0.0f, 0.0f, 0.0f), // rotation
 		glm::vec3(1.0f, 1.0f, 1.0f)  // scale
 	);
-	m_Registry.emplace<Engine::Components::OrthographicCamera>(camera,
+	Engine::EntityRegistry::Emplace<Engine::Components::OrthographicCamera>(camera,
 		(float)-1280 / 2, // left
 		(float)1280 / 2, // right
 		(float)-720 / 2, // bottom

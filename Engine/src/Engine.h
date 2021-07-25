@@ -23,6 +23,9 @@
 #include "Engine/Renderer/Material.h"
 // --------------------------------------
 
+#include "Engine/EntityRegistry.h"
+#include "Engine/RenderLayer.h"
+
 // ---Components-------------------------
 #include "Engine/Components/Transform.h"
 #include "Engine/Components/Camera.h"
