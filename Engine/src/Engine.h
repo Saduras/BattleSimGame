@@ -23,7 +23,7 @@
 #include "Engine/Renderer/Material.h"
 // --------------------------------------
 
-#include "Engine/EntityRegistry.h"
+#include "Engine/Scene.h"
 #include "Engine/RenderLayer.h"
 
 // ---Components-------------------------

@@ -21,7 +21,7 @@ struct Tower
 class TowerBattleLayer : public Engine::Layer
 {
 public:
-	TowerBattleLayer();
+	TowerBattleLayer(Engine::Scene& scene);
 	~TowerBattleLayer();
 
 	void OnUpdate(float deltaTime) override;
@@ -32,6 +32,7 @@ public:
 	void UpdateTower(Tower& tower, float deltaTime);
 	void Attack(entt::entity source, entt::entity target);
 private:
+	Engine::Scene& m_Scene;
 	entt::entity m_SourceTower;
 
 	entt::entity CreateTower(glm::vec3 position, Faction faction);

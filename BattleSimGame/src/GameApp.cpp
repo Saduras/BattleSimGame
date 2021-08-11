@@ -69,8 +69,9 @@ public:
 	BattleSimGame()
 	{
 		//PushLayer(new ExampleLayer());
-		PushLayer(new TowerBattleLayer());
-		PushLayer(new Engine::RenderLayer());
+		Engine::Scene* scene = new Engine::Scene();
+		PushLayer(new TowerBattleLayer(*scene));
+		PushLayer(new Engine::RenderLayer(*scene));
 		//PushOverlay(new Engine::ImGuiLayer());
 	}
 

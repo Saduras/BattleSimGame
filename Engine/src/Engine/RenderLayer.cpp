@@ -3,13 +3,12 @@
 
 #include "Engine/Components/Camera.h"
 #include "Engine/Assets/AssetRegistry.h"
-#include "Engine/EntityRegistry.h"
 #include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Renderer.h"
 
 namespace Engine {
-	RenderLayer::RenderLayer()
+	RenderLayer::RenderLayer(Scene& scene) : m_Scene(scene)
 	{
 
 	}
@@ -24,15 +23,15 @@ namespace Engine {
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
-		auto cameras = EntityRegistry::View<Components::Transform, Components::OrthographicCamera>();
-		cameras.each([](Components::Transform& transform, Components::OrthographicCamera& camera) {
+		auto cameras = m_Scene.GetView<Components::Transform, Components::OrthographicCamera>();
+		cameras.each([this](Components::Transform& transform, Components::OrthographicCamera& camera) {
 			auto viewMatrix = transform.GetTransformationMatrix();
 			auto projMatrix = camera.GetProjectionMatrix();
 
 			Engine::Renderer::BeginScene(projMatrix * viewMatrix);
 
 			// Render all entities with transform, mesh and material
-			auto renderableView = EntityRegistry::View<Components::Transform, Components::Renderable>();
+			auto renderableView = m_Scene.GetView<Components::Transform, Components::Renderable>();
 			renderableView.each(RenderLayer::RenderRenderable);
 
 			Engine::Renderer::EndScene();
