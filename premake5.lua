@@ -134,10 +134,6 @@ project "Engine"
 			"IMGUI_IMPL_OPENGL_LOADER_GLAD",
 		}
 
-		postbuildcommands {
-			"vstest.console.exe %{wks.location}/bin/" .. outputdir .. "/EngineUnitTests/EngineUnitTests.dll"
-		}
-
 	filter "configurations:Debug"
 		defines "ENG_DEBUG"
 		runtime "Debug"
@@ -189,6 +185,10 @@ project "EngineUnitTests"
 		defines
 		{
 			"ENG_PLATFORM_WINDOWS"
+		}
+
+		postbuildcommands {
+			"vstest.console.exe %{cfg.targetdir}/%{prj.name}.dll"
 		}
 	
 	filter "configurations:Debug"
