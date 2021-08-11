@@ -1,5 +1,7 @@
 #include "pch.h"
+
 #include "CppUnitTest.h"
+#include "AssertUtils.h"
 
 #include "Engine/Components/Camera.h"
 #include "Engine/Components/Camera.cpp"
@@ -43,7 +45,7 @@ namespace CameraTests
 
 			for (size_t i = 0; i < viewPoints.size(); i++) {
 				glm::vec4 result = camera.ViewToWorld(viewPoints[i]);
-				Assert::AreEqual(glm::to_string(result), glm::to_string(worldPoints[i]));
+				AssertUtils::glmAreEqual(result, worldPoints[i]);
 			}
 		}
 
@@ -69,7 +71,7 @@ namespace CameraTests
 
 			for (size_t i = 0; i < screenPoints.size(); i++) {
 				glm::vec4 result = camera.ScreenToView(screenPoints[i], screenWidth, screenHeight);
-				Assert::AreEqual(glm::to_string(result), glm::to_string(viewPoints[i]));
+				AssertUtils::glmAreEqual(result, viewPoints[i]);
 			}
 		}
 	};
