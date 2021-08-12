@@ -26,10 +26,15 @@
 #include "Engine/Scene.h"
 #include "Engine/RenderLayer.h"
 
+// ---ECS-Base--------------------------
+#include "Engine/ECS/Entity.h"
+// -------------------------------------
+
+
 // ---Components-------------------------
-#include "Engine/Components/Transform.h"
-#include "Engine/Components/Camera.h"
-#include "Engine/Components/Renderable.h"
+#include "Engine/ECS/Components/Transform.h"
+#include "Engine/ECS/Components/Camera.h"
+#include "Engine/ECS/Components/Renderable.h"
 // --------------------------------------
 
 // ---Entry Point------------------------

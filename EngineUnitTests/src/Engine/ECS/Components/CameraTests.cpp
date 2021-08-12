@@ -3,8 +3,8 @@
 #include "CppUnitTest.h"
 #include "AssertUtils.h"
 
-#include "Engine/Components/Camera.h"
-#include "Engine/Components/Camera.cpp"
+#include "Engine/ECS/Components/Camera.h"
+#include "Engine/ECS/Components/Camera.cpp"
 
 #include <glm/gtx/string_cast.hpp>
 

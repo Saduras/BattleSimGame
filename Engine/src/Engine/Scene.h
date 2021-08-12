@@ -2,8 +2,12 @@
 
 #include <entt/entt.hpp>
 
+#include <vector>
+
 namespace Engine
 {
+	class Entity;
+
 	/// <summary>
 	/// A scene contains a collection of entities.
 	/// </summary>
@@ -16,7 +20,7 @@ namespace Engine
 		/// Add a new entity to the scene.
 		/// </summary>
 		/// <returns>The newly created entity</returns>
-		entt::entity CreateEntity();
+		Entity CreateEntity();
 
 		/// <summary>
 		/// Retrieves a component of an entity.
@@ -27,17 +31,6 @@ namespace Engine
 		template<typename Component>
 		Component& GetComponent(const entt::entity entity) {
 			return m_Registry.get<Component>(entity);
-		}
-
-		/// <summary>
-		/// Constructs a component with the given arguments on the entity.
-		/// </summary>
-		/// <typeparam name="Component">Type of component to construct</typeparam>
-		/// <param name="entity">The entity</param>
-		/// <param name="...args">Arguments for the component constructor</param>
-		template<typename Component, typename... Args>
-		void EmplaceComponent(const entt::entity entity, Args &&... args) {
-			m_Registry.emplace<Component>(entity, args...);
 		}
 
 		/// <summary>
@@ -52,5 +45,7 @@ namespace Engine
 
 	private:
 		entt::registry m_Registry;
+
+		friend class Entity;
 	};
 }

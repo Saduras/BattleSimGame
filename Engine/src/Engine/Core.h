@@ -19,8 +19,8 @@
 #endif
 
 #ifdef ENG_ENABLE_ASSERTS
-	#define ENG_ASSERT(x, ...) { if(!(x)) { ENG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak();} }
-	#define ENG_CORE_ASSERT(x, ...) { if(!(x)) { ENG_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak();} }
+	#define ENG_ASSERT(x, ...) { if(!(x)) { ENG_ERROR("Assertion Failed: {0}", __VA_ARGS__); throw std::logic_error("Assertion Failed!");} }
+	#define ENG_CORE_ASSERT(x, ...) { if(!(x)) { ENG_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); throw std::logic_error("Assertion Failed!");} }
 #else
 	#define ENG_ASSERT(x, ...)
 	#define ENG_CORE_ASSERT(x, ...)

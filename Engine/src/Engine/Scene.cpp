@@ -1,14 +1,16 @@
 #include "epch.h"
 #include "Scene.h"
 
+#include "Engine/ECS/Entity.h"
+
 namespace Engine
 {
 	Scene::Scene()
 	{
 	}
 
-	entt::entity Scene::CreateEntity()
+	Entity Scene::CreateEntity()
 	{
-		return m_Registry.create();
+		return { m_Registry.create(), this };
 	}
 }

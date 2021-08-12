@@ -1,8 +1,8 @@
 #pragma once
 #include "Engine/Layer.h"
 #include "Engine/Scene.h"
-#include "Engine/Components/Transform.h"
-#include "Engine/Components/Renderable.h"
+#include "Engine/ECS/Components/Transform.h"
+#include "Engine/ECS/Components/Renderable.h"
 
 namespace Engine {
 	class RenderLayer : public Layer

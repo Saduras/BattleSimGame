@@ -1,7 +1,7 @@
 #include "epch.h"
 #include "RenderLayer.h"
 
-#include "Engine/Components/Camera.h"
+#include "Engine/ECS/Components/Camera.h"
 #include "Engine/Assets/AssetRegistry.h"
 #include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Mesh.h"
