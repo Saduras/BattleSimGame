@@ -70,8 +70,8 @@ public:
 	{
 		//PushLayer(new ExampleLayer());
 		Engine::Scene* scene = new Engine::Scene();
+		scene->AddSystem<Engine::Systems::RenderSystem>();
 		PushLayer(new TowerBattleLayer(*scene));
-		PushLayer(new Engine::RenderLayer(*scene));
 		//PushOverlay(new Engine::ImGuiLayer());
 	}
 
