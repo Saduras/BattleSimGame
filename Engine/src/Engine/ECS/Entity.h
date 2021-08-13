@@ -5,6 +5,10 @@
 
 #include <entt/entt.hpp>
 
+/// <summary>
+/// An entity is a lightweight interface to manipulate components assigned to an entity.
+/// It can be constructed, copies and destroyed quickly and is not indented to be stored.
+/// </summary>
 namespace Engine {
 	class Entity {
 	public:
@@ -54,17 +58,19 @@ namespace Engine {
 		bool HasComponent() {
 			return m_ContextScene->m_Registry.has<Component>(m_EntityID);
 		}
-		
+
 		/// <summary>
 		/// Checks if this entity is valid.
 		/// </summary>
 		/// <returns>True if the entity is invalid.</returns>
 		inline bool IsNull() { return m_EntityID == entt::null || m_ContextScene == nullptr; }
+		operator entt::entity() const { return m_EntityID; }
+		operator uint32_t() const { return (uint32_t)m_EntityID; }
 
-		friend inline bool operator==(const Entity& lhs, const Entity& rhs) { return lhs.m_EntityID == rhs.m_EntityID; }
-		friend inline bool operator!=(const Entity& lhs, const Entity& rhs) { return !(lhs == rhs); }
-		friend inline std::ostream& operator<<(std::ostream& os, const Entity& entity) {
-			return os << "Entity(" << (std::uint32_t)entity.m_EntityID << ")";
+		bool operator==(const Entity& other) const { return m_EntityID == other.m_EntityID; }
+		bool operator!=(const Entity& other) const { return !(*this == other); }
+		std::ostream& operator<<(std::ostream& os) {
+			return os << "Entity(" << (std::uint32_t)m_EntityID << ")";
 		}
 
 	private:
