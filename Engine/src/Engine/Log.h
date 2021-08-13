@@ -9,7 +9,20 @@ namespace Engine
 	class ENGINE_API Log
 	{
 	public:
+		/// <summary>
+		/// Initialize the logger plugin.
+		/// </summary>
 		static void Init();
+
+		/// <summary>
+		/// Removes logger from memory.
+		/// </summary>
+		static void Destroy();
+
+		/// <summary>
+		/// Checks if the logger was initialized.
+		/// </summary>
+		static inline bool IsInitialized() { return s_IsInitialized; }
 
 		inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
 		inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
@@ -17,6 +30,7 @@ namespace Engine
 	private:
 		static std::shared_ptr<spdlog::logger> s_CoreLogger;
 		static std::shared_ptr<spdlog::logger> s_ClientLogger;
+		static bool s_IsInitialized;
 	};
 }
 

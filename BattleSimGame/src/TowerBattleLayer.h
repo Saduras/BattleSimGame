@@ -28,14 +28,14 @@ public:
 	void OnEvent(Engine::Event& event) override;
 
 	bool OnMouseButtonPressed(Engine::MouseButtonPressedEvent& event);
-	void OnTowerClick(entt::entity tower);
+	void OnTowerClick(Engine::Entity tower);
 	void UpdateTower(Tower& tower, float deltaTime);
-	void Attack(entt::entity source, entt::entity target);
+	void Attack(Engine::Entity source, Engine::Entity target);
 private:
 	Engine::Scene& m_Scene;
-	entt::entity m_SourceTower;
+	Engine::Entity m_SourceTower;
 
-	entt::entity CreateTower(glm::vec3 position, Faction faction);
-	entt::entity CreateCamera();
+	Engine::Entity CreateTower(glm::vec3 position, Faction faction);
+	Engine::Entity CreateCamera();
 };
 

@@ -11,7 +11,10 @@ using namespace Engine;
 namespace EntityTests
 {
 	struct TestComponent {
-		int data;
+		TestComponent() {}
+		TestComponent(int data) : m_Data(data) {}
+
+		int m_Data;
 	};
 
 	TEST_CLASS(EntityTests)
@@ -19,7 +22,8 @@ namespace EntityTests
 	public:
 		TEST_METHOD_INITIALIZE(Setup)
 		{
-			Log::Init();
+			if(!Log::IsInitialized())
+				Log::Init();
 		}
 
 		TEST_METHOD(AddComponentTest)
@@ -31,9 +35,57 @@ namespace EntityTests
 
 			Assert::IsTrue(entity.HasComponent<TestComponent>());
 
+			// Already has this component
 			Assert::ExpectException<std::logic_error>([&entity]() {
 				entity.AddComponent<TestComponent>();
 			});
+		}
+
+		TEST_METHOD(RemoveComponentTest)
+		{
+			Scene scene;
+			Entity entity = scene.CreateEntity();
+
+			entity.AddComponent<TestComponent>();
+			entity.RemoveComponent<TestComponent>();
+
+			Assert::IsFalse(entity.HasComponent<TestComponent>());
+
+			// Doesn't have to component
+			Assert::ExpectException<std::logic_error>([&entity]() {
+				entity.RemoveComponent<TestComponent>();
+			});
+		}
+
+		TEST_METHOD(GetComponentTest)
+		{
+			Scene scene;
+			Entity entity = scene.CreateEntity();
+
+			// Doesn't have the component
+			Assert::ExpectException<std::logic_error>([&entity]() {
+				entity.GetComponent<TestComponent>();
+			});															   
+
+			entity.AddComponent<TestComponent>(42);
+			TestComponent& component = entity.GetComponent<TestComponent>();
+			Assert::AreEqual(component.m_Data, 42);
+		}
+
+		TEST_METHOD(IsNullTest)
+		{
+			Scene scene;
+			Entity entity = { entt::null, &scene };
+
+			Assert::IsTrue(entity.IsNull());
+
+			entity = { (entt::entity)1, nullptr };
+
+			Assert::IsTrue(entity.IsNull());
+
+			entity = { (entt::entity)1, &scene };
+
+			Assert::IsFalse(entity.IsNull());
 		}
 	};
 }

@@ -23,17 +23,6 @@ namespace Engine
 		Entity CreateEntity();
 
 		/// <summary>
-		/// Retrieves a component of an entity.
-		/// </summary>
-		/// <typeparam name="Component">Type of the component</typeparam>
-		/// <param name="entity">Entity for which to get the component</param>
-		/// <returns>Reference to the component</returns>
-		template<typename Component>
-		Component& GetComponent(const entt::entity entity) {
-			return m_Registry.get<Component>(entity);
-		}
-
-		/// <summary>
 		/// Creates a view on all entities with a given set of components in the scene.
 		/// </summary>
 		/// <typeparam name="...Component">Set of component types to filter by</typeparam>
