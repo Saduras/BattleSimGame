@@ -21,14 +21,14 @@ namespace Engine::Systems {
 			Engine::Renderer::BeginScene(projMatrix * viewMatrix);
 
 			// Render all entities with transform, mesh and material
-			auto renderableView = m_Scene->GetView<Components::Transform, Components::Renderable>();
+			auto renderableView = m_Scene->GetView<Components::Transform, Components::Renderable3D>();
 			renderableView.each(RenderSystem::RenderRenderable);
 
 			Engine::Renderer::EndScene();
 			});
 	}
 
-	void RenderSystem::RenderRenderable(const Components::Transform& transform, const Components::Renderable& renderable)
+	void RenderSystem::RenderRenderable(const Components::Transform& transform, const Components::Renderable3D& renderable)
 	{
 		auto& material = AssetRegistry::Get<Material>(renderable.MaterialID);
 		auto& mesh = Engine::AssetRegistry::Get<Mesh>(renderable.MeshID);

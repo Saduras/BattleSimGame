@@ -3,8 +3,6 @@
 #include <unordered_map>
 
 #include "Asset.h"
-#include "Engine/Renderer/Material.h"
-#include "Engine/Renderer/Mesh.h"
 
 namespace Engine
 {

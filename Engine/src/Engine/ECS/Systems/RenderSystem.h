@@ -14,6 +14,6 @@ namespace Engine::Systems {
 		std::string GetName() const override { return "RenderSystem"; }
 
 	private:
-		static void RenderRenderable(const Components::Transform& transform, const Components::Renderable& renderable);
+		static void RenderRenderable(const Components::Transform& transform, const Components::Renderable3D& renderable);
 	};
 }

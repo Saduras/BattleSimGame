@@ -2,8 +2,6 @@
 
 #include <Engine.h>
 
-#include <entt/entt.hpp>
-
 enum class Faction
 {
 	None, Red, Blue

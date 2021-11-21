@@ -106,7 +106,7 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 			Engine::Vec4 worldPos = Camera::ScreenToWorld(camera, { x, y }, screenWidth, screenHeight);
 
 			// Check collision
-			m_Scene.GetView<QuadCollider, Tower, Renderable>().each([&worldPos, this](const entt::entity entityID, auto& collider, auto& tower, auto& renderable) {
+			m_Scene.GetView<QuadCollider, Tower, Renderable3D>().each([&worldPos, this](const entt::entity entityID, auto& collider, auto& tower, auto& renderable) {
 				ENG_TRACE("Hit {0}", collider.IsInside({ worldPos.x, worldPos.y }));
 				if (collider.IsInside({ worldPos.x, worldPos.y })) {
 					this->OnTowerClick({ entityID, &m_Scene });
@@ -122,7 +122,7 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 {
 	using namespace Engine::Components;
 
-	auto& renderable = towerEntity.GetComponent<Renderable>();
+	auto& renderable = towerEntity.GetComponent<Renderable3D>();
 	auto& tower = towerEntity.GetComponent<Tower>();
 
 	if (m_SourceTower.IsNull()) {
@@ -161,7 +161,7 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 {
 	ENG_TRACE("Attack from {0} to {1}", source, target);
 	ENG_TRACE("Deselected {0}", source);
-	auto& srcRenderable = source.GetComponent<Engine::Components::Renderable>();
+	auto& srcRenderable = source.GetComponent<Engine::Components::Renderable3D>();
 	auto& srcTower = source.GetComponent<Tower>();
 	srcRenderable.MaterialID = GetFactionMaterialID(srcTower.Faction, false);
 
@@ -182,7 +182,7 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 			// tower conquered
 			targetTower.Faction = srcTower.Faction;
 			targetTower.Units = (unsigned int)(-1 * diff);
-			auto& targetRenderable = target.GetComponent<Engine::Components::Renderable>();
+			auto& targetRenderable = target.GetComponent<Engine::Components::Renderable3D>();
 			targetRenderable.MaterialID = GetFactionMaterialID(targetTower.Faction, false);
 		}
 	}
@@ -199,7 +199,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(50.0f, 100.0f, 1.0f)  // scale
 	);
-	tower.AddComponent<Renderable>(GetFactionMaterialID(faction, false), "mesh/quad");
+	tower.AddComponent<Renderable3D>(GetFactionMaterialID(faction, false), "mesh/quad");
 	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)10, 1.0f, 0.0f);
 	tower.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
