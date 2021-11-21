@@ -134,12 +134,12 @@ namespace Engine
 		glUseProgram(0);
 	}
 	
-	void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+	void Shader::SetUniformMat4f(const std::string& name, const Mat4& matrix)
 	{
 		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 
-	void Shader::SetUniform4f(const std::string& name, const glm::vec4 values)
+	void Shader::SetUniform4f(const std::string& name, const Vec4 values)
 	{
 		glUniform4f(GetUniformLocation(name), values.x, values.y, values.z, values.w);
 	}

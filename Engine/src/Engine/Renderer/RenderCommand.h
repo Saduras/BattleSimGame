@@ -7,7 +7,7 @@ namespace Engine
 	class RenderCommand
 	{
 	public:
-		inline static void SetClearColor(const glm::vec4& color)
+		inline static void SetClearColor(const Vec4& color)
 		{
 			s_RendererAPI->SetClearColor(color);
 		};

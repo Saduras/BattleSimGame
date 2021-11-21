@@ -1,7 +1,7 @@
 #pragma once
 
-#include <glm/glm.hpp>
 
+#include "Engine/Math.h"
 #include "VertexArray.h"
 
 namespace Engine
@@ -14,7 +14,7 @@ namespace Engine
 			None = 0, OpenGL = 1,
 		};
 	public:
-		virtual void SetClearColor(const glm::vec4& color) = 0;
+		virtual void SetClearColor(const Vec4& color) = 0;
 		virtual void Clear() = 0;
 
 		virtual void DrawIndexed(const VertexArray* vertexArray) = 0;

@@ -35,7 +35,7 @@ private:
 	Engine::Scene& m_Scene;
 	Engine::Entity m_SourceTower;
 
-	Engine::Entity CreateTower(glm::vec3 position, Faction faction);
+	Engine::Entity CreateTower(Engine::Vec3 position, Faction faction);
 	Engine::Entity CreateCamera();
 };
 

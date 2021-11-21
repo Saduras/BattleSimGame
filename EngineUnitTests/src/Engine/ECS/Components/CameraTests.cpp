@@ -21,7 +21,7 @@ namespace CameraTests
 		{
 			OrthographicCamera camera(-2.0, 2.0, -1.5f, 1.5f, -5.0f, 5.0f);
 			
-			std::vector<glm::vec4> viewPoints = {
+			std::vector<Engine::Vec4> viewPoints = {
 				{-1.0f, -1.0f, -1.0f, 1.0f },
 				{ 1.0f, -1.0f, -1.0f, 1.0f },
 				{ 1.0f,  1.0f, -1.0f, 1.0f },
@@ -32,7 +32,7 @@ namespace CameraTests
 				{-1.0f,  1.0f,  1.0f, 1.0f },
 			};
 
-			std::vector<glm::vec4> worldPoints = {
+			std::vector<Engine::Vec4> worldPoints = {
 				{-2.0f, -1.5f,  5.0f, 1.0f },
 				{ 2.0f, -1.5f,  5.0f, 1.0f },
 				{ 2.0f,  1.5f,  5.0f, 1.0f },
@@ -44,7 +44,7 @@ namespace CameraTests
 			};
 
 			for (size_t i = 0; i < viewPoints.size(); i++) {
-				glm::vec4 result = camera.ViewToWorld(viewPoints[i]);
+				Engine::Vec4 result = Camera::ViewToWorld(camera, viewPoints[i]);
 				AssertUtils::glmAreEqual(result, worldPoints[i]);
 			}
 		}
@@ -55,14 +55,14 @@ namespace CameraTests
 			float screenWidth = 1080.0f;
 			float screenHeight = 960.0f;
 
-			std::vector<glm::vec2> screenPoints = {
+			std::vector<Engine::Vec2> screenPoints = {
 				{          0,            0}, // top left
 				{screenWidth,            0},
 				{screenWidth, screenHeight}, // bottom right
 				{          0, screenHeight},
 			};
 
-			std::vector<glm::vec4> viewPoints = {
+			std::vector<Engine::Vec4> viewPoints = {
 				{-1.0f,  1.0f, 0.0f, 1.0f},
 				{ 1.0f,  1.0f, 0.0f, 1.0f},
 				{ 1.0f, -1.0f, 0.0f, 1.0f},
@@ -70,7 +70,7 @@ namespace CameraTests
 			};
 
 			for (size_t i = 0; i < screenPoints.size(); i++) {
-				glm::vec4 result = camera.ScreenToView(screenPoints[i], screenWidth, screenHeight);
+				Engine::Vec4 result = Camera::ScreenToView(screenPoints[i], screenWidth, screenHeight);
 				AssertUtils::glmAreEqual(result, viewPoints[i]);
 			}
 		}

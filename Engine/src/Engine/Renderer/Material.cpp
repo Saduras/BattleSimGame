@@ -4,7 +4,7 @@
 namespace Engine
 {
 	Material::Material(std::string shaderPath)
-		: m_Color(glm::vec4(1.0f, 0.0f, 1.0f, 1.0f))
+		: m_Color(Vec4(1.0f, 0.0f, 1.0f, 1.0f))
 	{
 		m_Shader.reset(new Shader(shaderPath));
 	}

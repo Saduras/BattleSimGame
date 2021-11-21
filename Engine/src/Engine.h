@@ -13,6 +13,8 @@
 
 #include "Engine/Assets/AssetRegistry.h"
 
+#include "Engine/Math.h"
+
 // ---Rendering--------------------------
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/RenderCommand.h"

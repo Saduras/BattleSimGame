@@ -5,7 +5,7 @@ namespace Engine
 {
 	Renderer::SceneData* Renderer::s_SceneData = new SceneData;
 
-	void Renderer::BeginScene(glm::mat4 projectionViewMatrix)
+	void Renderer::BeginScene(Mat4 projectionViewMatrix)
 	{
 		s_SceneData->ViewProjectionMatrix = projectionViewMatrix;
 	}

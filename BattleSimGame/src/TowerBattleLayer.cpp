@@ -22,11 +22,11 @@ static std::string GetFactionMaterialID(Faction faction, bool selected)
 
 struct QuadCollider
 {
-	glm::vec2 Center;
+	Engine::Vec2 Center;
 	float Width;
 	float Height;
 
-	bool IsInside(glm::vec2 position)
+	bool IsInside(Engine::Vec2 position)
 	{
 		float left = Center.x - Width / 2;
 		float right = Center.x + Width / 2;
@@ -103,7 +103,7 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 			// Translate screen position to world position
 			float screenWidth = (float)Engine::Application::Get().GetWindow().GetWidth();
 			float screenHeight = (float)Engine::Application::Get().GetWindow().GetHeight();
-			glm::vec4 worldPos = camera.ScreenToWorld({ x, y }, screenWidth, screenHeight);
+			Engine::Vec4 worldPos = Camera::ScreenToWorld(camera, { x, y }, screenWidth, screenHeight);
 
 			// Check collision
 			m_Scene.GetView<QuadCollider, Tower, Renderable>().each([&worldPos, this](const entt::entity entityID, auto& collider, auto& tower, auto& renderable) {
@@ -189,20 +189,20 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 	ENG_TRACE("{0} units reached target (Faction: {1}, Units {2})", units, targetTower.Faction, targetTower.Units);
 }
 
-Engine::Entity TowerBattleLayer::CreateTower(glm::vec3 position, Faction faction)
+Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction faction)
 {
 	using namespace Engine::Components;
 	
 	auto tower = m_Scene.CreateEntity();
 	tower.AddComponent<Transform>(
 		position,
-		glm::vec3(0.0f, 0.0f, 0.0f), // rotation
-		glm::vec3(50.0f, 100.0f, 1.0f)  // scale
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(50.0f, 100.0f, 1.0f)  // scale
 	);
 	tower.AddComponent<Renderable>(GetFactionMaterialID(faction, false), "mesh/quad");
 	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)10, 1.0f, 0.0f);
 	tower.AddComponent<QuadCollider>(
-		glm::vec2{ position.x, position.y },
+		Engine::Vec2{ position.x, position.y },
 		50.0f, // width
 		100.0f // height
 	);
@@ -214,9 +214,9 @@ Engine::Entity TowerBattleLayer::CreateCamera()
 {
 	auto camera = m_Scene.CreateEntity();
 	camera.AddComponent<Engine::Components::Transform>(
-		glm::vec3(0.0f, 0.0f, 0.0f), // position
-		glm::vec3(0.0f, 0.0f, 0.0f), // rotation
-		glm::vec3(1.0f, 1.0f, 1.0f)  // scale
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(1.0f, 1.0f, 1.0f)  // scale
 	);
 	camera.AddComponent<Engine::Components::OrthographicCamera>(
 		(float)-1280 / 2, // left

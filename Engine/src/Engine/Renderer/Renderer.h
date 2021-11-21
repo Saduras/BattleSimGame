@@ -8,7 +8,7 @@ namespace Engine
 	class Renderer
 	{
 	public:
-		static void BeginScene(glm::mat4 projectionViewMatrix);
+		static void BeginScene(Mat4 projectionViewMatrix);
 		static void EndScene();
 
 		static void SetShader(Shader* shader);
@@ -18,7 +18,7 @@ namespace Engine
 	private:
 		struct SceneData
 		{
-			glm::mat4 ViewProjectionMatrix;
+			Mat4 ViewProjectionMatrix;
 		};
 
 		static SceneData* s_SceneData;

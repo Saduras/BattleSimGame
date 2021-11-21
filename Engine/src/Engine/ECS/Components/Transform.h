@@ -1,19 +1,19 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <Engine/Math.h>
 
 namespace Engine::Components
 {
 	struct Transform
 	{
-		glm::vec3 Position;
-		glm::vec3 Rotation;
-		glm::vec3 Scale;
+		Vec3 Position;
+		Vec3 Rotation;
+		Vec3 Scale;
 
 		Transform();
-		Transform(glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+		Transform(Vec3 position, Vec3 rotation, Vec3 scale);
 		~Transform();
 
-		glm::mat4 GetTransformationMatrix() const;
+		Mat4 GetTransformationMatrix() const;
 	};
 }

@@ -1,7 +1,8 @@
 #pragma once
 
 #include <string>
-#include <glm\glm.hpp>
+
+#include "Engine\Math.h" 
 
 namespace Engine
 {
@@ -21,8 +22,8 @@ namespace Engine
 		void Bind() const;
 		void Unbind() const;
 
-		void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
-		void SetUniform4f(const std::string& name, const glm::vec4 values);
+		void SetUniformMat4f(const std::string& name, const Mat4& matrix);
+		void SetUniform4f(const std::string& name, const Vec4 values);
 		inline std::string GetFilePath() { return m_FilePath; }
 	private:
 		ShaderProgramSource ParseShader(const std::string& filepath);

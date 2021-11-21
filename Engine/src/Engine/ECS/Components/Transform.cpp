@@ -1,8 +1,6 @@
 #include "epch.h"
 #include "Transform.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-
 namespace Engine::Components
 {
 	Transform::Transform()
@@ -10,7 +8,7 @@ namespace Engine::Components
 	{
 	}
 
-	Transform::Transform(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale)
+	Transform::Transform(Vec3 pos, Vec3 rot, Vec3 scale)
 		: Position(pos), Rotation(rot), Scale(scale)
 	{
 	}
@@ -19,14 +17,14 @@ namespace Engine::Components
 	{
 	}
 	
-	glm::mat4 Transform::GetTransformationMatrix() const
+	Mat4 Transform::GetTransformationMatrix() const
 	{
-		glm::mat4 transformMat(1.0f);
-		transformMat = glm::translate(transformMat, Position);
-		transformMat = glm::rotate(transformMat, glm::radians(Rotation.x), glm::vec3({ 1.0f, 0.0f, 0.0f }));
-		transformMat = glm::rotate(transformMat, glm::radians(Rotation.y), glm::vec3({ 0.0f, 1.0f, 0.0f }));
-		transformMat = glm::rotate(transformMat, glm::radians(Rotation.z), glm::vec3({ 0.0f, 0.0f, 1.0f }));
-		transformMat = glm::scale(transformMat, Scale);
+		Mat4 transformMat(1.0f);
+		transformMat = Engine::Translate(transformMat, Position);
+		transformMat = Engine::Rotate(transformMat, Engine::DegToRad(Rotation.x), Vec3({ 1.0f, 0.0f, 0.0f }));
+		transformMat = Engine::Rotate(transformMat, Engine::DegToRad(Rotation.y), Vec3({ 0.0f, 1.0f, 0.0f }));
+		transformMat = Engine::Rotate(transformMat, Engine::DegToRad(Rotation.z), Vec3({ 0.0f, 0.0f, 1.0f }));
+		transformMat = Engine::Scale(transformMat, Scale);
 		return transformMat;
 	}
 }

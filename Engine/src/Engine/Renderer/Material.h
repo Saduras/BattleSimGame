@@ -15,10 +15,10 @@ namespace Engine
         Material& operator=(const Material&) { return *this; }
 
         inline Shader* GetShader() const { return m_Shader.get(); }
-        inline glm::vec4 GetColor() const { return m_Color; }
-        inline void SetColor(glm::vec4 color) { m_Color = color; }
+        inline Vec4 GetColor() const { return m_Color; }
+        inline void SetColor(Vec4 color) { m_Color = color; }
     private:
         std::unique_ptr<Shader> m_Shader;
-        glm::vec4 m_Color;
+        Vec4 m_Color;
     };
 }

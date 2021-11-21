@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <Engine/Math.h>
 
 namespace Engine::Components
 {
@@ -9,14 +9,17 @@ namespace Engine::Components
 	public:
 		virtual ~Camera() {};
 
-		inline glm::mat4 GetProjectionMatrix() { return m_Proj; }
-		inline glm::mat4 GetProjectionMatrixInverse() { return m_ProjInverse; }
-		glm::vec4 ScreenToView(glm::vec2 screenPoint, float screenWidth, float screenHeight);
-		glm::vec4 ViewToWorld(glm::vec4 viewPoint);
-		glm::vec4 ScreenToWorld(glm::vec2 screenPoint, float screenWidth, float screenHeight);
+		inline Mat4 GetProjectionMatrix() { return m_Proj; }
+		inline Mat4 GetProjectionMatrixInverse() { return m_ProjInverse; }
+
+	// Static helpers
+		static Vec4 ScreenToView(Vec2 screenPoint, float screenWidth, float screenHeight);
+		static Vec4 ViewToWorld(Camera camera, Vec4 viewPoint);
+		static Vec4 ScreenToWorld(Camera camera, Vec2 screenPoint, float screenWidth, float screenHeight);
+
 	protected:
-		glm::mat4 m_Proj;
-		glm::mat4 m_ProjInverse;
+		Mat4 m_Proj;
+		Mat4 m_ProjInverse;
 	};
 
 	class OrthographicCamera : public Camera
