@@ -80,6 +80,8 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 {
 	auto towerView = m_Scene.GetView<Tower>();
 	towerView.each([&deltaTime, this](Tower& tower) { this->UpdateTower(tower, deltaTime); });
+
+	m_Scene.Update(deltaTime);
 }
 
 void TowerBattleLayer::OnEvent(Engine::Event& event)
