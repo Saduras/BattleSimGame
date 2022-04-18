@@ -1,5 +1,5 @@
 #include "epch.h"
-#include "RenderSystem.h"
+#include "Render3DSystem.h"
 
 #include "Engine/ECS/Components/Camera.h"
 #include "Engine/Assets/AssetRegistry.h"
@@ -8,7 +8,7 @@
 #include "Engine/Renderer/Renderer.h"
 
 namespace Engine::Systems {
-	void RenderSystem::Execute(float deltaTime)
+	void Render3DSystem::Execute(float deltaTime)
 	{
 		RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
@@ -22,13 +22,13 @@ namespace Engine::Systems {
 
 			// Render all entities with transform, mesh and material
 			auto renderableView = m_Scene->GetView<Components::Transform, Components::Renderable3D>();
-			renderableView.each(RenderSystem::RenderRenderable);
+			renderableView.each(Render3DSystem::RenderRenderable);
 
 			Engine::Renderer::EndScene();
 			});
 	}
 
-	void RenderSystem::RenderRenderable(const Components::Transform& transform, const Components::Renderable3D& renderable)
+	void Render3DSystem::RenderRenderable(const Components::Transform& transform, const Components::Renderable3D& renderable)
 	{
 		auto& material = AssetRegistry::Get<Material>(renderable.MaterialID);
 		auto& mesh = Engine::AssetRegistry::Get<Mesh>(renderable.MeshID);

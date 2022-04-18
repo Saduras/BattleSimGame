@@ -5,13 +5,13 @@
 #include "Engine/ECS/Components/Renderable.h"
 
 namespace Engine::Systems {
-	class RenderSystem : public System
+	class Render3DSystem : public System
 	{
 	public:
-		RenderSystem(Scene* scene) : System(scene) {}
+		Render3DSystem(Scene* scene) : System(scene) {}
 
 		void Execute(float deltaTime) override;
-		std::string GetName() const override { return "RenderSystem"; }
+		std::string GetName() const override { return "Render3DSystem"; }
 
 	private:
 		static void RenderRenderable(const Components::Transform& transform, const Components::Renderable3D& renderable);

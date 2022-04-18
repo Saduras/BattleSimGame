@@ -12,7 +12,7 @@ class BattleSimGame : public Engine::Application
 public:
 	BattleSimGame()
 	{
-		PushLayer(new ExampleLayer(ExampleScene::SpriteRender));
+		PushLayer(new ExampleLayer(ExampleScene::QuadRender));
 		//Engine::Scene* scene = new Engine::Scene();
 		//scene->AddSystem<Engine::Systems::RenderSystem>();
 		//PushLayer(new TowerBattleLayer(*scene));

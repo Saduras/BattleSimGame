@@ -39,7 +39,7 @@ static void CreateQuadRenderExample(Engine::Scene* scene)
 	entity.AddComponent<Engine::Components::Renderable3D>("mat/default", "mesh/quad");
 
 	// Setup systems
-	scene->AddSystem<Engine::Systems::RenderSystem>();
+	scene->AddSystem<Engine::Systems::Render3DSystem>();
 }
 
 static void CreateSpriteRenderExample(Engine::Scene* scene)
@@ -80,7 +80,7 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	// Setup systems
 	//scene->AddSystem<Engine::Systems::RenderSystem>();
 	// TODO: Create RenderSystem2D
-	// - add alpha rendnering
+	// - add alpha rendering
 	// - support switching sprite from atlas
 }
 
