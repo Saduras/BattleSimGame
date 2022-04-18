@@ -50,7 +50,7 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
 
 	auto sprite = new Engine::Sprite("res/shader/unlit_texture.shader", 
-									"res/sprite/pop-me.png");
+									"res/sprite/alpha-test.png");
 	sprite->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
 	Engine::AssetRegistry::Add("sprite/pop", sprite);
 
@@ -80,7 +80,6 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	// Setup systems
 	scene->AddSystem<Engine::Systems::Render2DSystem>();
 	// TODO: Create RenderSystem2D
-	// - add alpha rendering
 	// - support switching sprite from atlas
 }
 

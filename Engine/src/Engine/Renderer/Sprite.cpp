@@ -39,6 +39,10 @@ namespace Engine
 
 	void Sprite::Bind(unsigned int slot /*= 0*/) const
 	{
+		// TODO: What would be a good place to put blend function?
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		glActiveTexture(GL_TEXTURE0 + slot);
 		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 	}
