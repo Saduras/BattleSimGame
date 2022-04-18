@@ -47,11 +47,11 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	ENG_TRACE("SpriteRenderExample");
 
 	// Create resources
-	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::Quad));
+	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
 
 	auto sprite = new Engine::Sprite("res/shader/unlit_texture.shader", 
-									"res/texture/pop-me.png");
-	sprite->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+									"res/sprite/pop-me.png");
+	sprite->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
 	Engine::AssetRegistry::Add("sprite/pop", sprite);
 
 	// Setup camera
@@ -73,12 +73,12 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	entity.AddComponent<Engine::Components::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// position
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// rotation
-		Engine::Vec3(50.0f, 100.0f, 1.0f)	// scale
+		Engine::Vec3(100.0f, 100.0f, 1.0f)	// scale
 		);
 	entity.AddComponent<Engine::Components::Renderable2D>("sprite/pop", "mesh/quad");
 
 	// Setup systems
-	//scene->AddSystem<Engine::Systems::RenderSystem>();
+	scene->AddSystem<Engine::Systems::Render2DSystem>();
 	// TODO: Create RenderSystem2D
 	// - add alpha rendering
 	// - support switching sprite from atlas

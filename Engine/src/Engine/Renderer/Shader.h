@@ -25,6 +25,7 @@ namespace Engine
 		void SetUniformMat4f(const std::string& name, const Mat4& matrix);
 		void SetUniform4f(const std::string& name, const Vec4 values);
 		inline std::string GetFilePath() { return m_FilePath; }
+		void SetUniform1i(const std::string& name, int value);
 	private:
 		ShaderProgramSource ParseShader(const std::string& filepath);
 		int GetUniformLocation(const std::string& name);

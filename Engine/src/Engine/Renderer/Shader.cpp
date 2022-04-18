@@ -144,6 +144,11 @@ namespace Engine
 		glUniform4f(GetUniformLocation(name), values.x, values.y, values.z, values.w);
 	}
 
+	void Shader::SetUniform1i(const std::string& name, int value)
+	{
+		glUniform1i(GetUniformLocation(name), value);
+	}
+
 	ShaderProgramSource Shader::ParseShader(const std::string& filepath)
 	{
 		std::ifstream stream(filepath);

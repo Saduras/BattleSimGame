@@ -39,6 +39,7 @@
 
 // ---Systems----------------------------
 #include "Engine/ECS/Systems/Render3DSystem.h"
+#include "Engine/ECS/Systems/Render2DSystem.h"
 // --------------------------------------
 
 

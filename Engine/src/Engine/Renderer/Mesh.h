@@ -11,6 +11,7 @@ namespace Engine
 		None = 0,
 		Quad,
 		Triangle,
+		TextureQuad,
 	};
 
 	struct MeshData
