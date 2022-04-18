@@ -18,6 +18,7 @@ IncludeDir["Glad"] = "Engine/vendor/Glad/include"
 IncludeDir["ImGui"] = "Engine/vendor/imgui/"
 IncludeDir["glm"] = "Engine/vendor/glm"
 IncludeDir["entt"] = "Engine/vendor/entt/src"
+IncludeDir["std_image"] = "Engine/vendor/std_image"
 
 group "Dependencies"
 	include "Engine/vendor/GLFW"
@@ -95,8 +96,10 @@ project "Engine"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/vendor/glm/glm/**.hpp",
-		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{IncludeDir.glm}/glm/**.hpp",
+		"%{IncludeDir.glm}/glm/**.inl",
+		"%{IncludeDir.std_image}/**.h",
+		"%{IncludeDir.std_image}/**.cpp",
 	}
 
 	includedirs
@@ -108,6 +111,8 @@ project "Engine"
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
+		"%{IncludeDir.std_image}",
+
 	}
 
 	links 
