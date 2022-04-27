@@ -102,8 +102,8 @@ TowerBattleLayer::~TowerBattleLayer()
 
 void TowerBattleLayer::OnUpdate(float deltaTime)
 {
-	auto towerView = m_Scene.GetView<Tower>();
-	towerView.each([&deltaTime, this](Tower& tower) { this->UpdateTower(tower, deltaTime); });
+	auto towerView = m_Scene.GetView<Tower, Engine::Components::Renderable2D>();
+	towerView.each([&deltaTime, this](Tower& tower, Engine::Components::Renderable2D& renderable) { this->UpdateTower(tower, renderable, deltaTime); });
 
 	m_Scene.Update(deltaTime);
 }
@@ -130,7 +130,7 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 			Engine::Vec4 worldPos = Camera::ScreenToWorld(camera, { x, y }, screenWidth, screenHeight);
 
 			// Check collision
-			m_Scene.GetView<QuadCollider, Tower, Renderable3D>().each([&worldPos, this](const entt::entity entityID, auto& collider, auto& tower, auto& renderable) {
+			m_Scene.GetView<QuadCollider, Tower, Renderable2D>().each([&worldPos, this](const entt::entity entityID, auto& collider, auto& tower, auto& renderable) {
 				ENG_TRACE("Hit {0}", collider.IsInside({ worldPos.x, worldPos.y }));
 				if (collider.IsInside({ worldPos.x, worldPos.y })) {
 					this->OnTowerClick({ entityID, &m_Scene });
@@ -146,18 +146,18 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 {
 	using namespace Engine::Components;
 
-	auto& renderable = towerEntity.GetComponent<Renderable3D>();
+	auto& renderable = towerEntity.GetComponent<Renderable2D>();
 	auto& tower = towerEntity.GetComponent<Tower>();
 
 	if (m_SourceTower.IsNull()) {
 		ENG_TRACE("Selected {0}", towerEntity);
 		m_SourceTower = towerEntity;
-		renderable.MaterialID = GetFactionSpriteID(tower.Faction, true);
+		renderable.SpriteID = GetFactionSpriteID(tower.Faction, true);
 	} else {
 		if (m_SourceTower == towerEntity) {
 			ENG_TRACE("Deselected {0}", towerEntity);
 			m_SourceTower = Engine::Entity();
-			renderable.MaterialID = GetFactionSpriteID(tower.Faction, false);
+			renderable.SpriteID = GetFactionSpriteID(tower.Faction, false);
 		}
 		else {
 			Attack(m_SourceTower, towerEntity);
@@ -166,7 +166,7 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 	}
 }
 
-void TowerBattleLayer::UpdateTower(Tower& tower, float deltaTime)
+void TowerBattleLayer::UpdateTower(Tower& tower, Engine::Components::Renderable2D& renderable, float deltaTime)
 {
 	if (tower.Units >= tower.MaxUnits || tower.Faction == Faction::None) {
 		return;
@@ -176,8 +176,17 @@ void TowerBattleLayer::UpdateTower(Tower& tower, float deltaTime)
 	if (tower.NextProductionTime <= 0 ) {
 		tower.NextProductionTime += tower.ProductionIntervall;
 		tower.Units += 1;
+
+		UpdateTowerSprite(renderable, tower.Units);
+
 		ENG_TRACE("Faction {0} got one unit. Currently {1}/{2}", tower.Faction, tower.Units, tower.MaxUnits);
 	}
+}
+
+void TowerBattleLayer::UpdateTowerSprite(Engine::Components::Renderable2D& renderable, int units)
+{
+	size_t startIndex = renderable.MeshID.find_last_of('/') + 1;
+	renderable.MeshID.replace(startIndex, renderable.MeshID.length() - startIndex, std::to_string(units));
 }
 
 // TODO add visualization of attack
@@ -185,16 +194,18 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 {
 	ENG_TRACE("Attack from {0} to {1}", source, target);
 	ENG_TRACE("Deselected {0}", source);
-	auto& srcRenderable = source.GetComponent<Engine::Components::Renderable3D>();
+	auto& srcRenderable = source.GetComponent<Engine::Components::Renderable2D>();
 	auto& srcTower = source.GetComponent<Tower>();
-	srcRenderable.MaterialID = GetFactionSpriteID(srcTower.Faction, false);
+	srcRenderable.SpriteID = GetFactionSpriteID(srcTower.Faction, false);
 
 	// take units from source tower
 	unsigned int units = std::min(srcTower.Units, (unsigned int)5);
 	srcTower.Units -= units;
+	UpdateTowerSprite(srcRenderable, srcTower.Units);
 	ENG_TRACE("{0} units move from source (Faction: {1}, Units: {2})", units, srcTower.Faction, srcTower.Units);
 
 	auto& targetTower = target.GetComponent<Tower>();
+	auto& targetRenderable = target.GetComponent<Engine::Components::Renderable2D>();
 	if (targetTower.Faction == srcTower.Faction) {
 		// Add to target if same faction
 		targetTower.Units += units;
@@ -206,10 +217,11 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 			// tower conquered
 			targetTower.Faction = srcTower.Faction;
 			targetTower.Units = (unsigned int)(-1 * diff);
-			auto& targetRenderable = target.GetComponent<Engine::Components::Renderable3D>();
-			targetRenderable.MaterialID = GetFactionSpriteID(targetTower.Faction, false);
+			targetRenderable.SpriteID = GetFactionSpriteID(targetTower.Faction, false);
 		}
 	}
+	UpdateTowerSprite(targetRenderable, targetTower.Units);
+
 	ENG_TRACE("{0} units reached target (Faction: {1}, Units {2})", units, targetTower.Faction, targetTower.Units);
 }
 

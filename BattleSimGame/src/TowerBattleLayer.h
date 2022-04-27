@@ -27,7 +27,8 @@ public:
 
 	bool OnMouseButtonPressed(Engine::MouseButtonPressedEvent& event);
 	void OnTowerClick(Engine::Entity tower);
-	void UpdateTower(Tower& tower, float deltaTime);
+	void UpdateTower(Tower& tower, Engine::Components::Renderable2D& renderable, float deltaTime);
+	void UpdateTowerSprite(Engine::Components::Renderable2D& renderable, int units);
 	void Attack(Engine::Entity source, Engine::Entity target);
 private:
 	Engine::Scene& m_Scene;
