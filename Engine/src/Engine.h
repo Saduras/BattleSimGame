@@ -14,6 +14,8 @@
 #include "Engine/Assets/AssetRegistry.h"
 
 #include "Engine/Math.h"
+#include "Engine/String.h"
+#include "Engine/Time.h"
 
 // ---Rendering--------------------------
 #include "Engine/Renderer/Renderer.h"
@@ -22,6 +24,7 @@
 #include "Engine/Renderer/VertexArray.h"
 #include "Engine/Renderer/Buffer.h"
 #include "Engine/Renderer/Mesh.h"
+#include "Engine/Renderer/Sprite.h"
 #include "Engine/Renderer/Material.h"
 // --------------------------------------
 

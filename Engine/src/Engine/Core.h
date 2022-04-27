@@ -29,3 +29,10 @@
 #define BIT(x) (1 << x)
 
 #define ENG_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
+#define ALIAS_TEMPLATE_FUNCTION(highLevelF, lowLevelF) \
+template<typename... Args> \
+inline auto highLevelF(Args&&... args) -> decltype(lowLevelF(std::forward<Args>(args)...)) \
+{ \
+    return lowLevelF(std::forward<Args>(args)...); \
+}

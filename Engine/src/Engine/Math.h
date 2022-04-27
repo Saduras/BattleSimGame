@@ -1,14 +1,9 @@
 #pragma once
 
+#include "Engine/Core.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-#define ALIAS_TEMPLATE_FUNCTION(highLevelF, lowLevelF) \
-template<typename... Args> \
-inline auto highLevelF(Args&&... args) -> decltype(lowLevelF(std::forward<Args>(args)...)) \
-{ \
-    return lowLevelF(std::forward<Args>(args)...); \
-}
 
 namespace Engine
 {
