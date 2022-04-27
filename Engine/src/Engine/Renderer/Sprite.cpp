@@ -1,17 +1,18 @@
 #include "epch.h"
+
 #include "Sprite.h"
+#include "Engine/Assets/AssetRegistry.h"
 
 #include <std_image.h>
 #include <glad/glad.h>
 
 namespace Engine
 {
-	Sprite::Sprite(std::string shaderPath, std::string spritePath)
-		: m_RendererID(0), m_FilePath(spritePath), m_LocalBuffer(nullptr),
-		m_Width(0), m_Height(0), m_BPP(0), m_Color(Vec4(1.0f, 1.0f, 1.0f, 1.0f))
+	Sprite::Sprite(const std::string& shaderID, const std::string& spritePath)
+		: m_RendererID(0), m_FilePath(spritePath), m_LocalBuffer(nullptr), m_ShaderID(shaderID),
+		m_Width(0), m_Height(0), m_BPP(0), m_Color(Vec4(1.0f, 1.0f, 1.0f, 1.0f)), 
+		m_textureCoordinates{ { 0.0f, 0.0f, 1.0f, 1.0f } }
 	{
-		m_Shader.reset(new Shader(shaderPath));
-
 		stbi_set_flip_vertically_on_load(1);
 		m_LocalBuffer = stbi_load(spritePath.c_str(), &m_Width, &m_Height, &m_BPP, 4);
 
@@ -29,7 +30,8 @@ namespace Engine
 		if (m_LocalBuffer)
 			stbi_image_free(m_LocalBuffer);
 
-		m_Shader->SetUniform1i("u_Texture", 0);
+		Shader& shader = AssetRegistry::Get<Shader>(shaderID);
+		shader.SetUniform1i("u_Texture", 0);
 	}
 
 	Sprite::~Sprite()

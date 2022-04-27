@@ -8,17 +8,17 @@ namespace Engine
     class Material : public Asset
     {
     public:
-        Material(std::string shaderPath);
+        Material(const std::string& shaderID);
         Material(const Material& material);
         ~Material();
 
         Material& operator=(const Material&) { return *this; }
 
-        inline Shader* GetShader() const { return m_Shader.get(); }
+        inline const std::string& GetShaderID() const { return m_ShaderID; }
         inline Vec4 GetColor() const { return m_Color; }
         inline void SetColor(Vec4 color) { m_Color = color; }
     private:
-        std::unique_ptr<Shader> m_Shader;
+        std::string m_ShaderID;
         Vec4 m_Color;
     };
 }

@@ -2,7 +2,8 @@
 
 #include <string>
 
-#include "Engine\Math.h" 
+#include "Engine/Assets/Asset.h"
+#include "Engine/Math.h" 
 
 namespace Engine
 {
@@ -12,7 +13,7 @@ namespace Engine
 		std::string FragmentSource;
 	};
 
-	class Shader
+	class Shader : public Asset
 	{
 	public:
 		Shader(const std::string& filepath);

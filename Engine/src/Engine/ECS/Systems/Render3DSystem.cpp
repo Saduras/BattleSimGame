@@ -30,14 +30,14 @@ namespace Engine::Systems {
 
 	void Render3DSystem::RenderRenderable(const Components::Transform& transform, const Components::Renderable3D& renderable)
 	{
-		auto& material = AssetRegistry::Get<Material>(renderable.MaterialID);
-		auto& mesh = Engine::AssetRegistry::Get<Mesh>(renderable.MeshID);
+		Material& material = AssetRegistry::Get<Material>(renderable.MaterialID);
+		Mesh& mesh = Engine::AssetRegistry::Get<Mesh>(renderable.MeshID);
+		Shader& shader = AssetRegistry::Get<Shader>(material.GetShaderID());
 
-		auto shader = material.GetShader();
-		Renderer::SetShader(shader);
+		Renderer::SetShader(&shader);
 		auto modelMatrix = transform.GetTransformationMatrix();
-		shader->SetUniformMat4f("u_Model", modelMatrix);
-		shader->SetUniform4f("u_Color", material.GetColor());
+		shader.SetUniformMat4f("u_Model", modelMatrix);
+		shader.SetUniform4f("u_Color", material.GetColor());
 		Renderer::Submit(mesh.GetVertexArray());
 	}
 }

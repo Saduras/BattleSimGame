@@ -3,16 +3,14 @@
 
 namespace Engine
 {
-	Material::Material(std::string shaderPath)
-		: m_Color(Vec4(1.0f, 0.0f, 1.0f, 1.0f))
+	Material::Material(const std::string& shaderID)
+		: m_Color(Vec4(1.0f, 0.0f, 1.0f, 1.0f)), m_ShaderID(shaderID)
 	{
-		m_Shader.reset(new Shader(shaderPath));
 	}
 
 	Material::Material(const Material& material)
-		: m_Color(material.m_Color)
+		: m_Color(material.m_Color), m_ShaderID(material.m_ShaderID)
 	{
-		m_Shader.reset(new Shader(material.m_Shader->GetFilePath()));
 	}
 	
 	Material::~Material()

@@ -10,8 +10,9 @@ static void CreateQuadRenderExample(Engine::Scene* scene)
 
 	// Create resources
 	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::Quad));
+	Engine::AssetRegistry::Add("shader/default", new Engine::Shader("res/shader/default.shader"));
 
-	auto material = new Engine::Material("res/shader/default.shader");
+	auto material = new Engine::Material("shader/default");
 	material->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
 	Engine::AssetRegistry::Add("mat/default", material);
 
@@ -47,12 +48,25 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	ENG_TRACE("SpriteRenderExample");
 
 	// Create resources
-	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
+	Engine::AssetRegistry::Add("shader/unlit_texture", new Engine::Shader("res/shader/unlit_texture.shader"));
 
-	auto sprite = new Engine::Sprite("res/shader/unlit_texture.shader", 
-									"res/sprite/alpha-test.png");
+	auto sprite = new Engine::Sprite("shader/unlit_texture", "res/sprite/alpha-test.png");
 	sprite->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+	sprite->SetTextureCoordinates({ { 0.0f, 0.0f, 0.5f, 0.5f } });
 	Engine::AssetRegistry::Add("sprite/pop", sprite);
+
+
+	Engine::TextureCoordinates texCoords = sprite->GetTextureCoordinates(0);
+	Engine::MeshData meshData = Engine::Mesh::PrimitiveToMeshData(Engine::PrimitiveMesh::TextureQuad);
+	meshData.Verticies[3] = texCoords.StartX;
+	meshData.Verticies[4] = texCoords.StartY;
+	meshData.Verticies[8] = texCoords.EndX;
+	meshData.Verticies[9] = texCoords.StartY;
+	meshData.Verticies[13] = texCoords.EndX;
+	meshData.Verticies[14] = texCoords.EndY;
+	meshData.Verticies[18] = texCoords.StartX;
+	meshData.Verticies[19] = texCoords.EndY;
+	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(meshData));
 
 	// Setup camera
 	auto camera = scene->CreateEntity();
