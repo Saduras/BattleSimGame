@@ -62,12 +62,11 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 	{
 		for (int x = 0; x < 8; x++)
 		{
-			// TODO there is a bug in the tex coord calculation...
 			texCoords.push_back({ 
-				x * 16.0f / 256.0f, 
-				(256 - y * 16.0f) / 256.0f, 
-				(x + 1) * 16.0f / 256.0f, 
-				(256 - (y + 1) * 16.0f) / 256.0f 
+				x * 16.0f / 128.0f,
+				(128 - (y + 1) * 16.0f) / 128.0f, 
+				(x + 1) * 16.0f / 128.0f,
+				(128 - y * 16.0f) / 128.0f
 			});
 		}
 	}
@@ -89,27 +88,6 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 		Engine::SetTextureCoordinatesOnMeshData(texCoords, meshData, 3, 5);
 		Engine::AssetRegistry::Add(Engine::FormatString("mesh/quad/{}", i), new Engine::Mesh(meshData));
 	}
-
-	//auto matNoneBase = new Engine::Material("res/shader/default.shader");
-	//matNoneBase->SetColor({0.4f, 0.4f, 0.4f, 1.0f});
-	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::None, false), matNoneBase);
-	//auto matNoneSelect = new Engine::Material("res/shader/default.shader");
-	//matNoneSelect->SetColor({ 0.6f, 0.6f, 0.6f, 1.0f });
-	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::None, true), matNoneSelect);
-
-	//auto matRedBase = new Engine::Material("res/shader/default.shader");
-	//matRedBase->SetColor({ 0.7f, 0.2f, 0.2f, 1.0f });
-	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Red, false), matRedBase);
-	//auto matRedSelect = new Engine::Material("res/shader/default.shader");
-	//matRedSelect->SetColor({ 0.8f, 0.4f, 0.4f, 1.0f });
-	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Red, true), matRedSelect);
-
-	//auto matBlueBase = new Engine::Material("res/shader/default.shader");
-	//matBlueBase->SetColor({ 0.2f, 0.2f, 0.7f, 1.0f });
-	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, false), matBlueBase);
-	//auto matBlueSelect = new Engine::Material("res/shader/default.shader");
-	//matBlueSelect->SetColor({ 0.4f, 0.4f, 0.8f, 1.0f });
-	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, true), matBlueSelect);
 
 	CreateCamera();
 
