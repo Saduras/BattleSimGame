@@ -5,15 +5,27 @@
 #include <Engine/Renderer/Material.h>
 #include <Engine/Renderer/Mesh.h>
 
-static std::string GetFactionMaterialID(Faction faction, bool selected)
+static std::string GetFactionSpriteID(Faction faction, bool selected)
 {
 	switch (faction) {
 	case Faction::Red: 
-		return selected ? "material/tower/red/selected" : "material/tower/red/unselected";
+		return selected ? "sprite/tower/red/selected" : "sprite/tower/red/unselected";
 	case Faction::Blue:
-		return selected ? "material/tower/blue/selected" : "material/tower/blue/unselected";
+		return selected ? "sprite/tower/blue/selected" : "sprite/tower/blue/unselected";
 	case Faction::None:
-		return selected ? "material/tower/none/selected" : "material/tower/none/unselected";
+		return selected ? "sprite/tower/none/selected" : "sprite/tower/none/unselected";
+	}
+
+	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
+	return "";
+}
+
+static std::string GetFactionSpritePath(Faction faction)
+{
+	switch (faction) {
+	case Faction::Red:  return "res/sprite/Tower_Red.png";
+	case Faction::Blue: return "res/sprite/Tower_Blue.png";
+	case Faction::None: return "res/sprite/Tower_None.png";
 	}
 
 	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
@@ -42,28 +54,62 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 	: Layer("TowerBattle"), m_Scene(scene)
 {
 	// Prepare assets
-	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::Quad));
+	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
+	Engine::AssetRegistry::Add("shader/sprite", new Engine::Shader("res/shader/unlit_texture.shader"));
 
-	auto matNoneBase = new Engine::Material("res/shader/default.shader");
-	matNoneBase->SetColor({0.4f, 0.4f, 0.4f, 1.0f});
-	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::None, false), matNoneBase);
-	auto matNoneSelect = new Engine::Material("res/shader/default.shader");
-	matNoneSelect->SetColor({ 0.6f, 0.6f, 0.6f, 1.0f });
-	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::None, true), matNoneSelect);
+	std::vector<Engine::TextureCoordinates> texCoords;
+	for (int y = 0; y < 8; y++)
+	{
+		for (int x = 0; x < 8; x++)
+		{
+			// TODO there is a bug in the tex coord calculation...
+			texCoords.push_back({ 
+				x * 16.0f / 256.0f, 
+				(256 - y * 16.0f) / 256.0f, 
+				(x + 1) * 16.0f / 256.0f, 
+				(256 - (y + 1) * 16.0f) / 256.0f 
+			});
+		}
+	}
 
-	auto matRedBase = new Engine::Material("res/shader/default.shader");
-	matRedBase->SetColor({ 0.7f, 0.2f, 0.2f, 1.0f });
-	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Red, false), matRedBase);
-	auto matRedSelect = new Engine::Material("res/shader/default.shader");
-	matRedSelect->SetColor({ 0.8f, 0.4f, 0.4f, 1.0f });
-	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Red, true), matRedSelect);
+	for (Faction faction : { Faction::Blue, Faction::Red, Faction::None })
+	{
+		Engine::Sprite* towerSprite = new Engine::Sprite("shader/sprite", GetFactionSpritePath(faction));
+		towerSprite->SetTextureCoordinates(texCoords);
+		Engine::AssetRegistry::Add(GetFactionSpriteID(faction, true), towerSprite);
+		Engine::AssetRegistry::Add(GetFactionSpriteID(faction, false), towerSprite);
 
-	auto matBlueBase = new Engine::Material("res/shader/default.shader");
-	matBlueBase->SetColor({ 0.2f, 0.2f, 0.7f, 1.0f });
-	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, false), matBlueBase);
-	auto matBlueSelect = new Engine::Material("res/shader/default.shader");
-	matBlueSelect->SetColor({ 0.4f, 0.4f, 0.8f, 1.0f });
-	Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, true), matBlueSelect);
+	}
+
+	Engine::Sprite& sprite = Engine::AssetRegistry::Get<Engine::Sprite>(GetFactionSpriteID(Faction::None, false));
+	for (size_t i = 0; i < sprite.GetTileCount(); i++)
+	{
+		Engine::TextureCoordinates texCoords = sprite.GetTextureCoordinates((int)i);
+		Engine::MeshData meshData = Engine::Mesh::PrimitiveToMeshData(Engine::PrimitiveMesh::TextureQuad);
+		Engine::SetTextureCoordinatesOnMeshData(texCoords, meshData, 3, 5);
+		Engine::AssetRegistry::Add(Engine::FormatString("mesh/quad/{}", i), new Engine::Mesh(meshData));
+	}
+
+	//auto matNoneBase = new Engine::Material("res/shader/default.shader");
+	//matNoneBase->SetColor({0.4f, 0.4f, 0.4f, 1.0f});
+	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::None, false), matNoneBase);
+	//auto matNoneSelect = new Engine::Material("res/shader/default.shader");
+	//matNoneSelect->SetColor({ 0.6f, 0.6f, 0.6f, 1.0f });
+	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::None, true), matNoneSelect);
+
+	//auto matRedBase = new Engine::Material("res/shader/default.shader");
+	//matRedBase->SetColor({ 0.7f, 0.2f, 0.2f, 1.0f });
+	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Red, false), matRedBase);
+	//auto matRedSelect = new Engine::Material("res/shader/default.shader");
+	//matRedSelect->SetColor({ 0.8f, 0.4f, 0.4f, 1.0f });
+	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Red, true), matRedSelect);
+
+	//auto matBlueBase = new Engine::Material("res/shader/default.shader");
+	//matBlueBase->SetColor({ 0.2f, 0.2f, 0.7f, 1.0f });
+	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, false), matBlueBase);
+	//auto matBlueSelect = new Engine::Material("res/shader/default.shader");
+	//matBlueSelect->SetColor({ 0.4f, 0.4f, 0.8f, 1.0f });
+	//Engine::AssetRegistry::Add(GetFactionMaterialID(Faction::Blue, true), matBlueSelect);
 
 	CreateCamera();
 
@@ -128,12 +174,12 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 	if (m_SourceTower.IsNull()) {
 		ENG_TRACE("Selected {0}", towerEntity);
 		m_SourceTower = towerEntity;
-		renderable.MaterialID = GetFactionMaterialID(tower.Faction, true);
+		renderable.MaterialID = GetFactionSpriteID(tower.Faction, true);
 	} else {
 		if (m_SourceTower == towerEntity) {
 			ENG_TRACE("Deselected {0}", towerEntity);
 			m_SourceTower = Engine::Entity();
-			renderable.MaterialID = GetFactionMaterialID(tower.Faction, false);
+			renderable.MaterialID = GetFactionSpriteID(tower.Faction, false);
 		}
 		else {
 			Attack(m_SourceTower, towerEntity);
@@ -163,7 +209,7 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 	ENG_TRACE("Deselected {0}", source);
 	auto& srcRenderable = source.GetComponent<Engine::Components::Renderable3D>();
 	auto& srcTower = source.GetComponent<Tower>();
-	srcRenderable.MaterialID = GetFactionMaterialID(srcTower.Faction, false);
+	srcRenderable.MaterialID = GetFactionSpriteID(srcTower.Faction, false);
 
 	// take units from source tower
 	unsigned int units = std::min(srcTower.Units, (unsigned int)5);
@@ -183,7 +229,7 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 			targetTower.Faction = srcTower.Faction;
 			targetTower.Units = (unsigned int)(-1 * diff);
 			auto& targetRenderable = target.GetComponent<Engine::Components::Renderable3D>();
-			targetRenderable.MaterialID = GetFactionMaterialID(targetTower.Faction, false);
+			targetRenderable.MaterialID = GetFactionSpriteID(targetTower.Faction, false);
 		}
 	}
 	ENG_TRACE("{0} units reached target (Faction: {1}, Units {2})", units, targetTower.Faction, targetTower.Units);
@@ -197,9 +243,9 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	tower.AddComponent<Transform>(
 		position,
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
-		Engine::Vec3(50.0f, 100.0f, 1.0f)  // scale
+		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
 	);
-	tower.AddComponent<Renderable3D>(GetFactionMaterialID(faction, false), "mesh/quad");
+	tower.AddComponent<Renderable2D>(GetFactionSpriteID(faction, false), "mesh/quad/0");
 	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)10, 1.0f, 0.0f);
 	tower.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
