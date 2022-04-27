@@ -58,14 +58,7 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 
 	Engine::TextureCoordinates texCoords = sprite->GetTextureCoordinates(0);
 	Engine::MeshData meshData = Engine::Mesh::PrimitiveToMeshData(Engine::PrimitiveMesh::TextureQuad);
-	meshData.Verticies[3] = texCoords.StartX;
-	meshData.Verticies[4] = texCoords.StartY;
-	meshData.Verticies[8] = texCoords.EndX;
-	meshData.Verticies[9] = texCoords.StartY;
-	meshData.Verticies[13] = texCoords.EndX;
-	meshData.Verticies[14] = texCoords.EndY;
-	meshData.Verticies[18] = texCoords.StartX;
-	meshData.Verticies[19] = texCoords.EndY;
+	Engine::SetTextureCoordinatesOnMeshData(texCoords, meshData, 3, 5);
 	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(meshData));
 
 	// Setup camera

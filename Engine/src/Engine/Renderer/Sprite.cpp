@@ -8,6 +8,22 @@
 
 namespace Engine
 {
+	void SetTextureCoordinatesOnMeshData(const TextureCoordinates& texCoords, MeshData& meshData, int texCoordIndex, int vertexLength)
+	{
+		// Bottom left
+		meshData.Verticies[texCoordIndex] = texCoords.StartX;
+		meshData.Verticies[texCoordIndex + 1] = texCoords.StartY;
+		// Bottom right
+		meshData.Verticies[texCoordIndex + vertexLength] = texCoords.EndX;
+		meshData.Verticies[texCoordIndex + vertexLength + 1] = texCoords.StartY;
+		// Top right
+		meshData.Verticies[texCoordIndex + 2 * vertexLength] = texCoords.EndX;
+		meshData.Verticies[texCoordIndex + 2 * vertexLength + 1] = texCoords.EndY;
+		// Top left
+		meshData.Verticies[texCoordIndex + 3 * vertexLength] = texCoords.StartX;
+		meshData.Verticies[texCoordIndex + 3 * vertexLength + 1] = texCoords.EndY;
+	}
+
 	Sprite::Sprite(const std::string& shaderID, const std::string& spritePath)
 		: m_RendererID(0), m_FilePath(spritePath), m_LocalBuffer(nullptr), m_ShaderID(shaderID),
 		m_Width(0), m_Height(0), m_BPP(0), m_Color(Vec4(1.0f, 1.0f, 1.0f, 1.0f)), 

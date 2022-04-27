@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Assets/Asset.h"
+#include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Shader.h"
 
 namespace Engine
@@ -12,6 +13,8 @@ namespace Engine
 		float EndX;
 		float EndY;
 	};
+
+	void SetTextureCoordinatesOnMeshData(const TextureCoordinates& texCoords, MeshData& meshData, int texCoordIndex, int vertexLength);
 
 	class Sprite : public Asset
 	{

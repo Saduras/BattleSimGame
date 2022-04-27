@@ -96,12 +96,12 @@ namespace Engine
 		m_VertexArray.reset(Engine::VertexArray::Create());
 
 		std::shared_ptr<Engine::VertexBuffer> vertexBuffer;
-		vertexBuffer.reset(Engine::VertexBuffer::Create((float*)m_MeshData.Verticies.data(), m_MeshData.Verticies.size() * sizeof(float)));
+		vertexBuffer.reset(Engine::VertexBuffer::Create((float*)m_MeshData.Verticies.data(), (uint32_t)m_MeshData.Verticies.size() * sizeof(float)));
 		vertexBuffer->SetLayout(m_MeshData.Layout);
 		m_VertexArray->AddVertexBuffer(vertexBuffer);
 
 		std::shared_ptr<Engine::IndexBuffer> indexBuffer;
-		indexBuffer.reset(Engine::IndexBuffer::Create((uint32_t*)m_MeshData.Indicies.data(), m_MeshData.Indicies.size()));
+		indexBuffer.reset(Engine::IndexBuffer::Create((uint32_t*)m_MeshData.Indicies.data(), (uint32_t)m_MeshData.Indicies.size()));
 		m_VertexArray->SetIndexBuffer(indexBuffer);
 	}
 }
