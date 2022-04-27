@@ -32,6 +32,7 @@ namespace Engine
 		inline void SetColor(Vec4 color) { m_Color = color; }
 		inline TextureCoordinates GetTextureCoordinates(int index) { return m_textureCoordinates[index]; }
 		inline void SetTextureCoordinates(std::vector<TextureCoordinates> textureCoordinates) { m_textureCoordinates = textureCoordinates; }
+		inline size_t GetTileCount() { return m_textureCoordinates.size(); }
 	private:
 		std::string m_ShaderID;
 		std::string m_FilePath;

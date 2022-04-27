@@ -1,8 +1,6 @@
 #include "ExamplesLayer.h"
 
-#include <Engine/Renderer/Material.h>
-#include <Engine/Renderer/Mesh.h>
-#include <Engine/Renderer/Sprite.h>
+#include <Engine.h>
 
 static void CreateQuadRenderExample(Engine::Scene* scene)
 {
@@ -43,6 +41,38 @@ static void CreateQuadRenderExample(Engine::Scene* scene)
 	scene->AddSystem<Engine::Systems::Render3DSystem>();
 }
 
+struct SpriteAnimation
+{
+	int CurrentIndex;
+	float LastUpdate;
+	float AnimationStepTime;
+};
+
+class AnimateSpriteSystem : public Engine::System
+{
+public:
+	AnimateSpriteSystem(Engine::Scene* scene) : Engine::System(scene) {}
+
+	void Execute(float deltaTime) override
+	{
+		auto view = m_Scene->GetView<Engine::Components::Renderable2D, SpriteAnimation>();
+		view.each([this](Engine::Components::Renderable2D& renderable, SpriteAnimation& spriteAnimation) {
+
+			float now = Engine::Time::GetTime();
+			if (now - spriteAnimation.LastUpdate > spriteAnimation.AnimationStepTime)
+			{
+				Engine::Sprite& sprite = Engine::AssetRegistry::Get<Engine::Sprite>(renderable.SpriteID);
+				int newIndex = (spriteAnimation.CurrentIndex + 1) % sprite.GetTileCount();
+				renderable.MeshID.replace((int)renderable.MeshID.length() - 1, 1, std::to_string(newIndex));
+
+				spriteAnimation.LastUpdate = now;
+				spriteAnimation.CurrentIndex = newIndex;
+			}
+		});
+	}
+	std::string GetName() const override { return "UpdateSpriteSystem"; }
+};
+
 static void CreateSpriteRenderExample(Engine::Scene* scene)
 {
 	ENG_TRACE("SpriteRenderExample");
@@ -50,16 +80,25 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	// Create resources
 	Engine::AssetRegistry::Add("shader/unlit_texture", new Engine::Shader("res/shader/unlit_texture.shader"));
 
-	auto sprite = new Engine::Sprite("shader/unlit_texture", "res/sprite/alpha-test.png");
+	auto sprite = new Engine::Sprite("shader/unlit_texture", "res/sprite/animation-test.png");
 	sprite->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-	sprite->SetTextureCoordinates({ { 0.0f, 0.0f, 0.5f, 0.5f } });
+	sprite->SetTextureCoordinates({ 
+			{ 0.0f, 0.5f, 0.5f, 1.0f },
+			{ 0.5f, 0.5f, 1.0f, 1.0f },
+			{ 0.0f, 0.0f, 0.5f, 0.5f },
+			{ 0.5f, 0.0f, 1.0f, 0.5f },
+		});
 	Engine::AssetRegistry::Add("sprite/pop", sprite);
 
 
-	Engine::TextureCoordinates texCoords = sprite->GetTextureCoordinates(0);
-	Engine::MeshData meshData = Engine::Mesh::PrimitiveToMeshData(Engine::PrimitiveMesh::TextureQuad);
-	Engine::SetTextureCoordinatesOnMeshData(texCoords, meshData, 3, 5);
-	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(meshData));
+
+	for (size_t i = 0; i < sprite->GetTileCount(); i++)
+	{
+		Engine::TextureCoordinates texCoords = sprite->GetTextureCoordinates((int)i);
+		Engine::MeshData meshData = Engine::Mesh::PrimitiveToMeshData(Engine::PrimitiveMesh::TextureQuad);
+		Engine::SetTextureCoordinatesOnMeshData(texCoords, meshData, 3, 5);
+		Engine::AssetRegistry::Add(Engine::FormatString("mesh/quad/{}", i), new Engine::Mesh(meshData));
+	}
 
 	// Setup camera
 	auto camera = scene->CreateEntity();
@@ -82,10 +121,12 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// rotation
 		Engine::Vec3(100.0f, 100.0f, 1.0f)	// scale
 		);
-	entity.AddComponent<Engine::Components::Renderable2D>("sprite/pop", "mesh/quad");
+	entity.AddComponent<Engine::Components::Renderable2D>("sprite/pop", "mesh/quad/0");
+	entity.AddComponent<SpriteAnimation>(0, 0.0f, 0.5f);
 
 	// Setup systems
 	scene->AddSystem<Engine::Systems::Render2DSystem>();
+	scene->AddSystem<AnimateSpriteSystem>();
 	// TODO: Create RenderSystem2D
 	// - support switching sprite from atlas
 }
