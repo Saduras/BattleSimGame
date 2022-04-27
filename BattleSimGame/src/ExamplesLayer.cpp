@@ -127,8 +127,6 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	// Setup systems
 	scene->AddSystem<Engine::Systems::Render2DSystem>();
 	scene->AddSystem<AnimateSpriteSystem>();
-	// TODO: Create RenderSystem2D
-	// - support switching sprite from atlas
 }
 
 ExampleLayer::ExampleLayer(ExampleScene example)
