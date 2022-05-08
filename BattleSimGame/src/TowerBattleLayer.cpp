@@ -55,7 +55,10 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 {
 	// Prepare assets
 	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
-	Engine::AssetRegistry::Add("shader/sprite", new Engine::Shader("res/shader/unlit_texture.shader"));
+
+	Engine::Shader* shader = new Engine::Shader("res/shader/pixel_sprite.shader");
+	shader->SetProperty("u_TexelPerPixel", 5.0f);
+	Engine::AssetRegistry::Add("shader/sprite", shader);
 
 	std::vector<Engine::TextureCoordinates> texCoords;
 	for (int y = 0; y < 8; y++)
@@ -71,7 +74,16 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 		}
 	}
 
-	for (Faction faction : { Faction::Blue, Faction::Red, Faction::None })
+	// Player faction sprites
+	Engine::Sprite* towerSpriteSelected = new Engine::Sprite("shader/sprite", "res/sprite/Tower_Blue_Selected.png");
+	towerSpriteSelected->SetTextureCoordinates(texCoords);
+	Engine::Sprite* towerSpriteUnselected = new Engine::Sprite("shader/sprite", "res/sprite/Tower_Blue.png");
+	towerSpriteUnselected->SetTextureCoordinates(texCoords);
+	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue, true), towerSpriteSelected);
+	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue, false), towerSpriteUnselected);
+
+	// Other sprites
+	for (Faction faction : { Faction::Red, Faction::None })
 	{
 		Engine::Sprite* towerSprite = new Engine::Sprite("shader/sprite", GetFactionSpritePath(faction));
 		towerSprite->SetTextureCoordinates(texCoords);
@@ -152,12 +164,16 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 	if (m_SourceTower.IsNull()) {
 		ENG_TRACE("Selected {0}", towerEntity);
 		m_SourceTower = towerEntity;
-		renderable.SpriteID = GetFactionSpriteID(tower.Faction, true);
+
+		if(tower.Faction == Faction::Blue)
+			renderable.SpriteID = GetFactionSpriteID(tower.Faction, true);
 	} else {
 		if (m_SourceTower == towerEntity) {
 			ENG_TRACE("Deselected {0}", towerEntity);
 			m_SourceTower = Engine::Entity();
-			renderable.SpriteID = GetFactionSpriteID(tower.Faction, false);
+
+			if (tower.Faction == Faction::Blue)
+				renderable.SpriteID = GetFactionSpriteID(tower.Faction, false);
 		}
 		else {
 			Attack(m_SourceTower, towerEntity);
@@ -236,7 +252,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
 	);
 	tower.AddComponent<Renderable2D>(GetFactionSpriteID(faction, false), "mesh/quad/0");
-	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)10, 1.0f, 0.0f);
+	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)36, 1.0f, 0.0f);
 	tower.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
 		50.0f, // width
