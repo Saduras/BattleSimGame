@@ -114,8 +114,19 @@ TowerBattleLayer::~TowerBattleLayer()
 
 void TowerBattleLayer::OnUpdate(float deltaTime)
 {
+	int redTowerCount = 0;
 	auto towerView = m_Scene.GetView<Tower, Engine::Components::Renderable2D>();
-	towerView.each([&deltaTime, this](Tower& tower, Engine::Components::Renderable2D& renderable) { this->UpdateTower(tower, renderable, deltaTime); });
+	towerView.each([this, &deltaTime, &redTowerCount](Tower& tower, Engine::Components::Renderable2D& renderable)
+		{ 
+			if (tower.Faction == Faction::Red)
+				redTowerCount++;
+
+			this->UpdateTower(tower, renderable, deltaTime); 
+		}
+	);
+
+	if (redTowerCount == 0)
+		ENG_TRACE("Game Over! Player Wins!");
 
 	m_Scene.Update(deltaTime);
 }
