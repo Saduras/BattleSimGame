@@ -17,7 +17,7 @@ namespace Engine
 	void Renderer::SetShader(Shader* shader)
 	{
 		shader->Bind();
-		shader->SetUniformMat4f("u_PV", s_SceneData->ViewProjectionMatrix);
+		shader->SetProperty("u_PV", s_SceneData->ViewProjectionMatrix);
 	}
 
 	void Renderer::Submit(const VertexArray* vertexArray)

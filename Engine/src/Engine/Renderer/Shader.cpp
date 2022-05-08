@@ -134,6 +134,27 @@ namespace Engine
 		glUseProgram(0);
 	}
 	
+	void Shader::ApplyProperties()
+	{
+		for (const std::pair<std::string, Mat4>& pair : m_PropertiesMat4)
+			SetUniformMat4f(pair.first, pair.second);
+
+		for (const std::pair<std::string, Vec4>& pair : m_PropertiesVec4)
+			SetUniform4f(pair.first, pair.second);
+
+		for (const std::pair<std::string, Vec3>& pair : m_PropertiesVec3)
+			SetUniform3f(pair.first, pair.second);
+
+		for (const std::pair<std::string, Vec2>& pair : m_PropertiesVec2)
+			SetUniform2f(pair.first, pair.second);
+
+		for (const std::pair<std::string, float>& pair : m_PropertiesFloat)
+			SetUniform1f(pair.first, pair.second);
+
+		for (const std::pair<std::string, int>& pair : m_PropertiesInt)
+			SetUniform1i(pair.first, pair.second);
+	}
+
 	void Shader::SetUniformMat4f(const std::string& name, const Mat4& matrix)
 	{
 		glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, glm::value_ptr(matrix));
@@ -142,6 +163,22 @@ namespace Engine
 	void Shader::SetUniform4f(const std::string& name, const Vec4 values)
 	{
 		glUniform4f(GetUniformLocation(name), values.x, values.y, values.z, values.w);
+	}
+
+	void Shader::SetUniform3f(const std::string& name, const Vec3 values)
+	{
+		glUniform3f(GetUniformLocation(name), values.x, values.y, values.z);
+	}
+
+	void Shader::SetUniform2f(const std::string& name, const Vec2 values)
+	{
+		glUniform2f(GetUniformLocation(name), values.x, values.y);
+	}
+
+
+	void Shader::SetUniform1f(const std::string& name, const float value)
+	{
+		glUniform1f(GetUniformLocation(name), value);
 	}
 
 	void Shader::SetUniform1i(const std::string& name, int value)
@@ -163,17 +200,21 @@ namespace Engine
 		std::string line;
 		std::stringstream ss[2];
 		ShaderType type = ShaderType::NONE;
-		while (getline(stream, line)) {
+		while (getline(stream, line)) 
+		{
 			// npos means it didn't find the substring
 			if (line.find("#shader") != std::string::npos) {
 				if (line.find("vertex") != std::string::npos) {
 					type = ShaderType::VERTEX;
+					continue;
 				}
 				else if (line.find("fragment") != std::string::npos) {
 					type = ShaderType::FRAGMENT;
+					continue;
 				}
 			}
-			else {
+			
+			if(type != ShaderType::NONE) {
 				ss[(int)type] << line << '\n';
 			}
 		}

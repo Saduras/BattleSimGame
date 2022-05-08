@@ -33,6 +33,7 @@ namespace Engine
 		inline TextureCoordinates GetTextureCoordinates(int index) { return m_textureCoordinates[index]; }
 		inline void SetTextureCoordinates(std::vector<TextureCoordinates> textureCoordinates) { m_textureCoordinates = textureCoordinates; }
 		inline size_t GetTileCount() { return m_textureCoordinates.size(); }
+		inline Vec2 GetTextureSize() const { return Vec2(m_Width, m_Height); }
 	private:
 		std::string m_ShaderID;
 		std::string m_FilePath;

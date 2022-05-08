@@ -36,8 +36,9 @@ namespace Engine::Systems {
 
 		Renderer::SetShader(&shader);
 		auto modelMatrix = transform.GetTransformationMatrix();
-		shader.SetUniformMat4f("u_Model", modelMatrix);
-		shader.SetUniform4f("u_Color", material.GetColor());
+		shader.SetProperty("u_Model", modelMatrix);
+		shader.SetProperty("u_Color", material.GetColor());
+		shader.ApplyProperties();
 		Renderer::Submit(mesh.GetVertexArray());
 	}
 }

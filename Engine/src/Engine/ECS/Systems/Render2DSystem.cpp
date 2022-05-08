@@ -1,6 +1,7 @@
 #include "epch.h"
 #include "Render2DSystem.h"
 
+#include "Engine/Application.h"
 #include "Engine/ECS/Components/Camera.h"
 #include "Engine/Assets/AssetRegistry.h"
 #include "Engine/Renderer/Sprite.h"
@@ -37,8 +38,10 @@ namespace Engine::Systems {
 		sprite.Bind();
 		Renderer::SetShader(&shader);
 		Mat4 modelMatrix = transform.GetTransformationMatrix();
-		shader.SetUniformMat4f("u_Model", modelMatrix);
-		shader.SetUniform4f("u_Color", sprite.GetColor());
+		shader.SetProperty("u_Model", modelMatrix);
+		shader.SetProperty("u_Color", sprite.GetColor());
+		shader.SetProperty("u_TextureSize", sprite.GetTextureSize());
+		shader.ApplyProperties();
 		Renderer::Submit(mesh.GetVertexArray());
 	}
 }

@@ -47,7 +47,7 @@ namespace Engine
 			stbi_image_free(m_LocalBuffer);
 
 		Shader& shader = AssetRegistry::Get<Shader>(shaderID);
-		shader.SetUniform1i("u_Texture", 0);
+		shader.SetProperty("u_Texture", 0);
 	}
 
 	Sprite::~Sprite()
