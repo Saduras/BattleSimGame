@@ -61,7 +61,7 @@ namespace Engine
 		}
 
 		/// <summary>
-		/// Returns cound of (alive) entities in this scene.
+		/// Returns count of (alive) entities in this scene.
 		/// </summary>
 		/// <returns></returns>
 		size_t GetEntityCount() const;
