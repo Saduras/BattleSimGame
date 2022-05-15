@@ -20,6 +20,17 @@ static std::string GetFactionSpriteID(Faction faction, bool selected)
 	return "";
 }
 
+static std::string GetUnitSpriteID(Faction faction)
+{
+	switch (faction) {
+	case Faction::Red: return "sprite/unit/red";
+	case Faction::Blue: return "sprite/unit/blue";
+	}
+
+	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
+	return "";
+}
+
 static std::string GetFactionSpritePath(Faction faction)
 {
 	switch (faction) {
@@ -32,22 +43,121 @@ static std::string GetFactionSpritePath(Faction faction)
 	return "";
 }
 
-struct QuadCollider
+class UnitMoveSystem : public Engine::System
 {
-	Engine::Vec2 Center;
-	float Width;
-	float Height;
+public:
+	UnitMoveSystem(Engine::Scene* scene) : Engine::System(scene) {}
 
-	bool IsInside(Engine::Vec2 position)
+	void Execute(float deltaTime) override
 	{
-		float left = Center.x - Width / 2;
-		float right = Center.x + Width / 2;
-		float bottom = Center.y - Height / 2;
-		float top = Center.y + Height / 2;
+		using namespace Engine::Components;
 
-		return left <= position.x && position.x <= right
-			&& bottom <= position.y && position.y <= top;
+		auto view = m_Scene->GetView<Unit, Transform>();
+		view.each([deltaTime](Unit& unit, Transform& transform) {
+
+			Engine::Vec3 targetPosition = unit.Target.GetComponent<Transform>().Position;
+			Engine::Vec3 currentPosition = transform.Position;
+			Engine::Vec3 distance = targetPosition - currentPosition;
+			
+			if(Engine::Magnitude(distance) > 0.1f)
+				transform.Position += Engine::Normalize(distance) * unit.Speed * deltaTime;
+		});
 	}
+	std::string GetName() const override { return "UnitMoveSystem"; }
+};
+
+class UnitAttackSystem : public Engine::System
+{
+public:
+	UnitAttackSystem(Engine::Scene* scene) : Engine::System(scene) {}
+
+	void Execute(float deltaTime) override
+	{
+		using namespace Engine::Components;
+
+		auto view = m_Scene->GetView<Unit, Transform>();
+		view.each([this, deltaTime](const entt::entity& entity, Unit& unit, Transform& transform) {
+
+			Engine::Vec3 targetPosition = unit.Target.GetComponent<Transform>().Position;
+			Engine::Vec3 distance = targetPosition - transform.Position;
+
+			// Check if we are close enough to attack
+			if (Engine::Magnitude(distance) > 1.0f)
+				return;
+
+			
+			Tower& targetTower = unit.Target.GetComponent<Tower>();
+			if (targetTower.Faction == unit.Faction) 
+			{
+				// Reinforcing own tower
+				TowerBattleLayer::ChangeTowerUnits(unit.Target, +1);
+			} 
+			else if (targetTower.Units == 0)
+			{ 
+				// Capturing tower
+				targetTower.Faction = unit.Faction;
+				TowerBattleLayer::ChangeTowerUnits(unit.Target, +1);
+			} 
+			else 
+			{
+				// Damage tower
+				TowerBattleLayer::ChangeTowerUnits(unit.Target, -1);
+			}
+
+			m_Scene->DestroyEntity(Engine::Entity(entity, m_Scene));
+			
+			ENG_TRACE("Unit reached target (Unit Faction: {1}, Target Faction: {2})", unit.Faction, targetTower.Faction);
+		});
+	}
+	std::string GetName() const override { return "UnitAttackSystem"; }
+};
+
+class TowerViewSystem : public Engine::System
+{
+public:
+	TowerViewSystem(Engine::Scene* scene) : Engine::System(scene) {}
+
+	void Execute(float deltaTime) override
+	{
+		using namespace Engine::Components;
+
+		auto view = m_Scene->GetView<Tower, Renderable2D, UpdateView>();
+		view.each([this, deltaTime](const entt::entity& entity, Tower& tower, Renderable2D& renderable, UpdateView& updateView) {
+			size_t startIndex = renderable.MeshID.find_last_of('/') + 1;
+			renderable.MeshID.replace(startIndex, renderable.MeshID.length() - startIndex, std::to_string(tower.Units));
+			renderable.SpriteID = GetFactionSpriteID(tower.Faction, tower.Selected);
+			Engine::Entity(entity, m_Scene).RemoveComponent<UpdateView>();
+		});
+	}
+
+	std::string GetName() const override { return "TowerViewSystem"; }
+};
+
+class TowerProductionSystem : public Engine::System
+{
+public:
+	TowerProductionSystem(Engine::Scene* scene) : Engine::System(scene) {}
+
+	void Execute(float deltaTime) override
+	{
+		using namespace Engine::Components;
+
+		auto view = m_Scene->GetView<Tower>();
+		view.each([this, deltaTime](const entt::entity& entity, Tower& tower) {
+			if (tower.Units >= tower.MaxUnits || tower.Faction == Faction::None)
+				return;
+
+			tower.NextProductionTime -= deltaTime;
+			if (tower.NextProductionTime <= 0) {
+				tower.NextProductionTime += tower.ProductionIntervall;
+				TowerBattleLayer::ChangeTowerUnits(Engine::Entity(entity, m_Scene), +1);
+
+				ENG_TRACE("Faction {0} got one unit. Currently {1}/{2}", tower.Faction, tower.Units, tower.MaxUnits);
+			}
+		});
+	}
+
+	std::string GetName() const override { return "TowerProductionSystem"; }
 };
 
 TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
@@ -101,11 +211,20 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 		Engine::AssetRegistry::Add(Engine::FormatString("mesh/quad/{}", i), new Engine::Mesh(meshData));
 	}
 
+	Engine::AssetRegistry::Add("sprite/unit/blue", new Engine::Sprite("shader/sprite", "res/sprite/Unit_Blue.png"));
+	Engine::AssetRegistry::Add("sprite/unit/red", new Engine::Sprite("shader/sprite", "res/sprite/Unit_Red.png"));
+	Engine::AssetRegistry::Add("mesh/quad/unit", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
+
 	CreateCamera();
 
 	CreateTower({ 100.0f, 0.0f, 0.0f }, Faction::None);
 	CreateTower({ 200.0f, 50.0f, 0.0f }, Faction::Red);
 	CreateTower({ -50.0f, 75.0f, 0.0f }, Faction::Blue);
+
+	m_Scene.AddSystem<UnitMoveSystem>();
+	m_Scene.AddSystem<UnitAttackSystem>();
+	m_Scene.AddSystem<TowerViewSystem>();
+	m_Scene.AddSystem<TowerProductionSystem>();
 }
 
 TowerBattleLayer::~TowerBattleLayer()
@@ -114,14 +233,13 @@ TowerBattleLayer::~TowerBattleLayer()
 
 void TowerBattleLayer::OnUpdate(float deltaTime)
 {
+	// TODO evaluate victory condition on capture
 	int redTowerCount = 0;
 	auto towerView = m_Scene.GetView<Tower, Engine::Components::Renderable2D>();
-	towerView.each([this, &deltaTime, &redTowerCount](Tower& tower, Engine::Components::Renderable2D& renderable)
+	towerView.each([this, &deltaTime, &redTowerCount](const entt::entity& entity, Tower& tower, Engine::Components::Renderable2D& renderable)
 		{ 
 			if (tower.Faction == Faction::Red)
 				redTowerCount++;
-
-			this->UpdateTower(tower, renderable, deltaTime); 
 		}
 	);
 
@@ -176,47 +294,62 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 		ENG_TRACE("Selected {0}", towerEntity);
 		m_SourceTower = towerEntity;
 
-		if(tower.Faction == Faction::Blue)
-			renderable.SpriteID = GetFactionSpriteID(tower.Faction, true);
+		if (tower.Faction == Faction::Blue) 
+		{
+			tower.Selected = true;
+			if(!towerEntity.HasComponent<UpdateView>())
+				towerEntity.AddComponent<UpdateView>();
+		}
 	} else {
 		if (m_SourceTower == towerEntity) {
 			ENG_TRACE("Deselected {0}", towerEntity);
 			m_SourceTower = Engine::Entity();
 
 			if (tower.Faction == Faction::Blue)
-				renderable.SpriteID = GetFactionSpriteID(tower.Faction, false);
+			{
+				tower.Selected = false;
+				if (!towerEntity.HasComponent<UpdateView>())
+					towerEntity.AddComponent<UpdateView>();
+			}
 		}
 		else {
 			Attack(m_SourceTower, towerEntity);
+			m_SourceTower.GetComponent<Tower>().Selected = false;
+			if (!m_SourceTower.HasComponent<UpdateView>())
+				m_SourceTower.AddComponent<UpdateView>();
+			
 			m_SourceTower = Engine::Entity();
 		}
 	}
 }
 
-void TowerBattleLayer::UpdateTower(Tower& tower, Engine::Components::Renderable2D& renderable, float deltaTime)
+static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::Entity targetTower, size_t index)
 {
-	if (tower.Units >= tower.MaxUnits || tower.Faction == Faction::None) {
-		return;
-	}
+	using namespace Engine::Components;
 
-	tower.NextProductionTime -= deltaTime;
-	if (tower.NextProductionTime <= 0 ) {
-		tower.NextProductionTime += tower.ProductionIntervall;
-		tower.Units += 1;
+	Faction faction = sourceTower.GetComponent<Tower>().Faction;
+	
+	// Choose position at random point on circle around source tower
+	Engine::Vec3 towerPosition = sourceTower.GetComponent<Transform>().Position;
+	float angle = Engine::DegToRad(10.0f * index);
+	float radius = 50.0f;
+	Engine::Vec3 position = towerPosition + Engine::Vec3(std::cos(angle), std::sin(angle), 0.0f) * radius;
 
-		UpdateTowerSprite(renderable, tower.Units);
-
-		ENG_TRACE("Faction {0} got one unit. Currently {1}/{2}", tower.Faction, tower.Units, tower.MaxUnits);
-	}
+	Engine::Entity unit = scene.CreateEntity();
+	unit.AddComponent<Transform>(
+		position,
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
+		);
+	unit.AddComponent<Unit>(faction, targetTower);
+	unit.AddComponent<Renderable2D>(GetUnitSpriteID(faction), "mesh/quad/unit");
+	unit.AddComponent<QuadCollider>(
+		Engine::Vec2{ position.x, position.y },
+		50.0f, // width
+		100.0f // height
+		);
 }
 
-void TowerBattleLayer::UpdateTowerSprite(Engine::Components::Renderable2D& renderable, int units)
-{
-	size_t startIndex = renderable.MeshID.find_last_of('/') + 1;
-	renderable.MeshID.replace(startIndex, renderable.MeshID.length() - startIndex, std::to_string(units));
-}
-
-// TODO add visualization of attack
 void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 {
 	ENG_TRACE("Attack from {0} to {1}", source, target);
@@ -227,29 +360,19 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 
 	// take units from source tower
 	unsigned int units = std::min(srcTower.Units, (unsigned int)5);
-	srcTower.Units -= units;
-	UpdateTowerSprite(srcRenderable, srcTower.Units);
+	ChangeTowerUnits(source, -units);
 	ENG_TRACE("{0} units move from source (Faction: {1}, Units: {2})", units, srcTower.Faction, srcTower.Units);
 
-	auto& targetTower = target.GetComponent<Tower>();
-	auto& targetRenderable = target.GetComponent<Engine::Components::Renderable2D>();
-	if (targetTower.Faction == srcTower.Faction) {
-		// Add to target if same faction
-		targetTower.Units += units;
-	} else {
-		int diff = (int)targetTower.Units - (int)units;
-		if (diff >= 0) {
-			targetTower.Units -= units;
-		} else {
-			// tower conquered
-			targetTower.Faction = srcTower.Faction;
-			targetTower.Units = (unsigned int)(-1 * diff);
-			targetRenderable.SpriteID = GetFactionSpriteID(targetTower.Faction, false);
-		}
-	}
-	UpdateTowerSprite(targetRenderable, targetTower.Units);
+	for (size_t i=0; i<units; i++)
+		SpawnUnit(m_Scene, source, target, i);
+}
 
-	ENG_TRACE("{0} units reached target (Faction: {1}, Units {2})", units, targetTower.Faction, targetTower.Units);
+void TowerBattleLayer::ChangeTowerUnits(Engine::Entity towerEntity, int unitDelta)
+{
+	Tower& tower = towerEntity.GetComponent<Tower>();
+	tower.Units += unitDelta;
+	if(!towerEntity.HasComponent<UpdateView>())
+		towerEntity.AddComponent<UpdateView>();
 }
 
 Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction faction)
