@@ -24,6 +24,12 @@ namespace Engine
 		Entity CreateEntity();
 
 		/// <summary>
+		/// Destroys given entity and removes it from the scene.
+		/// </summary>
+		/// <param name="entity"></param>
+		void DestroyEntity(const Entity& entity);
+
+		/// <summary>
 		/// Adds a system to the scene.
 		/// </summary>
 		/// <typeparam name="System"></typeparam>
@@ -53,6 +59,12 @@ namespace Engine
 		entt::basic_view<entt::entity, entt::exclude_t<>, Component...> GetView() {
 			return m_Registry.view<Component...>();
 		}
+
+		/// <summary>
+		/// Returns cound of (alive) entities in this scene.
+		/// </summary>
+		/// <returns></returns>
+		size_t GetEntityCount() const;
 
 	private:
 		entt::registry m_Registry;

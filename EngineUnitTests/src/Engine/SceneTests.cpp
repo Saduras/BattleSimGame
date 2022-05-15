@@ -42,6 +42,16 @@ namespace SceneTests
 			Engine::Entity entity = scene->CreateEntity();
 
 			Assert::IsFalse(entity.IsNull());
+			Assert::IsTrue(scene->GetEntityCount() == 1);
+		}
+
+		TEST_METHOD(DestroyEntityTest)
+		{
+			Engine::Scene* scene = new Engine::Scene();
+			Engine::Entity entity = scene->CreateEntity();
+			scene->DestroyEntity(entity);
+
+			Assert::IsTrue(scene->GetEntityCount() == 0);
 		}
 
 		TEST_METHOD(AddSystemTest)

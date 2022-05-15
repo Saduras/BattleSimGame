@@ -15,6 +15,11 @@ namespace Engine
 		return { m_Registry.create(), this };
 	}
 
+	void Scene::DestroyEntity(const Entity& entity)
+	{
+		m_Registry.destroy(entity);
+	}
+
 	void Scene::Update(float deltaTime)
 	{
 		for (auto system : m_Systems)
@@ -28,4 +33,10 @@ namespace Engine
 			[](const System* system) { return system->GetName(); });
 		return names;;
 	}
+
+	size_t Scene::GetEntityCount() const
+	{
+		return m_Registry.alive();
+	}
+
 }
