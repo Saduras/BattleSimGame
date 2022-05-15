@@ -12,6 +12,8 @@ namespace Engine
 	using Vec4 = glm::vec4;
 	using Mat4 = glm::mat4;
 
+	ALIAS_TEMPLATE_FUNCTION(Magnitude, glm::length);
+	ALIAS_TEMPLATE_FUNCTION(Normalize, glm::normalize);
 	ALIAS_TEMPLATE_FUNCTION(Translate, glm::translate);
 	ALIAS_TEMPLATE_FUNCTION(Rotate, glm::rotate);
 	ALIAS_TEMPLATE_FUNCTION(Scale, glm::scale);
