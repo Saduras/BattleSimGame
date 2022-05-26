@@ -60,8 +60,11 @@ public:
 	bool OnMouseButtonPressed(Engine::MouseButtonPressedEvent& event);
 	void OnTowerClick(Engine::Entity tower);
 	void Attack(Engine::Entity source, Engine::Entity target);
+	static void CheckVictoryCondition(Engine::Scene* scene);
 	static void ChangeTowerUnits(Engine::Entity towerEntity, int unitDelta);
 private:
+	static bool m_GameRunning;
+
 	Engine::Scene& m_Scene;
 	Engine::Entity m_SourceTower;
 

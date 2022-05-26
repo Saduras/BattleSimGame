@@ -97,6 +97,7 @@ public:
 				// Capturing tower
 				targetTower.Faction = unit.Faction;
 				TowerBattleLayer::ChangeTowerUnits(unit.Target, +1);
+				TowerBattleLayer::CheckVictoryCondition(m_Scene);
 			} 
 			else 
 			{
@@ -159,6 +160,8 @@ public:
 
 	std::string GetName() const override { return "TowerProductionSystem"; }
 };
+
+bool TowerBattleLayer::m_GameRunning = false;
 
 TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 	: Layer("TowerBattle"), m_Scene(scene)
@@ -225,6 +228,8 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 	m_Scene.AddSystem<UnitAttackSystem>();
 	m_Scene.AddSystem<TowerViewSystem>();
 	m_Scene.AddSystem<TowerProductionSystem>();
+
+	m_GameRunning = true;
 }
 
 TowerBattleLayer::~TowerBattleLayer()
@@ -233,18 +238,8 @@ TowerBattleLayer::~TowerBattleLayer()
 
 void TowerBattleLayer::OnUpdate(float deltaTime)
 {
-	// TODO evaluate victory condition on capture
-	int redTowerCount = 0;
-	auto towerView = m_Scene.GetView<Tower, Engine::Components::Renderable2D>();
-	towerView.each([this, &deltaTime, &redTowerCount](const entt::entity& entity, Tower& tower, Engine::Components::Renderable2D& renderable)
-		{ 
-			if (tower.Faction == Faction::Red)
-				redTowerCount++;
-		}
-	);
-
-	if (redTowerCount == 0)
-		ENG_TRACE("Game Over! Player Wins!");
+	if (!m_GameRunning)
+		return;
 
 	m_Scene.Update(deltaTime);
 }
@@ -347,7 +342,7 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 		Engine::Vec2{ position.x, position.y },
 		50.0f, // width
 		100.0f // height
-		);
+	);
 }
 
 void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
@@ -359,12 +354,37 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 	srcRenderable.SpriteID = GetFactionSpriteID(srcTower.Faction, false);
 
 	// take units from source tower
-	unsigned int units = std::min(srcTower.Units, (unsigned int)5);
+	int units = std::min((int)srcTower.Units, 5);
 	ChangeTowerUnits(source, -units);
 	ENG_TRACE("{0} units move from source (Faction: {1}, Units: {2})", units, srcTower.Faction, srcTower.Units);
 
 	for (size_t i=0; i<units; i++)
 		SpawnUnit(m_Scene, source, target, i);
+}
+
+void TowerBattleLayer::CheckVictoryCondition(Engine::Scene* scene)
+{
+	int redTowerCount = 0;
+	int blueTowerCount = 0;
+	auto towerView = scene->GetView<Tower>();
+	towerView.each([&redTowerCount, &blueTowerCount](const entt::entity& entity, Tower& tower)
+		{
+			if (tower.Faction == Faction::Red)
+				redTowerCount++;
+			else if (tower.Faction == Faction::Blue)
+				blueTowerCount++;
+		}
+	);
+
+	if (blueTowerCount == 0) {
+		ENG_TRACE("Defeated!");
+		m_GameRunning = false;
+	}
+	else if (redTowerCount == 0)
+	{
+		ENG_TRACE("Victory!");
+		m_GameRunning = false;
+	}
 }
 
 void TowerBattleLayer::ChangeTowerUnits(Engine::Entity towerEntity, int unitDelta)
