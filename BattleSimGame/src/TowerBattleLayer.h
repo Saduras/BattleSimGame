@@ -15,6 +15,7 @@ struct Tower
 	float ProductionIntervall = 1.0f;
 	float NextProductionTime = 0.0f;
 	bool Selected = false;
+	bool ViewUpdateRequested = false;
 };
 
 struct Unit
@@ -40,12 +41,6 @@ struct QuadCollider
 		return left <= position.x && position.x <= right
 			&& bottom <= position.y && position.y <= top;
 	}
-};
-
-struct UpdateView
-{
-	// TODO how to do marker components without members?
-	bool IsSet = true;
 };
 
 class TowerBattleLayer : public Engine::Layer

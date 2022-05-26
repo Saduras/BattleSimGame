@@ -122,13 +122,18 @@ public:
 	{
 		using namespace Engine::Components;
 
-		auto view = m_Scene->GetView<Tower, Renderable2D, UpdateView>();
-		view.each([this, deltaTime](const entt::entity& entity, Tower& tower, Renderable2D& renderable, UpdateView& updateView) {
-			size_t startIndex = renderable.MeshID.find_last_of('/') + 1;
-			renderable.MeshID.replace(startIndex, renderable.MeshID.length() - startIndex, std::to_string(tower.Units));
-			renderable.SpriteID = GetFactionSpriteID(tower.Faction, tower.Selected);
-			Engine::Entity(entity, m_Scene).RemoveComponent<UpdateView>();
-		});
+		auto view = m_Scene->GetView<Tower, Renderable2D>();
+		view.each([this, deltaTime](const entt::entity& entity, Tower& tower, Renderable2D& renderable) 
+			{
+				if (!tower.ViewUpdateRequested)
+					return;
+
+				size_t startIndex = renderable.MeshID.find_last_of('/') + 1;
+				renderable.MeshID.replace(startIndex, renderable.MeshID.length() - startIndex, std::to_string(tower.Units));
+				renderable.SpriteID = GetFactionSpriteID(tower.Faction, tower.Selected);
+				tower.ViewUpdateRequested = false;
+			}
+		);
 	}
 
 	std::string GetName() const override { return "TowerViewSystem"; }
@@ -282,8 +287,8 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 {
 	using namespace Engine::Components;
 
-	auto& renderable = towerEntity.GetComponent<Renderable2D>();
-	auto& tower = towerEntity.GetComponent<Tower>();
+	Renderable2D& renderable = towerEntity.GetComponent<Renderable2D>();
+	Tower& tower = towerEntity.GetComponent<Tower>();
 
 	if (m_SourceTower.IsNull()) {
 		ENG_TRACE("Selected {0}", towerEntity);
@@ -292,8 +297,7 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 		if (tower.Faction == Faction::Blue) 
 		{
 			tower.Selected = true;
-			if(!towerEntity.HasComponent<UpdateView>())
-				towerEntity.AddComponent<UpdateView>();
+			tower.ViewUpdateRequested = true;
 		}
 	} else {
 		if (m_SourceTower == towerEntity) {
@@ -303,15 +307,15 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 			if (tower.Faction == Faction::Blue)
 			{
 				tower.Selected = false;
-				if (!towerEntity.HasComponent<UpdateView>())
-					towerEntity.AddComponent<UpdateView>();
+				tower.ViewUpdateRequested = true;
 			}
 		}
 		else {
 			Attack(m_SourceTower, towerEntity);
-			m_SourceTower.GetComponent<Tower>().Selected = false;
-			if (!m_SourceTower.HasComponent<UpdateView>())
-				m_SourceTower.AddComponent<UpdateView>();
+
+			Tower& src_tower_comp = m_SourceTower.GetComponent<Tower>();
+			src_tower_comp.Selected = false;
+			src_tower_comp.ViewUpdateRequested = true;
 			
 			m_SourceTower = Engine::Entity();
 		}
@@ -391,8 +395,7 @@ void TowerBattleLayer::ChangeTowerUnits(Engine::Entity towerEntity, int unitDelt
 {
 	Tower& tower = towerEntity.GetComponent<Tower>();
 	tower.Units += unitDelta;
-	if(!towerEntity.HasComponent<UpdateView>())
-		towerEntity.AddComponent<UpdateView>();
+	tower.ViewUpdateRequested = true;
 }
 
 Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction faction)
