@@ -4,6 +4,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 namespace Engine
 {
@@ -20,4 +21,7 @@ namespace Engine
 	ALIAS_TEMPLATE_FUNCTION(DegToRad, glm::radians);
 	ALIAS_TEMPLATE_FUNCTION(Ortho, glm::ortho);
 	ALIAS_TEMPLATE_FUNCTION(Inverse, glm::inverse);
+	ALIAS_TEMPLATE_FUNCTION(RotateX, glm::rotateX)
+	ALIAS_TEMPLATE_FUNCTION(RotateY, glm::rotateY)
+	ALIAS_TEMPLATE_FUNCTION(RotateZ, glm::rotateZ)
 }

@@ -309,9 +309,13 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 	
 	// Choose position at random point on circle around source tower
 	Engine::Vec3 towerPosition = sourceTower.GetComponent<Transform>().Position;
-	float angle = Engine::DegToRad(10.0f * index);
-	float radius = 50.0f;
-	Engine::Vec3 position = towerPosition + Engine::Vec3(std::cos(angle), std::sin(angle), 0.0f) * radius;
+	Engine::Vec3 targetPosition = targetTower.GetComponent<Transform>().Position;
+	Engine::Vec3 direction = Engine::Normalize(targetPosition - towerPosition);
+
+	float sign = index % 2 == 0 ? 1 : -1;
+	float angle = Engine::DegToRad(30.0f * index / 2 * sign);
+	float radius = 30.0f;
+	Engine::Vec3 position = towerPosition + Engine::RotateZ(direction, angle) * radius;
 
 	Engine::Entity unit = scene.CreateEntity();
 	unit.AddComponent<Transform>(
