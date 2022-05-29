@@ -46,7 +46,7 @@ struct QuadCollider
 class TowerBattleLayer : public Engine::Layer
 {
 public:
-	TowerBattleLayer(Engine::Scene& scene);
+	TowerBattleLayer(Engine::Scene* scene);
 	~TowerBattleLayer();
 
 	void OnUpdate(float deltaTime) override;
@@ -55,12 +55,12 @@ public:
 	bool OnMouseButtonPressed(Engine::MouseButtonPressedEvent& event);
 	void OnTowerClick(Engine::Entity tower);
 	void Attack(Engine::Entity source, Engine::Entity target);
-	static void CheckVictoryCondition(Engine::Scene* scene);
+	static void CheckVictoryCondition();
 	static void ChangeTowerUnits(Engine::Entity towerEntity, int unitDelta);
 private:
 	static bool m_GameRunning;
+	static Engine::Scene* m_Scene;
 
-	Engine::Scene& m_Scene;
 	Engine::Entity m_SourceTower;
 
 	Engine::Entity CreateTower(Engine::Vec3 position, Faction faction);

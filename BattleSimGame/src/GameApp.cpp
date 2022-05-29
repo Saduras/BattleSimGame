@@ -15,7 +15,7 @@ public:
 		//PushLayer(new ExampleLayer(ExampleScene::SpriteRender));
 		Engine::Scene* scene = new Engine::Scene();
 		scene->AddSystem<Engine::Systems::Render2DSystem>();
-		PushLayer(new TowerBattleLayer(*scene));
+		PushLayer(new TowerBattleLayer(scene));
 		//PushOverlay(new Engine::ImGuiLayer());
 	}
 

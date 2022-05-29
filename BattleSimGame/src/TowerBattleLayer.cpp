@@ -43,134 +43,84 @@ static std::string GetFactionSpritePath(Faction faction)
 	return "";
 }
 
-class UnitMoveSystem : public Engine::System
+static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
 {
-public:
-	UnitMoveSystem(Engine::Scene* scene) : Engine::System(scene) {}
+	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
+	Engine::Vec3 currentPosition = transform.Position;
+	Engine::Vec3 distance = targetPosition - currentPosition;
 
-	void Execute(float deltaTime) override
+	if (Engine::Magnitude(distance) > 0.1f)
+		transform.Position += Engine::Normalize(distance) * unit.Speed * deltaTime;
+}
+
+static void UnitAttackSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
+{
+	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
+	Engine::Vec3 distance = targetPosition - transform.Position;
+
+	// Check if we are close enough to attack
+	if (Engine::Magnitude(distance) > 1.0f)
+		return;
+
+
+	Tower& targetTower = unit.Target.GetComponent<Tower>();
+	if (targetTower.Faction == unit.Faction)
 	{
-		using namespace Engine::Components;
-
-		auto view = m_Scene->GetView<Unit, Transform>();
-		view.each([deltaTime](Unit& unit, Transform& transform) {
-
-			Engine::Vec3 targetPosition = unit.Target.GetComponent<Transform>().Position;
-			Engine::Vec3 currentPosition = transform.Position;
-			Engine::Vec3 distance = targetPosition - currentPosition;
-			
-			if(Engine::Magnitude(distance) > 0.1f)
-				transform.Position += Engine::Normalize(distance) * unit.Speed * deltaTime;
-		});
+		// Reinforcing own tower
+		TowerBattleLayer::ChangeTowerUnits(unit.Target, +1);
 	}
-	std::string GetName() const override { return "UnitMoveSystem"; }
-};
-
-class UnitAttackSystem : public Engine::System
-{
-public:
-	UnitAttackSystem(Engine::Scene* scene) : Engine::System(scene) {}
-
-	void Execute(float deltaTime) override
+	else if (targetTower.Units == 0)
 	{
-		using namespace Engine::Components;
-
-		auto view = m_Scene->GetView<Unit, Transform>();
-		view.each([this, deltaTime](const entt::entity& entity, Unit& unit, Transform& transform) {
-
-			Engine::Vec3 targetPosition = unit.Target.GetComponent<Transform>().Position;
-			Engine::Vec3 distance = targetPosition - transform.Position;
-
-			// Check if we are close enough to attack
-			if (Engine::Magnitude(distance) > 1.0f)
-				return;
-
-			
-			Tower& targetTower = unit.Target.GetComponent<Tower>();
-			if (targetTower.Faction == unit.Faction) 
-			{
-				// Reinforcing own tower
-				TowerBattleLayer::ChangeTowerUnits(unit.Target, +1);
-			} 
-			else if (targetTower.Units == 0)
-			{ 
-				// Capturing tower
-				targetTower.Faction = unit.Faction;
-				TowerBattleLayer::ChangeTowerUnits(unit.Target, +1);
-				TowerBattleLayer::CheckVictoryCondition(m_Scene);
-			} 
-			else 
-			{
-				// Damage tower
-				TowerBattleLayer::ChangeTowerUnits(unit.Target, -1);
-			}
-
-			m_Scene->DestroyEntity(Engine::Entity(entity, m_Scene));
-			
-			ENG_TRACE("Unit reached target (Unit Faction: {1}, Target Faction: {2})", unit.Faction, targetTower.Faction);
-		});
+		// Capturing tower
+		targetTower.Faction = unit.Faction;
+		TowerBattleLayer::ChangeTowerUnits(unit.Target, +1);
+		TowerBattleLayer::CheckVictoryCondition();
 	}
-	std::string GetName() const override { return "UnitAttackSystem"; }
-};
-
-class TowerViewSystem : public Engine::System
-{
-public:
-	TowerViewSystem(Engine::Scene* scene) : Engine::System(scene) {}
-
-	void Execute(float deltaTime) override
+	else
 	{
-		using namespace Engine::Components;
-
-		auto view = m_Scene->GetView<Tower, Renderable2D>();
-		view.each([this, deltaTime](const entt::entity& entity, Tower& tower, Renderable2D& renderable) 
-			{
-				if (!tower.ViewUpdateRequested)
-					return;
-
-				size_t startIndex = renderable.MeshID.find_last_of('/') + 1;
-				renderable.MeshID.replace(startIndex, renderable.MeshID.length() - startIndex, std::to_string(tower.Units));
-				renderable.SpriteID = GetFactionSpriteID(tower.Faction, tower.Selected);
-				tower.ViewUpdateRequested = false;
-			}
-		);
+		// Damage tower
+		TowerBattleLayer::ChangeTowerUnits(unit.Target, -1);
 	}
 
-	std::string GetName() const override { return "TowerViewSystem"; }
-};
+	entity.Destroy();
 
-class TowerProductionSystem : public Engine::System
+	ENG_TRACE("Unit reached target (Unit Faction: {1}, Target Faction: {2})", unit.Faction, targetTower.Faction);
+}
+
+static void TowerViewSystem(float deltaTime, Engine::Entity entity, Tower& tower, Engine::Components::Renderable2D& renderable)
 {
-public:
-	TowerProductionSystem(Engine::Scene* scene) : Engine::System(scene) {}
+	if (!tower.ViewUpdateRequested)
+		return;
 
-	void Execute(float deltaTime) override
-	{
-		using namespace Engine::Components;
+	size_t startIndex = renderable.MeshID.find_last_of('/') + 1;
+	renderable.MeshID.replace(startIndex, renderable.MeshID.length() - startIndex, std::to_string(tower.Units));
+	renderable.SpriteID = GetFactionSpriteID(tower.Faction, tower.Selected);
+	tower.ViewUpdateRequested = false;
+}
 
-		auto view = m_Scene->GetView<Tower>();
-		view.each([this, deltaTime](const entt::entity& entity, Tower& tower) {
-			if (tower.Units >= tower.MaxUnits || tower.Faction == Faction::None)
-				return;
 
-			tower.NextProductionTime -= deltaTime;
-			if (tower.NextProductionTime <= 0) {
-				tower.NextProductionTime += tower.ProductionIntervall;
-				TowerBattleLayer::ChangeTowerUnits(Engine::Entity(entity, m_Scene), +1);
+static void TowerProductionSystem(float deltaTime, Engine::Entity entity, Tower& tower)
+{
+	if (tower.Units >= tower.MaxUnits || tower.Faction == Faction::None)
+		return;
 
-				ENG_TRACE("Faction {0} got one unit. Currently {1}/{2}", tower.Faction, tower.Units, tower.MaxUnits);
-			}
-		});
+	tower.NextProductionTime -= deltaTime;
+	if (tower.NextProductionTime <= 0) {
+		tower.NextProductionTime += tower.ProductionIntervall;
+		TowerBattleLayer::ChangeTowerUnits(entity, +1);
+
+		ENG_TRACE("Faction {0} got one unit. Currently {1}/{2}", tower.Faction, tower.Units, tower.MaxUnits);
 	}
-
-	std::string GetName() const override { return "TowerProductionSystem"; }
-};
+}
 
 bool TowerBattleLayer::m_GameRunning = false;
+Engine::Scene* TowerBattleLayer::m_Scene = nullptr;
 
-TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
-	: Layer("TowerBattle"), m_Scene(scene)
+TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
+	: Layer("TowerBattle")
 {
+	m_Scene = scene;
+
 	// Prepare assets
 	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
 
@@ -229,11 +179,6 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene& scene)
 	CreateTower({ 200.0f, 50.0f, 0.0f }, Faction::Red);
 	CreateTower({ -50.0f, 75.0f, 0.0f }, Faction::Blue);
 
-	m_Scene.AddSystem<UnitMoveSystem>();
-	m_Scene.AddSystem<UnitAttackSystem>();
-	m_Scene.AddSystem<TowerViewSystem>();
-	m_Scene.AddSystem<TowerProductionSystem>();
-
 	m_GameRunning = true;
 }
 
@@ -246,7 +191,11 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	if (!m_GameRunning)
 		return;
 
-	m_Scene.Update(deltaTime);
+	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitMoveSystem);
+	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitAttackSystem);
+	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
+	m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
+	m_Scene->Update(deltaTime);
 }
 
 void TowerBattleLayer::OnEvent(Engine::Event& event)
@@ -263,7 +212,7 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 		float x = Engine::Input::GetMouseX();
 		float y = Engine::Input::GetMouseY();
 		
-		auto cameras = m_Scene.GetView<OrthographicCamera>();
+		auto cameras = m_Scene->GetView<OrthographicCamera>();
 		cameras.each([x, y, this](OrthographicCamera& camera) {
 			// Translate screen position to world position
 			float screenWidth = (float)Engine::Application::Get().GetWindow().GetWidth();
@@ -271,10 +220,10 @@ bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& eve
 			Engine::Vec4 worldPos = Camera::ScreenToWorld(camera, { x, y }, screenWidth, screenHeight);
 
 			// Check collision
-			m_Scene.GetView<QuadCollider, Tower, Renderable2D>().each([&worldPos, this](const entt::entity entityID, auto& collider, auto& tower, auto& renderable) {
+			m_Scene->GetView<QuadCollider, Tower, Renderable2D>().each([&worldPos, this](const entt::entity entityID, auto& collider, auto& tower, auto& renderable) {
 				ENG_TRACE("Hit {0}", collider.IsInside({ worldPos.x, worldPos.y }));
 				if (collider.IsInside({ worldPos.x, worldPos.y })) {
-					this->OnTowerClick({ entityID, &m_Scene });
+					this->OnTowerClick({ entityID, m_Scene });
 				}
 			});
 		});
@@ -363,14 +312,14 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 	ENG_TRACE("{0} units move from source (Faction: {1}, Units: {2})", units, srcTower.Faction, srcTower.Units);
 
 	for (size_t i=0; i<units; i++)
-		SpawnUnit(m_Scene, source, target, i);
+		SpawnUnit(*m_Scene, source, target, i);
 }
 
-void TowerBattleLayer::CheckVictoryCondition(Engine::Scene* scene)
+void TowerBattleLayer::CheckVictoryCondition()
 {
 	int redTowerCount = 0;
 	int blueTowerCount = 0;
-	auto towerView = scene->GetView<Tower>();
+	auto towerView = m_Scene->GetView<Tower>();
 	towerView.each([&redTowerCount, &blueTowerCount](const entt::entity& entity, Tower& tower)
 		{
 			if (tower.Faction == Faction::Red)
@@ -402,7 +351,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 {
 	using namespace Engine::Components;
 	
-	auto tower = m_Scene.CreateEntity();
+	auto tower = m_Scene->CreateEntity();
 	tower.AddComponent<Transform>(
 		position,
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
@@ -421,7 +370,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 
 Engine::Entity TowerBattleLayer::CreateCamera()
 {
-	auto camera = m_Scene.CreateEntity();
+	auto camera = m_Scene->CreateEntity();
 	camera.AddComponent<Engine::Components::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
