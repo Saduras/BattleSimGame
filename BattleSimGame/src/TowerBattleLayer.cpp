@@ -317,11 +317,13 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 	float radius = 30.0f;
 	Engine::Vec3 position = towerPosition + Engine::RotateZ(direction, angle) * radius;
 
+	float faceDirection = direction.x != 0.0f ? Engine::Sign(direction.x) : 1.0f;
+
 	Engine::Entity unit = scene.CreateEntity();
 	unit.AddComponent<Transform>(
 		position,
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
-		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
+		Engine::Vec3(faceDirection * 100.0f, 100.0f, 1.0f)  // scale
 		);
 	unit.AddComponent<Unit>(faction, targetTower);
 	unit.AddComponent<Renderable2D>(GetUnitSpriteID(faction), "mesh/quad/unit");
