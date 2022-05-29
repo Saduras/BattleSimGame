@@ -312,7 +312,7 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 	Engine::Vec3 targetPosition = targetTower.GetComponent<Transform>().Position;
 	Engine::Vec3 direction = Engine::Normalize(targetPosition - towerPosition);
 
-	float sign = index % 2 == 0 ? 1 : -1;
+	int sign = index % 2 == 0 ? 1 : -1;
 	float angle = Engine::DegToRad(30.0f * index / 2 * sign);
 	float radius = 30.0f;
 	Engine::Vec3 position = towerPosition + Engine::RotateZ(direction, angle) * radius;
