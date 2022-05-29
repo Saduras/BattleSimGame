@@ -87,5 +87,33 @@ namespace EntityTests
 
 			Assert::IsFalse(entity.IsNull());
 		}
+
+		TEST_METHOD(IsValidTest)
+		{
+			Scene scene;
+			Entity entity = { entt::null, &scene };
+
+			Assert::IsFalse(entity.IsValid());
+
+			entity = { (entt::entity)1, nullptr };
+
+			Assert::IsFalse(entity.IsValid());
+
+			entity = scene.CreateEntity();
+
+			Assert::IsTrue(entity.IsValid());
+		}
+
+		TEST_METHOD(DestoryTest)
+		{
+			Scene scene;
+			Entity entity = scene.CreateEntity();
+
+			Assert::IsTrue(entity.IsValid());
+
+			entity.Destroy();
+
+			Assert::IsFalse(entity.IsValid());
+		}
 	};
 }

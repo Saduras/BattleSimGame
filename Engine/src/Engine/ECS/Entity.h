@@ -60,10 +60,16 @@ namespace Engine {
 		}
 
 		/// <summary>
-		/// Checks if this entity is valid.
+		/// Checks if this entity is not null.
 		/// </summary>
 		/// <returns>True if the entity is invalid.</returns>
 		inline bool IsNull() { return m_EntityID == entt::null || m_ContextScene == nullptr; }
+
+		/// <summary>
+		/// Check if the entity is valid (not null and not destroyed).
+		/// </summary>
+		/// <returns></returns>
+		inline bool IsValid() { return m_ContextScene != nullptr && m_ContextScene->m_Registry.valid(*this); }
 
 		/// <summary>
 		/// Destroys this entity and removes it from the scene.
