@@ -25,6 +25,12 @@ struct Unit
 	float Speed = 20.0f;
 };
 
+struct AIStrategist
+{
+	Faction Faction = Faction::None;
+	float TimeUntilAction = 0.0f;
+};
+
 struct QuadCollider
 {
 	Engine::Vec2 Center;
@@ -54,9 +60,12 @@ public:
 
 	bool OnMouseButtonPressed(Engine::MouseButtonPressedEvent& event);
 	void OnTowerClick(Engine::Entity tower);
-	void Attack(Engine::Entity source, Engine::Entity target);
+	static void Attack(Engine::Entity source, Engine::Entity target);
+
 	static void CheckVictoryCondition();
 	static void ChangeTowerUnits(Engine::Entity towerEntity, int unitDelta);
+
+	static Engine::Scene* GetScene() { return m_Scene; };
 private:
 	static bool m_GameRunning;
 	static Engine::Scene* m_Scene;
@@ -64,6 +73,7 @@ private:
 	Engine::Entity m_SourceTower;
 
 	Engine::Entity CreateTower(Engine::Vec3 position, Faction faction);
+	Engine::Entity CreateAI(Faction faction);
 	Engine::Entity CreateCamera();
 };
 

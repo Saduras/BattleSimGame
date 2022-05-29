@@ -98,7 +98,6 @@ static void TowerViewSystem(float deltaTime, Engine::Entity entity, Tower& tower
 	tower.ViewUpdateRequested = false;
 }
 
-
 static void TowerProductionSystem(float deltaTime, Engine::Entity entity, Tower& tower)
 {
 	if (tower.Units >= tower.MaxUnits || tower.Faction == Faction::None)
@@ -111,6 +110,33 @@ static void TowerProductionSystem(float deltaTime, Engine::Entity entity, Tower&
 
 		ENG_TRACE("Faction {0} got one unit. Currently {1}/{2}", tower.Faction, tower.Units, tower.MaxUnits);
 	}
+}
+
+static void AIStrategistSystem(float deltaTime, Engine::Entity entity, AIStrategist& ai)
+{
+	ai.TimeUntilAction -= deltaTime;
+
+	if (ai.TimeUntilAction > 0.0f)
+		return;
+
+	ai.TimeUntilAction = 7.0f + 2.0f * Engine::GetRandomFloat();
+
+	std::vector<Engine::Entity> own_tower_entites;
+	std::vector<Engine::Entity> other_tower_entities;
+
+	// Gather towers for each faction
+	Engine::Scene* scene = TowerBattleLayer::GetScene();
+	scene->GetView<Tower>().each([&own_tower_entites, &other_tower_entities, &ai, scene](entt::entity entity, Tower& tower) {
+		if (tower.Faction == ai.Faction)
+			own_tower_entites.push_back(Engine::Entity(entity, scene));
+		else
+			other_tower_entities.push_back(Engine::Entity(entity, scene));
+	});
+
+	int src_index = Engine::GetRandomIndex(own_tower_entites.size());
+	int target_index = Engine::GetRandomIndex(other_tower_entities.size());
+
+	TowerBattleLayer::Attack(own_tower_entites[src_index], other_tower_entities[target_index]);
 }
 
 bool TowerBattleLayer::m_GameRunning = false;
@@ -179,6 +205,9 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	CreateTower({ 200.0f, 50.0f, 0.0f }, Faction::Red);
 	CreateTower({ -50.0f, 75.0f, 0.0f }, Faction::Blue);
 
+	CreateAI(Faction::Blue);
+	CreateAI(Faction::Red);
+
 	m_GameRunning = true;
 }
 
@@ -195,6 +224,7 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitAttackSystem);
 	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
 	m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
+	m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
 	m_Scene->Update(deltaTime);
 }
 
@@ -366,6 +396,14 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	);
 	
 	return tower;
+}
+
+Engine::Entity TowerBattleLayer::CreateAI(Faction faction)
+{
+	Engine::Entity ai = m_Scene->CreateEntity();
+	ai.AddComponent<AIStrategist>(faction, 3.0f);
+
+	return ai;
 }
 
 Engine::Entity TowerBattleLayer::CreateCamera()
