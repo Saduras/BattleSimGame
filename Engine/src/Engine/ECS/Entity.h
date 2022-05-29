@@ -64,6 +64,12 @@ namespace Engine {
 		/// </summary>
 		/// <returns>True if the entity is invalid.</returns>
 		inline bool IsNull() { return m_EntityID == entt::null || m_ContextScene == nullptr; }
+
+		/// <summary>
+		/// Destroys this entity and removes it from the scene.
+		/// </summary>
+		inline void Destroy() { m_ContextScene->DestroyEntity(*this); }
+
 		operator entt::entity() const { return m_EntityID; }
 		operator uint32_t() const { return (uint32_t)m_EntityID; }
 

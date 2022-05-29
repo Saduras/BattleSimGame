@@ -28,6 +28,16 @@ namespace SceneTests
 			std::string GetName() const { return "TestSystem"; }
 		};
 
+		struct TestComponent
+		{
+			bool IsValid = false;
+		};
+
+		static void RunTestSystem(float deltaTime, Engine::Entity entity, TestComponent& component)
+		{
+			s_SystemExecuteCount++;
+		}
+
 	public:
 		TEST_METHOD(CreateSceneTest)
 		{
@@ -69,12 +79,28 @@ namespace SceneTests
 		{
 			Engine::Scene* scene = new Engine::Scene();
 			scene->AddSystem<TestSystem>();
+			s_SystemExecuteCount = 0;
 
 			scene->Update(0.1f);
 			scene->Update(0.1f);
 			scene->Update(0.1f);
 
 			Assert::AreEqual(s_SystemExecuteCount, 3);
+		}
+
+		TEST_METHOD(ExecuteSystemsFucntionTest)
+		{
+			Engine::Scene* scene = new Engine::Scene();
+			s_SystemExecuteCount = 0;
+			Engine::Entity e1 = scene->CreateEntity();
+			Engine::Entity e2 = scene->CreateEntity();
+			e1.AddComponent<TestComponent>(true);
+			e2.AddComponent<TestComponent>(true);
+			
+			scene->ExecuteSystem<TestComponent>(0.2f, RunTestSystem);
+
+			// RunTestSytem was executed once per entity with TestComponent component
+			Assert::AreEqual(s_SystemExecuteCount, 2);
 		}
 	};
 }
