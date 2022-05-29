@@ -207,8 +207,8 @@ void TowerBattleLayer::OnEvent(Engine::Event& event)
 bool TowerBattleLayer::OnMouseButtonPressed(Engine::MouseButtonPressedEvent& event)
 {
 	using namespace Engine::Components;
-	// TODO get const for left mouse button
-	if (event.GetMouseButton() == 0) {
+
+	if (event.GetMouseButton() == ENG_MOUSE_BUTTON_LEFT) {
 		float x = Engine::Input::GetMouseX();
 		float y = Engine::Input::GetMouseY();
 		
