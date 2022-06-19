@@ -14,6 +14,8 @@ namespace Engine
 		float EndY;
 	};
 
+	std::vector<TextureCoordinates> TexCoordsFromXML(const std::string& xmlPath, Vec2 textureSize);
+
 	void SetTextureCoordinatesOnMeshData(const TextureCoordinates& texCoords, MeshData& meshData, int texCoordIndex, int vertexLength);
 
 	class Sprite : public Asset
