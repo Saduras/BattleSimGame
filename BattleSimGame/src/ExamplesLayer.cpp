@@ -186,21 +186,60 @@ static void CreatePixelShaderExample(Engine::Scene* scene)
 	scene->AddSystem<Engine::Systems::Render2DSystem>();
 }
 
+static void CreateSpriteSheetExample(Engine::Scene* scene)
+{
+	// Prepare assets
+	Engine::AssetRegistry::Add("shader/sprite", new Engine::Shader("res/shader/pixel_sprite.shader"));
+
+	Engine::Sprite* spriteSheet = new Engine::Sprite("shader/sprite", "res/sprite/kenney_medievalRTS_spritesheet.png");
+	std::vector<Engine::TextureCoordinates> texCoords = Engine::TexCoordsFromXML("res/sprite/kenney_medievalRTS_spritesheet.xml", spriteSheet->GetTextureSize());
+	spriteSheet->SetTextureCoordinates(texCoords);
+	Engine::AssetRegistry::Add("sprite/sheet", spriteSheet);
+
+	int spriteIndex = 102;
+
+	Engine::MeshData meshData = Engine::Mesh::PrimitiveToMeshData(Engine::PrimitiveMesh::TextureQuad);
+	Engine::SetTextureCoordinatesOnMeshData(spriteSheet->GetTextureCoordinates(spriteIndex), meshData, 3, 5);
+	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(meshData));
+
+	// Prepare camera
+	auto camera = scene->CreateEntity();
+	camera.AddComponent<Engine::Components::Transform>(
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(1.0f, 1.0f, 1.0f)  // scale
+		);
+	camera.AddComponent<Engine::Components::OrthographicCamera>(
+		(float)-1280 / 2, // left
+		(float)1280 / 2, // right
+		(float)-720 / 2, // bottom
+		(float)720 / 2  // top
+		);
+
+	// Prepare pixel shaded sprite
+	auto tower = scene->CreateEntity();
+	tower.AddComponent<Engine::Components::Transform>(
+		Engine::Vec3(100.0f, 0.0f, 0.0f), // position
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
+		);
+	tower.AddComponent<Engine::Components::Renderable2D>("sprite/sheet", "mesh/quad");
+
+	Engine::Shader& shader = Engine::AssetRegistry::Get<Engine::Shader>("shader/sprite");
+	shader.SetProperty("u_TexelPerPixel", 5.0f); // Controls the mix between nearest neighbor and bilinear filtering
+
+	// Setup systems
+	scene->AddSystem<Engine::Systems::Render2DSystem>();
+}
+
 ExampleLayer::ExampleLayer(ExampleScene example)
 {
+	m_Scene = new Engine::Scene();
 	switch (example) {
-		case ExampleScene::QuadRender:
-			m_Scene = new Engine::Scene();
-			CreateQuadRenderExample(m_Scene);
-			break;
-		case ExampleScene::SpriteRender:
-			m_Scene = new Engine::Scene();
-			CreateSpriteRenderExample(m_Scene);
-			break;
-		case ExampleScene::PixelShader:
-			m_Scene = new Engine::Scene();
-			CreatePixelShaderExample(m_Scene);
-			break;
+		case ExampleScene::QuadRender:		CreateQuadRenderExample(m_Scene);	break;
+		case ExampleScene::SpriteRender:	CreateSpriteRenderExample(m_Scene);	break;
+		case ExampleScene::PixelShader:		CreatePixelShaderExample(m_Scene);	break;
+		case ExampleScene::SpriteSheet:		CreateSpriteSheetExample(m_Scene);	break;
 		default:
 			ENG_FATAL("Unknown example value!");
 	}

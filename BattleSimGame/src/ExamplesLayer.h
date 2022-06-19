@@ -7,6 +7,7 @@ enum class ExampleScene
 	QuadRender,
 	SpriteRender,
 	PixelShader,
+	SpriteSheet,
 };
 
 class ExampleLayer : public Engine::Layer
