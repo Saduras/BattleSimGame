@@ -5,15 +5,12 @@
 #include <Engine/Renderer/Material.h>
 #include <Engine/Renderer/Mesh.h>
 
-static std::string GetFactionSpriteID(Faction faction, bool selected)
+static std::string GetFactionSpriteID(Faction faction)
 {
 	switch (faction) {
-	case Faction::Red: 
-		return selected ? "sprite/tower/red/selected" : "sprite/tower/red/unselected";
-	case Faction::Blue:
-		return selected ? "sprite/tower/blue/selected" : "sprite/tower/blue/unselected";
-	case Faction::None:
-		return selected ? "sprite/tower/none/selected" : "sprite/tower/none/unselected";
+	case Faction::Red: return "sprite/tower/red";
+	case Faction::Blue: return "sprite/tower/blue";
+	case Faction::None: return "sprite/tower/none";
 	}
 
 	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
@@ -148,47 +145,22 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	m_Scene = scene;
 
 	// Prepare assets
-	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
-
+	Engine::AssetRegistry::Add("atlas", new Engine::TextureAtlas("res/sprite/kenney_medievalRTS_spritesheet.png"));
 	Engine::Shader* shader = new Engine::Shader("res/shader/pixel_sprite.shader");
 	shader->SetProperty("u_TexelPerPixel", 5.0f);
 	Engine::AssetRegistry::Add("shader/sprite", shader);
 
-	std::vector<Engine::TextureCoordinates> texCoords;
-	for (int y = 0; y < 8; y++)
-	{
-		for (int x = 0; x < 8; x++)
-		{
-			texCoords.push_back({ 
-				x * 16.0f / 128.0f,
-				(128 - (y + 1) * 16.0f) / 128.0f, 
-				(x + 1) * 16.0f / 128.0f,
-				(128 - y * 16.0f) / 128.0f
-			});
-		}
-	}
-
 	// Player faction sprites
-	Engine::Sprite* towerSpriteSelected = new Engine::Sprite("shader/sprite", "res/sprite/Tower_Blue_Selected.png");
-	//towerSpriteSelected->SetTextureCoordinates(texCoords);
-	Engine::Sprite* towerSpriteUnselected = new Engine::Sprite("shader/sprite", "res/sprite/Tower_Blue.png");
-	//towerSpriteUnselected->SetTextureCoordinates(texCoords);
-	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue, true), towerSpriteSelected);
-	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue, false), towerSpriteUnselected);
+	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue), new Engine::Sprite("shader/sprite", "atlas", 25));
 
 	// Other sprites
 	for (Faction faction : { Faction::Red, Faction::None })
 	{
-		Engine::Sprite* towerSprite = new Engine::Sprite("shader/sprite", GetFactionSpritePath(faction));
-		//towerSprite->SetTextureCoordinates(texCoords);
-		Engine::AssetRegistry::Add(GetFactionSpriteID(faction, true), towerSprite);
-		Engine::AssetRegistry::Add(GetFactionSpriteID(faction, false), towerSprite);
-
+		Engine::AssetRegistry::Add(GetFactionSpriteID(faction), new Engine::Sprite("shader/sprite", "atlas", 25));;
 	}
 
-	Engine::AssetRegistry::Add("sprite/unit/blue", new Engine::Sprite("shader/sprite", "res/sprite/Unit_Blue.png"));
-	Engine::AssetRegistry::Add("sprite/unit/red", new Engine::Sprite("shader/sprite", "res/sprite/Unit_Red.png"));
-	Engine::AssetRegistry::Add("mesh/quad/unit", new Engine::Mesh(Engine::PrimitiveMesh::TextureQuad));
+	Engine::AssetRegistry::Add("sprite/unit/blue", new Engine::Sprite("shader/sprite", "atlas", 103));
+	Engine::AssetRegistry::Add("sprite/unit/red", new Engine::Sprite("shader/sprite", "atlas", 109));
 
 	CreateCamera();
 
@@ -314,7 +286,7 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 	unit.AddComponent<Transform>(
 		position,
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
-		Engine::Vec3(faceDirection * 100.0f, 100.0f, 1.0f)  // scale
+		Engine::Vec3(faceDirection * 18.0f, 25.0f, 1.0f)  // scale
 		);
 	unit.AddComponent<Unit>(faction, targetTower);
 	unit.AddComponent<Renderable2D>(GetUnitSpriteID(faction));
@@ -329,9 +301,7 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 {
 	ENG_TRACE("Attack from {0} to {1}", source, target);
 	ENG_TRACE("Deselected {0}", source);
-	auto& srcRenderable = source.GetComponent<Engine::Components::Renderable2D>();
 	auto& srcTower = source.GetComponent<Tower>();
-	srcRenderable.Data[0].SpriteID = GetFactionSpriteID(srcTower.Faction, false);
 
 	// take units from source tower
 	int units = std::min((int)srcTower.Units, 5);
@@ -382,9 +352,9 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	tower.AddComponent<Transform>(
 		position,
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
-		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
+		Engine::Vec3(44.0f, 42.0f, 1.0f)  // scale
 	);
-	tower.AddComponent<Renderable2D>(GetFactionSpriteID(faction, false));
+	tower.AddComponent<Renderable2D>(GetFactionSpriteID(faction));
 	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)36, 1.0f, 0.0f);
 	tower.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
