@@ -19,6 +19,7 @@ IncludeDir["ImGui"] = "Engine/vendor/imgui/"
 IncludeDir["glm"] = "Engine/vendor/glm"
 IncludeDir["entt"] = "Engine/vendor/entt/src"
 IncludeDir["std_image"] = "Engine/vendor/std_image"
+IncludeDir["pugixml"] = "Engine/vendor/pugixml/src"
 
 group "Dependencies"
 	include "Engine/vendor/GLFW"
@@ -100,6 +101,8 @@ project "Engine"
 		"%{IncludeDir.glm}/glm/**.inl",
 		"%{IncludeDir.std_image}/**.h",
 		"%{IncludeDir.std_image}/**.cpp",
+		"%{IncludeDir.pugixml}/**.hpp",
+		"%{IncludeDir.pugixml}/**.cpp",
 	}
 
 	includedirs
@@ -112,7 +115,7 @@ project "Engine"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.std_image}",
-
+		"%{IncludeDir.pugixml}",
 	}
 
 	links 

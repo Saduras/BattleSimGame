@@ -13,3 +13,6 @@
 [submodule "Engine/vendor/entt"]
 	path = Engine/vendor/entt
 	url = https://github.com/skypjack/entt
+[submodule "Engine/vendor/pugixml"]
+	path = Engine/vendor/pugixml
+	url = https://github.com/zeux/pugixml
