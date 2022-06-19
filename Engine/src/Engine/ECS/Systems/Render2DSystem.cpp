@@ -3,8 +3,10 @@
 
 #include "Engine/Application.h"
 #include "Engine/ECS/Components/Camera.h"
+#include "Engine/ECS/Components/Renderable.h"
 #include "Engine/Assets/AssetRegistry.h"
 #include "Engine/Renderer/Sprite.h"
+#include "Engine/Renderer/TextureAtlas.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Renderer.h"
 
@@ -31,18 +33,23 @@ namespace Engine::Systems {
 
 	void Render2DSystem::RenderRenderable(const Components::Transform& transform, const Components::Renderable2D& renderable)
 	{
-		Sprite& sprite = AssetRegistry::Get<Sprite>(renderable.SpriteID);
-		Mesh& mesh = AssetRegistry::Get<Mesh>(renderable.MeshID);
-		Shader& shader = AssetRegistry::Get<Shader>(sprite.GetShaderID());
+		for (const Components::Renderable2D::RenderData2D& data : renderable.Data)
+		{
+			Sprite& sprite = AssetRegistry::Get<Sprite>(data.SpriteID);
+			Shader& shader = AssetRegistry::Get<Shader>(sprite.GetShaderID());
+			TextureAtlas& atlas = AssetRegistry::Get<TextureAtlas>(sprite.GetAtlasID());
 
-		sprite.Bind();
-		Renderer::SetShader(&shader);
-		Mat4 modelMatrix = transform.GetTransformationMatrix();
-		shader.SetProperty("u_Model", modelMatrix);
-		shader.SetProperty("u_Color", sprite.GetColor());
-		shader.SetProperty("u_TextureSize", sprite.GetTextureSize());
-		shader.ApplyProperties();
-		Renderer::Submit(mesh.GetVertexArray());
+			Mesh mesh(GetMeshDataForSubTexture(atlas, sprite.GetIndex()));
+
+			atlas.Bind();
+			Renderer::SetShader(&shader);
+			Mat4 modelMatrix = transform.GetTransformationMatrix();
+			shader.SetProperty("u_Model", modelMatrix);
+			shader.SetProperty("u_Color", sprite.GetColor());
+			shader.SetProperty("u_TextureSize", atlas.GetSize());
+			shader.ApplyProperties();
+			Renderer::Submit(mesh.GetVertexArray());
+		}
 	}
 }
 

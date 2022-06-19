@@ -26,6 +26,7 @@
 #include "Engine/Renderer/Buffer.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Sprite.h"
+#include "Engine/Renderer/TextureAtlas.h"
 #include "Engine/Renderer/Material.h"
 // --------------------------------------
 

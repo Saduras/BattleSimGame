@@ -21,28 +21,18 @@ namespace Engine
 	class Sprite : public Asset
 	{
 	public:
-		Sprite(const std::string& shaderID, const std::string& spritePath);
-		~Sprite();
-
-		Sprite& operator=(const Sprite&) { return *this; }
-
-		void Bind(unsigned int slot = 0) const;
-		void Unbind() const;
+		Sprite(const std::string& shaderID, const std::string& atlasID, int index = 0);
 
 		inline const std::string& GetShaderID() const { return m_ShaderID; }
+		inline const std::string& GetAtlasID() const { return m_AtlasID; }
+		inline int GetIndex() { return m_Index; }
+		inline void SetIndex(int index) { m_Index = index; }
 		inline Vec4 GetColor() const { return m_Color; }
 		inline void SetColor(Vec4 color) { m_Color = color; }
-		inline TextureCoordinates GetTextureCoordinates(int index) { return m_textureCoordinates[index]; }
-		inline void SetTextureCoordinates(std::vector<TextureCoordinates> textureCoordinates) { m_textureCoordinates = textureCoordinates; }
-		inline size_t GetTileCount() { return m_textureCoordinates.size(); }
-		inline Vec2 GetTextureSize() const { return Vec2(m_Width, m_Height); }
 	private:
 		std::string m_ShaderID;
-		std::string m_FilePath;
-		std::vector<TextureCoordinates> m_textureCoordinates;
-		unsigned int m_RendererID;
-		unsigned char* m_LocalBuffer;
-		int m_Width, m_Height, m_BPP; // BPP = bits per pixel
+		std::string m_AtlasID;
+		int m_Index;
 		Vec4 m_Color;
 	};
 }

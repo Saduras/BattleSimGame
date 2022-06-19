@@ -1,0 +1,6 @@
+<TextureAtlas imagePath="animation-test.png">
+	<SubTexture name="animation-test-0.png" x="0" y="0" width="32" height="32"/>
+    <SubTexture name="animation-test-1.png" x="32" y="0" width="32" height="32"/>
+    <SubTexture name="animation-test-3.png" x="0" y="32" width="32" height="32"/>
+    <SubTexture name="animation-test-2.png" x="32" y="32" width="32" height="32"/>
+</TextureAtlas>

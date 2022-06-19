@@ -92,9 +92,9 @@ static void TowerViewSystem(float deltaTime, Engine::Entity entity, Tower& tower
 	if (!tower.ViewUpdateRequested)
 		return;
 
-	size_t startIndex = renderable.MeshID.find_last_of('/') + 1;
-	renderable.MeshID.replace(startIndex, renderable.MeshID.length() - startIndex, std::to_string(tower.Units));
-	renderable.SpriteID = GetFactionSpriteID(tower.Faction, tower.Selected);
+	//size_t startIndex = renderable.Data[0].MeshID.find_last_of('/') + 1;
+	//renderable.Data[0].MeshID.replace(startIndex, renderable.Data[0].MeshID.length() - startIndex, std::to_string(tower.Units));
+	//renderable.Data[0].SpriteID = GetFactionSpriteID(tower.Faction, tower.Selected);
 	tower.ViewUpdateRequested = false;
 }
 
@@ -170,9 +170,9 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 
 	// Player faction sprites
 	Engine::Sprite* towerSpriteSelected = new Engine::Sprite("shader/sprite", "res/sprite/Tower_Blue_Selected.png");
-	towerSpriteSelected->SetTextureCoordinates(texCoords);
+	//towerSpriteSelected->SetTextureCoordinates(texCoords);
 	Engine::Sprite* towerSpriteUnselected = new Engine::Sprite("shader/sprite", "res/sprite/Tower_Blue.png");
-	towerSpriteUnselected->SetTextureCoordinates(texCoords);
+	//towerSpriteUnselected->SetTextureCoordinates(texCoords);
 	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue, true), towerSpriteSelected);
 	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue, false), towerSpriteUnselected);
 
@@ -180,19 +180,10 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	for (Faction faction : { Faction::Red, Faction::None })
 	{
 		Engine::Sprite* towerSprite = new Engine::Sprite("shader/sprite", GetFactionSpritePath(faction));
-		towerSprite->SetTextureCoordinates(texCoords);
+		//towerSprite->SetTextureCoordinates(texCoords);
 		Engine::AssetRegistry::Add(GetFactionSpriteID(faction, true), towerSprite);
 		Engine::AssetRegistry::Add(GetFactionSpriteID(faction, false), towerSprite);
 
-	}
-
-	Engine::Sprite& sprite = Engine::AssetRegistry::Get<Engine::Sprite>(GetFactionSpriteID(Faction::None, false));
-	for (size_t i = 0; i < sprite.GetTileCount(); i++)
-	{
-		Engine::TextureCoordinates texCoords = sprite.GetTextureCoordinates((int)i);
-		Engine::MeshData meshData = Engine::Mesh::PrimitiveToMeshData(Engine::PrimitiveMesh::TextureQuad);
-		Engine::SetTextureCoordinatesOnMeshData(texCoords, meshData, 3, 5);
-		Engine::AssetRegistry::Add(Engine::FormatString("mesh/quad/{}", i), new Engine::Mesh(meshData));
 	}
 
 	Engine::AssetRegistry::Add("sprite/unit/blue", new Engine::Sprite("shader/sprite", "res/sprite/Unit_Blue.png"));
@@ -326,7 +317,7 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 		Engine::Vec3(faceDirection * 100.0f, 100.0f, 1.0f)  // scale
 		);
 	unit.AddComponent<Unit>(faction, targetTower);
-	unit.AddComponent<Renderable2D>(GetUnitSpriteID(faction), "mesh/quad/unit");
+	unit.AddComponent<Renderable2D>(GetUnitSpriteID(faction));
 	unit.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
 		50.0f, // width
@@ -340,7 +331,7 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 	ENG_TRACE("Deselected {0}", source);
 	auto& srcRenderable = source.GetComponent<Engine::Components::Renderable2D>();
 	auto& srcTower = source.GetComponent<Tower>();
-	srcRenderable.SpriteID = GetFactionSpriteID(srcTower.Faction, false);
+	srcRenderable.Data[0].SpriteID = GetFactionSpriteID(srcTower.Faction, false);
 
 	// take units from source tower
 	int units = std::min((int)srcTower.Units, 5);
@@ -393,7 +384,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
 	);
-	tower.AddComponent<Renderable2D>(GetFactionSpriteID(faction, false), "mesh/quad/0");
+	tower.AddComponent<Renderable2D>(GetFactionSpriteID(faction, false));
 	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)36, 1.0f, 0.0f);
 	tower.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
