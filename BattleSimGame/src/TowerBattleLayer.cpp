@@ -157,6 +157,9 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	Engine::AssetRegistry::Add("sprite/unit/red", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_red")));
 
 	Engine::AssetRegistry::Add("sprite/selection", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_selection")));
+	Engine::AssetRegistry::Add("sprite/bar/frame", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_frame")));
+	Engine::AssetRegistry::Add("sprite/bar/fill", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_fill")));
+	Engine::AssetRegistry::Add("sprite/bar/background", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_background")));
 
 	CreateCamera();
 	CreateSelection();
@@ -355,6 +358,30 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		50.0f, // width
 		100.0f // height
 	);
+
+	auto bar_frame = m_Scene->CreateEntity();
+	bar_frame.AddComponent<Transform>(
+		position + Engine::Vec3(0.0f, 52.0f, -3.0f),
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(52.0f, 9.0f, 1.0f)  // scale
+	);
+	bar_frame.AddComponent<Renderable2D>("sprite/bar/frame");
+
+	auto bar_fill = m_Scene->CreateEntity();
+	bar_fill.AddComponent<Transform>(
+		position + Engine::Vec3(0.0f, 52.0f, -2.0f),
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(49.0f, 3.0f, 1.0f)  // scale
+		);
+	bar_fill.AddComponent<Renderable2D>("sprite/bar/fill");
+
+	auto bar_background = m_Scene->CreateEntity();
+	bar_background.AddComponent<Transform>(
+		position + Engine::Vec3(0.0f, 52.0f, -1.0f),
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(49.0f, 6.0f, 1.0f)  // scale
+		);
+	bar_background.AddComponent<Renderable2D>("sprite/bar/background");
 	
 	return tower;
 }
