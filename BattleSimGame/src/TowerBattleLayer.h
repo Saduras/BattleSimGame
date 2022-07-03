@@ -71,9 +71,11 @@ private:
 	static Engine::Scene* m_Scene;
 
 	Engine::Entity m_SourceTower;
+	Engine::Entity m_Selection;
 
 	Engine::Entity CreateTower(Engine::Vec3 position, Faction faction);
 	Engine::Entity CreateAI(Faction faction);
 	Engine::Entity CreateCamera();
+	Engine::Entity CreateSelection();
 };
 

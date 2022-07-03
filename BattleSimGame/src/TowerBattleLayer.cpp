@@ -156,7 +156,10 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	Engine::AssetRegistry::Add("sprite/unit/blue", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_blue")));
 	Engine::AssetRegistry::Add("sprite/unit/red", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_red")));
 
+	Engine::AssetRegistry::Add("sprite/selection", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_selection")));
+
 	CreateCamera();
+	CreateSelection();
 
 	CreateTower({ 100.0f, 0.0f, 0.0f }, Faction::None);
 	CreateTower({ 200.0f, 50.0f, 0.0f }, Faction::Red);
@@ -233,7 +236,7 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 		if (tower.Faction == Faction::Blue) 
 		{
 			tower.Selected = true;
-			tower.ViewUpdateRequested = true;
+			m_Selection.GetComponent<Transform>().Position = towerEntity.GetComponent<Transform>().Position;
 		}
 	} else {
 		if (m_SourceTower == towerEntity) {
@@ -241,17 +244,14 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 			m_SourceTower = Engine::Entity();
 
 			if (tower.Faction == Faction::Blue)
-			{
-				tower.Selected = false;
-				tower.ViewUpdateRequested = true;
-			}
+				m_Selection.GetComponent<Transform>().Position = Engine::Vec3(-1000.0f, 0.0f, 0.0f);
 		}
 		else {
 			Attack(m_SourceTower, towerEntity);
 
 			Tower& src_tower_comp = m_SourceTower.GetComponent<Tower>();
 			src_tower_comp.Selected = false;
-			src_tower_comp.ViewUpdateRequested = true;
+			m_Selection.GetComponent<Transform>().Position = Engine::Vec3(-1000.0f, 0.0f, 0.0f);
 			
 			m_SourceTower = Engine::Entity();
 		}
@@ -382,4 +382,17 @@ Engine::Entity TowerBattleLayer::CreateCamera()
 		(float)720 / 2  // top
 	);
 	return camera;
+}
+
+Engine::Entity TowerBattleLayer::CreateSelection()
+{
+	m_Selection = m_Scene->CreateEntity();
+	m_Selection.AddComponent<Engine::Components::Transform>(
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(60.0f, 98.0f, 1.0f)  // scale
+		);
+	m_Selection.AddComponent<Engine::Components::Renderable2D>("sprite/selection");
+
+	return m_Selection;
 }
