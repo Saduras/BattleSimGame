@@ -89,9 +89,7 @@ static void TowerViewSystem(float deltaTime, Engine::Entity entity, Tower& tower
 	if (!tower.ViewUpdateRequested)
 		return;
 
-	//size_t startIndex = renderable.Data[0].MeshID.find_last_of('/') + 1;
-	//renderable.Data[0].MeshID.replace(startIndex, renderable.Data[0].MeshID.length() - startIndex, std::to_string(tower.Units));
-	//renderable.Data[0].SpriteID = GetFactionSpriteID(tower.Faction, tower.Selected);
+	renderable.Data[0].SpriteID = GetFactionSpriteID(tower.Faction);
 	tower.ViewUpdateRequested = false;
 }
 
@@ -145,22 +143,18 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	m_Scene = scene;
 
 	// Prepare assets
-	Engine::AssetRegistry::Add("atlas", new Engine::TextureAtlas("res/sprite/kenney_medievalRTS_spritesheet.png"));
+	Engine::TextureAtlas* atlas = new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png");
+	Engine::AssetRegistry::Add("atlas", atlas);
 	Engine::Shader* shader = new Engine::Shader("res/shader/pixel_sprite.shader");
 	shader->SetProperty("u_TexelPerPixel", 5.0f);
 	Engine::AssetRegistry::Add("shader/sprite", shader);
 
-	// Player faction sprites
-	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue), new Engine::Sprite("shader/sprite", "atlas", 25));
+	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue), new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_blue")));
+	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Red), new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_red")));
+	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::None), new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_neutral")));
 
-	// Other sprites
-	for (Faction faction : { Faction::Red, Faction::None })
-	{
-		Engine::AssetRegistry::Add(GetFactionSpriteID(faction), new Engine::Sprite("shader/sprite", "atlas", 25));;
-	}
-
-	Engine::AssetRegistry::Add("sprite/unit/blue", new Engine::Sprite("shader/sprite", "atlas", 103));
-	Engine::AssetRegistry::Add("sprite/unit/red", new Engine::Sprite("shader/sprite", "atlas", 109));
+	Engine::AssetRegistry::Add("sprite/unit/blue", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_blue")));
+	Engine::AssetRegistry::Add("sprite/unit/red", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_red")));
 
 	CreateCamera();
 
@@ -352,7 +346,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	tower.AddComponent<Transform>(
 		position,
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
-		Engine::Vec3(44.0f, 42.0f, 1.0f)  // scale
+		Engine::Vec3(44.0f, 84.0f, 1.0f)  // scale
 	);
 	tower.AddComponent<Renderable2D>(GetFactionSpriteID(faction));
 	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)36, 1.0f, 0.0f);

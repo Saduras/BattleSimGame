@@ -1,6 +1,6 @@
 <TextureAtlas imagePath="animation-test.png">
-	<SubTexture name="animation-test-0.png" x="0" y="0" width="32" height="32"/>
-    <SubTexture name="animation-test-1.png" x="32" y="0" width="32" height="32"/>
-    <SubTexture name="animation-test-3.png" x="0" y="32" width="32" height="32"/>
-    <SubTexture name="animation-test-2.png" x="32" y="32" width="32" height="32"/>
+    <sprite n="animation-test-0" x="0" y="0" w="32" h="32"/>
+    <sprite n="animation-test-1" x="32" y="0" w="32" h="32"/>
+    <sprite n="animation-test-2" x="0" y="32" w="32" h="32"/>
+    <sprite n="animation-test-3" x="32" y="32" w="32" h="32"/>
 </TextureAtlas>

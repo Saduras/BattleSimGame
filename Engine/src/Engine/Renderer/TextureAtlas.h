@@ -38,6 +38,13 @@ namespace Engine
 		TextureAtlas& operator=(const TextureAtlas& other) = delete;
 		TextureAtlas& operator=(TextureAtlas&& other) = delete;
 
+		/// <summary>
+		/// Searches through all subtextures to find the one with the given name (slow).
+		/// </summary>
+		/// <param name="name">Name to search for.</param>
+		/// <returns>Index of the subtexture with matching name. Returns -1 if no match was found.</returns>
+		int FindSubTexIndex(std::string name);
+
 		void Bind(unsigned int slot = 0) const;
 		void Unbind() const;
 

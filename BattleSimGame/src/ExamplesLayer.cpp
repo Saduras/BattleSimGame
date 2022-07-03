@@ -120,7 +120,7 @@ static void CreatePixelShaderExample(Engine::Scene* scene)
 {
 	// Prepare assets
 	Engine::AssetRegistry::Add("shader/sprite", new Engine::Shader("res/shader/pixel_sprite.shader"));
-	Engine::AssetRegistry::Add("atlas", new Engine::TextureAtlas("res/sprite/kenney_medievalRTS_spritesheet.png"));
+	Engine::AssetRegistry::Add("atlas", new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png"));
 	Engine::Sprite* sprite = new Engine::Sprite("shader/sprite", "atlas");
 	sprite->SetIndex(102);
 	Engine::AssetRegistry::Add("sprite", sprite);

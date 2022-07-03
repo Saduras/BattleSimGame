@@ -75,13 +75,13 @@ TextureAtlas::TextureAtlas(const std::string& filePath)
 	if (!result)
 		ENG_CORE_ERROR(result.description());
 
-	for (xml_node node : doc.child("TextureAtlas").children("SubTexture")) \
+	for (xml_node node : doc.child("TextureAtlas").children("sprite")) \
 	{
-		std::string name = node.attribute("name").as_string();
+		std::string name = node.attribute("n").as_string();
 		int x = node.attribute("x").as_int();
 		int y = node.attribute("y").as_int();
-		int width = node.attribute("width").as_int();
-		int height = node.attribute("height").as_int();
+		int width = node.attribute("w").as_int();
+		int height = node.attribute("h").as_int();
 
 		// XML describes tex coordinates relative to top left.
 		// Renderer wants tex coordinates relative to bottom left.
@@ -99,6 +99,15 @@ TextureAtlas::TextureAtlas(const std::string& filePath)
 TextureAtlas::~TextureAtlas()
 {
 	glDeleteTextures(1, &m_RendererID);
+}
+
+int TextureAtlas::FindSubTexIndex(std::string name)
+{
+	for (size_t i = 0; i < m_SubTextures.size(); i++)
+		if (m_SubTextures[i].Name == name)
+			return i;
+
+	return -1;
 }
 
 void TextureAtlas::Bind(unsigned int slot /* = 0*/) const
