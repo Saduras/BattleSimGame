@@ -61,6 +61,18 @@ namespace Engine
 		}
 
 		/// <summary>
+		/// Sorts entities according to a given compare operation. The compare operation should return true if the left hand side is "less" than the right hand side.
+		/// </summary>
+		/// <typeparam name="Component">Component type to compare</typeparam>
+		/// <typeparam name="Compare"></typeparam>
+		/// <param name="compare">Compare operators with signature: bool compare(const Component& lhs, const Component& rhs);</param>
+		template<typename Component, typename Compare>
+		void Sort(Compare compare)
+		{
+			return m_Registry.sort<Component>(compare);
+		}
+
+		/// <summary>
 		/// Executes a system function on the view of all entities with the specified components.
 		/// </summary>
 		/// <typeparam name="...Component">Components each entity must have.</typeparam>
