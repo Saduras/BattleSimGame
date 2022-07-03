@@ -388,7 +388,7 @@ Engine::Entity TowerBattleLayer::CreateSelection()
 {
 	m_Selection = m_Scene->CreateEntity();
 	m_Selection.AddComponent<Engine::Components::Transform>(
-		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
+		Engine::Vec3(-1000.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(60.0f, 98.0f, 1.0f)  // scale
 		);
