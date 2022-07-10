@@ -392,7 +392,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	bar_frame.AddComponent<Transform>(
 		position + Engine::Vec3(0.0f, 52.0f, -3.0f),
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
-		Engine::Vec3(52.0f, 9.0f, 1.0f)  // scale
+		Engine::Vec3(52.0f, 6.0f, 1.0f)  // scale
 	);
 	bar_frame.AddComponent<Renderable2D>("sprite/bar/frame");
 
@@ -400,7 +400,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	bar_fill.AddComponent<Transform>(
 		position + Engine::Vec3(0.0f, 52.0f, -2.0f),
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
-		Engine::Vec3(49.0f, 3.0f, 1.0f)  // scale
+		Engine::Vec3(49.0f, 8.0f, 1.0f)  // scale
 		);
 	bar_fill.AddComponent<Renderable2D>(GetUnitBarSprite(faction));
 	bar_fill.AddComponent<UnitBar>(49.0f, position.x - 49.0f/2.0f, tower);

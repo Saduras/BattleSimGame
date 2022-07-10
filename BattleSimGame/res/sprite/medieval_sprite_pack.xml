@@ -14,7 +14,7 @@ oY => y-corner offset
 oW => original width
 oH => original height
 r => 'y' if sprite is rotated-->
-<TextureAtlas imagePath="medieval_sprite_pack.png" width="588" height="602" scale="1" format="RGBA8888">
+<TextureAtlas imagePath="medieval_sprite_pack.png" width="588" height="599" scale="1" format="RGBA8888">
   <sprite n="tower_selection" x="1" y="1" w="60" h="98" pX="0.5" pY="0.5" oX="2" oY="15" oW="64" oH="128"/>
   <sprite n="tower_blue" x="63" y="1" w="44" h="84" pX="0.5" pY="0.5" oX="10" oY="22" oW="64" oH="128"/>
   <sprite n="tower_neutral" x="63" y="87" w="44" h="84" pX="0.5" pY="0.5" oX="10" oY="22" oW="64" oH="128"/>
@@ -71,79 +71,79 @@ r => 'y' if sprite is rotated-->
   <sprite n="medievalTile_08" x="446" y="131" w="30" h="64" pX="0.5" pY="0.5" oX="17" oY="0" oW="64" oH="64"/>
   <sprite n="medievalTile_53" x="505" y="67" w="64" h="64" pX="0.5" pY="0.5"/>
   <sprite n="medievalStructure_14" x="461" y="197" w="63" h="63" pX="0.5" pY="0.5" oX="1" oY="1" oW="64" oH="64"/>
-  <sprite n="medievalStructure_02" x="133" y="463" w="60" h="38" pX="0.5" pY="0.5" oX="2" oY="26" oW="64" oH="64"/>
-  <sprite n="medievalStructure_21" x="478" y="133" w="60" h="60" pX="0.5" pY="0.5" oX="2" oY="2" oW="64" oH="64"/>
-  <sprite n="medievalStructure_19" x="463" y="262" w="52" h="60" pX="0.5" pY="0.5" oX="6" oY="2" oW="64" oH="64"/>
-  <sprite n="medievalStructure_17" x="517" y="262" w="44" h="60" pX="0.5" pY="0.5" oX="10" oY="2" oW="64" oH="64"/>
-  <sprite n="medievalStructure_16" x="463" y="324" w="44" h="60" pX="0.5" pY="0.5" oX="10" oY="2" oW="64" oH="64"/>
-  <sprite n="medievalStructure_09" x="509" y="324" w="56" h="60" pX="0.5" pY="0.5" oX="4" oY="2" oW="64" oH="64"/>
-  <sprite n="medievalStructure_06" x="195" y="463" w="60" h="38" pX="0.5" pY="0.5" oX="2" oY="0" oW="64" oH="64"/>
+  <sprite n="medievalStructure_06" x="133" y="463" w="60" h="38" pX="0.5" pY="0.5" oX="2" oY="0" oW="64" oH="64"/>
+  <sprite n="medievalStructure_09" x="478" y="133" w="56" h="60" pX="0.5" pY="0.5" oX="4" oY="2" oW="64" oH="64"/>
+  <sprite n="medievalStructure_21" x="463" y="262" w="60" h="60" pX="0.5" pY="0.5" oX="2" oY="2" oW="64" oH="64"/>
+  <sprite n="medievalStructure_02" x="195" y="463" w="60" h="38" pX="0.5" pY="0.5" oX="2" oY="26" oW="64" oH="64"/>
+  <sprite n="medievalStructure_16" x="525" y="262" w="44" h="60" pX="0.5" pY="0.5" oX="10" oY="2" oW="64" oH="64"/>
+  <sprite n="medievalStructure_19" x="463" y="324" w="52" h="60" pX="0.5" pY="0.5" oX="6" oY="2" oW="64" oH="64"/>
+  <sprite n="medievalStructure_17" x="517" y="324" w="44" h="60" pX="0.5" pY="0.5" oX="10" oY="2" oW="64" oH="64"/>
   <sprite n="medievalStructure_13" x="257" y="463" w="53" h="52" pX="0.5" pY="0.5" oX="6" oY="7" oW="64" oH="64"/>
   <sprite n="medievalStructure_20" x="312" y="463" w="52" h="48" pX="0.5" pY="0.5" oX="6" oY="8" oW="64" oH="64"/>
   <sprite n="medievalStructure_03" x="366" y="463" w="52" h="34" pX="0.5" pY="0.5" oX="6" oY="30" oW="64" oH="64"/>
-  <sprite n="tower_bar_frame" x="67" y="503" w="52" h="9" pX="0.5" pY="0.5" oX="6" oY="6" oW="64" oH="128"/>
   <sprite n="medievalStructure_07" x="420" y="463" w="52" h="34" pX="0.5" pY="0.5" oX="6" oY="0" oW="64" oH="64"/>
-  <sprite n="tower_bar_fill" x="121" y="503" w="51" h="8" pX="0.5" pY="0.5" oX="6" oY="6" oW="64" oH="128"/>
-  <sprite n="medievalTile_24" x="463" y="386" w="50" h="36" pX="0.5" pY="0.5" oX="0" oY="14" oW="64" oH="64"/>
-  <sprite n="medievalTile_39" x="526" y="195" w="36" h="50" pX="0.5" pY="0.5" oX="14" oY="0" oW="64" oH="64"/>
-  <sprite n="medievalTile_40" x="515" y="386" w="36" h="50" pX="0.5" pY="0.5" oX="14" oY="14" oW="64" oH="64"/>
-  <sprite n="medievalTile_38" x="463" y="424" w="50" h="36" pX="0.5" pY="0.5" oX="14" oY="14" oW="64" oH="64"/>
-  <sprite n="tower_bar_background" x="515" y="438" w="49" h="6" pX="0.5" pY="0.5" oX="8" oY="8" oW="64" oH="128"/>
+  <sprite n="tower_bar_fill" x="67" y="503" w="51" h="8" pX="0.5" pY="0.5" oX="6" oY="6" oW="64" oH="128"/>
+  <sprite n="medievalTile_40" x="526" y="195" w="36" h="50" pX="0.5" pY="0.5" oX="14" oY="14" oW="64" oH="64"/>
+  <sprite n="medievalTile_39" x="463" y="386" w="36" h="50" pX="0.5" pY="0.5" oX="14" oY="0" oW="64" oH="64"/>
+  <sprite n="medievalTile_24" x="501" y="386" w="50" h="36" pX="0.5" pY="0.5" oX="0" oY="14" oW="64" oH="64"/>
+  <sprite n="medievalTile_38" x="501" y="424" w="50" h="36" pX="0.5" pY="0.5" oX="14" oY="14" oW="64" oH="64"/>
+  <sprite n="tower_bar_background" x="120" y="503" w="49" h="6" pX="0.5" pY="0.5" oX="8" oY="8" oW="64" oH="128"/>
   <sprite n="medievalStructure_18" x="474" y="462" w="44" h="48" pX="0.5" pY="0.5" oX="10" oY="8" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_21" x="540" y="133" w="21" h="48" pX="0.5" pY="0.5" oX="22" oY="0" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_04" x="520" y="446" w="26" h="48" pX="0.5" pY="0.5" oX="19" oY="8" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_04" x="520" y="462" w="26" h="48" pX="0.5" pY="0.5" oX="19" oY="8" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_21" x="548" y="462" w="21" h="48" pX="0.5" pY="0.5" oX="22" oY="0" oW="64" oH="64"/>
   <sprite n="medievalTile_36" x="1" y="517" w="43" h="47" pX="0.5" pY="0.5" oX="21" oY="0" oW="64" oH="64"/>
-  <sprite n="medievalTile_37" x="520" y="496" w="47" h="43" pX="0.5" pY="0.5" oX="0" oY="0" oW="64" oH="64"/>
-  <sprite n="medievalTile_23" x="46" y="517" w="43" h="47" pX="0.5" pY="0.5" oX="0" oY="17" oW="64" oH="64"/>
-  <sprite n="medievalTile_22" x="91" y="517" w="47" h="43" pX="0.5" pY="0.5" oX="17" oY="21" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_02" x="140" y="517" w="19" h="46" pX="0.5" pY="0.5" oX="23" oY="10" oW="64" oH="64"/>
-  <sprite n="medievalStructure_10" x="161" y="517" w="44" h="40" pX="0.5" pY="0.5" oX="10" oY="24" oW="64" oH="64"/>
-  <sprite n="medievalStructure_04" x="207" y="503" w="44" h="36" pX="0.5" pY="0.5" oX="10" oY="0" oW="64" oH="64"/>
-  <sprite n="medievalStructure_11" x="253" y="517" w="44" h="40" pX="0.5" pY="0.5" oX="10" oY="0" oW="64" oH="64"/>
-  <sprite n="medievalStructure_23" x="299" y="517" w="44" h="36" pX="0.5" pY="0.5" oX="10" oY="28" oW="64" oH="64"/>
-  <sprite n="medievalStructure_08" x="345" y="513" w="32" h="40" pX="0.5" pY="0.5" oX="16" oY="12" oW="64" oH="64"/>
-  <sprite n="medievalStructure_22" x="379" y="512" w="32" h="40" pX="0.5" pY="0.5" oX="16" oY="12" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_11" x="413" y="512" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_19" x="453" y="512" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_17" x="1" y="566" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_16" x="41" y="566" w="38" h="32" pX="0.5" pY="0.5" oX="13" oY="16" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_12" x="81" y="566" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_18" x="121" y="565" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_10" x="207" y="541" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_09" x="161" y="559" w="38" h="32" pX="0.5" pY="0.5" oX="13" oY="16" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_06" x="201" y="578" w="36" h="15" pX="0.5" pY="0.5" oX="14" oY="25" oW="64" oH="64"/>
-  <sprite n="medievalStructure_12" x="548" y="446" w="20" h="36" pX="0.5" pY="0.5" oX="22" oY="14" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_03" x="109" y="133" w="19" h="33" pX="0.5" pY="0.5" oX="23" oY="23" oW="64" oH="64"/>
+  <sprite n="medievalTile_37" x="46" y="517" w="47" h="43" pX="0.5" pY="0.5" oX="0" oY="0" oW="64" oH="64"/>
+  <sprite n="medievalTile_23" x="95" y="517" w="43" h="47" pX="0.5" pY="0.5" oX="0" oY="17" oW="64" oH="64"/>
+  <sprite n="medievalTile_22" x="140" y="517" w="47" h="43" pX="0.5" pY="0.5" oX="17" oY="21" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_02" x="189" y="517" w="19" h="46" pX="0.5" pY="0.5" oX="23" oY="10" oW="64" oH="64"/>
+  <sprite n="medievalStructure_23" x="210" y="503" w="44" h="36" pX="0.5" pY="0.5" oX="10" oY="28" oW="64" oH="64"/>
+  <sprite n="medievalStructure_04" x="256" y="517" w="44" h="36" pX="0.5" pY="0.5" oX="10" oY="0" oW="64" oH="64"/>
+  <sprite n="medievalStructure_10" x="302" y="517" w="44" h="40" pX="0.5" pY="0.5" oX="10" oY="24" oW="64" oH="64"/>
+  <sprite n="medievalStructure_11" x="348" y="513" w="44" h="40" pX="0.5" pY="0.5" oX="10" oY="0" oW="64" oH="64"/>
+  <sprite n="medievalStructure_22" x="536" y="133" w="32" h="40" pX="0.5" pY="0.5" oX="16" oY="12" oW="64" oH="64"/>
+  <sprite n="medievalStructure_08" x="394" y="512" w="32" h="40" pX="0.5" pY="0.5" oX="16" oY="12" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_11" x="428" y="499" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_18" x="468" y="512" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_17" x="508" y="512" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_16" x="428" y="536" w="38" h="32" pX="0.5" pY="0.5" oX="13" oY="16" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_12" x="46" y="562" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_19" x="140" y="562" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_10" x="210" y="559" w="38" h="35" pX="0.5" pY="0.5" oX="13" oY="15" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_09" x="1" y="566" w="38" h="32" pX="0.5" pY="0.5" oX="13" oY="16" oW="64" oH="64"/>
+  <sprite n="tower_bar_frame" x="463" y="438" w="36" h="6" pX="0.5" pY="0.5" oX="14" oY="7" oW="64" oH="128"/>
+  <sprite n="medievalEnvironment_06" x="210" y="541" w="36" h="15" pX="0.5" pY="0.5" oX="14" oY="25" oW="64" oH="64"/>
+  <sprite n="medievalStructure_12" x="548" y="512" w="20" h="36" pX="0.5" pY="0.5" oX="22" oY="14" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_03" x="180" y="565" w="19" h="33" pX="0.5" pY="0.5" oX="23" oY="23" oW="64" oH="64"/>
   <sprite n="medievalEnvironment_01" x="47" y="101" w="14" h="32" pX="0.5" pY="0.5" oX="25" oY="24" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_08" x="247" y="559" w="32" h="28" pX="0.5" pY="0.5" oX="16" oY="18" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_15" x="281" y="559" w="32" h="28" pX="0.5" pY="0.5" oX="16" oY="18" oW="64" oH="64"/>
-  <sprite n="medievalUnit_01" x="493" y="512" w="20" h="26" pX="0.5" pY="0.5" oX="22" oY="18" oW="64" oH="64"/>
-  <sprite n="medievalUnit_19" x="493" y="540" w="20" h="26" pX="0.5" pY="0.5" oX="22" oY="18" oW="64" oH="64"/>
-  <sprite n="medievalUnit_07" x="315" y="568" w="20" h="26" pX="0.5" pY="0.5" oX="22" oY="18" oW="64" oH="64"/>
-  <sprite n="medievalUnit_13" x="337" y="568" w="20" h="26" pX="0.5" pY="0.5" oX="22" oY="17" oW="64" oH="64"/>
-  <sprite n="medievalUnit_14" x="359" y="568" w="18" h="25" pX="0.5" pY="0.5" oX="23" oY="18" oW="64" oH="64"/>
-  <sprite n="spearman_red" x="379" y="568" w="18" h="25" pX="0.5" pY="0.5" oX="23" oY="19" oW="64" oH="64"/>
-  <sprite n="spearman_armored_gray" x="399" y="568" w="20" h="25" pX="0.5" pY="0.5" oX="22" oY="19" oW="64" oH="64"/>
-  <sprite n="spearman_armored_blue" x="421" y="568" w="20" h="25" pX="0.5" pY="0.5" oX="22" oY="19" oW="64" oH="64"/>
-  <sprite n="spearman_gray" x="443" y="568" w="18" h="25" pX="0.5" pY="0.5" oX="23" oY="19" oW="64" oH="64"/>
-  <sprite n="spearman_blue" x="463" y="568" w="18" h="25" pX="0.5" pY="0.5" oX="23" oY="19" oW="64" oH="64"/>
-  <sprite n="medievalUnit_15" x="483" y="568" w="20" h="25" pX="0.5" pY="0.5" oX="22" oY="18" oW="64" oH="64"/>
-  <sprite n="spearman_armored_red" x="505" y="568" w="20" h="25" pX="0.5" pY="0.5" oX="22" oY="19" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_08" x="394" y="554" w="32" h="28" pX="0.5" pY="0.5" oX="16" oY="18" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_15" x="428" y="570" w="32" h="28" pX="0.5" pY="0.5" oX="16" oY="18" oW="64" oH="64"/>
+  <sprite n="medievalUnit_01" x="109" y="133" w="20" h="26" pX="0.5" pY="0.5" oX="22" oY="18" oW="64" oH="64"/>
+  <sprite n="medievalUnit_19" x="462" y="570" w="20" h="26" pX="0.5" pY="0.5" oX="22" oY="18" oW="64" oH="64"/>
+  <sprite n="medievalUnit_07" x="86" y="566" w="20" h="26" pX="0.5" pY="0.5" oX="22" oY="18" oW="64" oH="64"/>
+  <sprite n="medievalUnit_13" x="108" y="566" w="20" h="26" pX="0.5" pY="0.5" oX="22" oY="17" oW="64" oH="64"/>
+  <sprite n="medievalUnit_14" x="250" y="559" w="18" h="25" pX="0.5" pY="0.5" oX="23" oY="18" oW="64" oH="64"/>
+  <sprite n="spearman_red" x="270" y="555" w="18" h="25" pX="0.5" pY="0.5" oX="23" oY="19" oW="64" oH="64"/>
+  <sprite n="spearman_armored_gray" x="290" y="559" w="20" h="25" pX="0.5" pY="0.5" oX="22" oY="19" oW="64" oH="64"/>
+  <sprite n="spearman_armored_blue" x="312" y="559" w="20" h="25" pX="0.5" pY="0.5" oX="22" oY="19" oW="64" oH="64"/>
+  <sprite n="spearman_gray" x="334" y="559" w="18" h="25" pX="0.5" pY="0.5" oX="23" oY="19" oW="64" oH="64"/>
+  <sprite n="spearman_blue" x="354" y="555" w="18" h="25" pX="0.5" pY="0.5" oX="23" oY="19" oW="64" oH="64"/>
+  <sprite n="medievalUnit_15" x="484" y="550" w="20" h="25" pX="0.5" pY="0.5" oX="22" oY="18" oW="64" oH="64"/>
+  <sprite n="spearman_armored_red" x="506" y="549" w="20" h="25" pX="0.5" pY="0.5" oX="22" oY="19" oW="64" oH="64"/>
   <sprite n="medievalUnit_22" x="553" y="386" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
   <sprite n="medievalUnit_12" x="553" y="412" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="19" oW="64" oH="64"/>
-  <sprite n="medievalUnit_04" x="515" y="541" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalUnit_10" x="527" y="567" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalUnit_16" x="533" y="541" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="19" oW="64" oH="64"/>
-  <sprite n="medievalUnit_17" x="551" y="541" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalUnit_18" x="545" y="567" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalUnit_06" x="571" y="1" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalUnit_11" x="571" y="27" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="19" oW="64" oH="64"/>
-  <sprite n="medievalUnit_23" x="571" y="53" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalUnit_24" x="571" y="79" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalUnit_05" x="571" y="105" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_13" x="567" y="133" w="20" h="23" pX="0.5" pY="0.5" oX="22" oY="20" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_20" x="567" y="158" w="20" h="23" pX="0.5" pY="0.5" oX="22" oY="19" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_14" x="569" y="484" w="18" h="16" pX="0.5" pY="0.5" oX="23" oY="24" oW="64" oH="64"/>
-  <sprite n="medievalEnvironment_07" x="569" y="502" w="18" h="16" pX="0.5" pY="0.5" oX="23" oY="24" oW="64" oH="64"/>
+  <sprite n="medievalUnit_04" x="374" y="555" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalUnit_10" x="528" y="549" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalUnit_16" x="546" y="550" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="19" oW="64" oH="64"/>
+  <sprite n="medievalUnit_17" x="571" y="1" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalUnit_18" x="571" y="27" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalUnit_06" x="571" y="53" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalUnit_11" x="571" y="79" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="19" oW="64" oH="64"/>
+  <sprite n="medievalUnit_23" x="571" y="105" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalUnit_24" x="571" y="131" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalUnit_05" x="571" y="157" w="16" h="24" pX="0.5" pY="0.5" oX="24" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_13" x="564" y="550" w="20" h="23" pX="0.5" pY="0.5" oX="22" oY="20" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_20" x="564" y="575" w="20" h="23" pX="0.5" pY="0.5" oX="22" oY="19" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_14" x="270" y="582" w="18" h="16" pX="0.5" pY="0.5" oX="23" oY="24" oW="64" oH="64"/>
+  <sprite n="medievalEnvironment_07" x="354" y="582" w="18" h="16" pX="0.5" pY="0.5" oX="23" oY="24" oW="64" oH="64"/>
   <sprite n="medievalEnvironment_05" x="47" y="135" w="14" h="15" pX="0.5" pY="0.5" oX="25" oY="40" oW="64" oH="64"/>
 </TextureAtlas>
