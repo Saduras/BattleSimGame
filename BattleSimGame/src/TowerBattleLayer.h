@@ -84,5 +84,6 @@ private:
 	Engine::Entity CreateAI(Faction faction);
 	Engine::Entity CreateCamera();
 	Engine::Entity CreateSelection();
+	void CreateBackground(int width, int height, int tileSize);
 };
 

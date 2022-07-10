@@ -172,7 +172,7 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	TextureAtlas* atlas = new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png");
 	AssetRegistry::Add("atlas", atlas);
 	Shader* shader = new Shader("res/shader/pixel_sprite.shader");
-	shader->SetProperty("u_TexelPerPixel", 5.0f);
+	shader->SetProperty("u_TexelPerPixel", 50.0f);
 	AssetRegistry::Add("shader/sprite", shader);
 
 	AssetRegistry::Add(GetFactionSpriteID(Faction::Blue), new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_blue")));
@@ -198,6 +198,11 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 
 	CreateAI(Faction::Blue);
 	CreateAI(Faction::Red);
+
+	AssetRegistry::Add("sprite/grass01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("medievalTile_57")));
+	AssetRegistry::Add("sprite/grass02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("medievalTile_58")));
+
+	CreateBackground(1280, 720, 64);
 
 	m_GameRunning = true;
 }
@@ -452,4 +457,21 @@ Engine::Entity TowerBattleLayer::CreateSelection()
 	m_Selection.AddComponent<Engine::Components::Renderable2D>("sprite/selection");
 
 	return m_Selection;
+}
+
+void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
+{
+	for (int x = -width / 2.0f; x <= width / 2.0f; x += tileSize)
+	{
+		for (int y = -height / 2.0f; y <= height / 2.0f; y += tileSize)
+		{
+			Engine::Entity tile = m_Scene->CreateEntity();
+			tile.AddComponent<Engine::Components::Transform>(
+				Engine::Vec3(x, y, 3.0f),				// position
+				Engine::Vec3(0.0f, 0.0f, 0.0f),			// rotation
+				Engine::Vec3(tileSize+1, tileSize+1, 1.0f)	// scale
+			);
+			tile.AddComponent<Engine::Components::Renderable2D>(Engine::GetRandomFloat() < 0.5f ? "sprite/grass01" : "sprite/grass02");
+		}
+	}
 }
