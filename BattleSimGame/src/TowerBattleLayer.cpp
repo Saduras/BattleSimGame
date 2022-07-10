@@ -40,6 +40,19 @@ static std::string GetFactionSpritePath(Faction faction)
 	return "";
 }
 
+static std::string GetUnitBarSprite(Faction faction)
+{
+	switch (faction)
+	{
+	case Faction::Red:  return "sprite/bar/fill/red";
+	case Faction::Blue: return "sprite/bar/fill/blue";
+	case Faction::None: return "sprite/bar/fill/neutral";
+	}
+
+	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
+	return "";
+}
+
 static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
 {
 	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
@@ -107,6 +120,17 @@ static void TowerProductionSystem(float deltaTime, Engine::Entity entity, Tower&
 	}
 }
 
+static void UnitBarUISystem(float delta_time, Engine::Entity entity, UnitBar& unitBar, Engine::Components::Transform& transform, Engine::Components::Renderable2D& renderable)
+{
+	Tower& tower = unitBar.TowerEntity.GetComponent<Tower>();
+	float fraction = tower.Units / (float)tower.MaxUnits;
+
+	transform.Scale.x = unitBar.MaxWidth * fraction;
+	transform.Position.x = unitBar.X + unitBar.MaxWidth / 2.0f * fraction;
+
+	renderable.Data[0].SpriteID = GetUnitBarSprite(tower.Faction);
+}
+
 static void AIStrategistSystem(float deltaTime, Engine::Entity entity, AIStrategist& ai)
 {
 	ai.TimeUntilAction -= deltaTime;
@@ -142,24 +166,28 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 {
 	m_Scene = scene;
 
+	using namespace Engine;
+
 	// Prepare assets
-	Engine::TextureAtlas* atlas = new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png");
-	Engine::AssetRegistry::Add("atlas", atlas);
-	Engine::Shader* shader = new Engine::Shader("res/shader/pixel_sprite.shader");
+	TextureAtlas* atlas = new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png");
+	AssetRegistry::Add("atlas", atlas);
+	Shader* shader = new Shader("res/shader/pixel_sprite.shader");
 	shader->SetProperty("u_TexelPerPixel", 5.0f);
-	Engine::AssetRegistry::Add("shader/sprite", shader);
+	AssetRegistry::Add("shader/sprite", shader);
 
-	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Blue), new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_blue")));
-	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::Red), new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_red")));
-	Engine::AssetRegistry::Add(GetFactionSpriteID(Faction::None), new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_neutral")));
+	AssetRegistry::Add(GetFactionSpriteID(Faction::Blue), new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_blue")));
+	AssetRegistry::Add(GetFactionSpriteID(Faction::Red), new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_red")));
+	AssetRegistry::Add(GetFactionSpriteID(Faction::None), new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_neutral")));
 
-	Engine::AssetRegistry::Add("sprite/unit/blue", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_blue")));
-	Engine::AssetRegistry::Add("sprite/unit/red", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_red")));
+	AssetRegistry::Add("sprite/unit/blue", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_blue")));
+	AssetRegistry::Add("sprite/unit/red", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_red")));
 
-	Engine::AssetRegistry::Add("sprite/selection", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_selection")));
-	Engine::AssetRegistry::Add("sprite/bar/frame", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_frame")));
-	Engine::AssetRegistry::Add("sprite/bar/fill", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_fill")));
-	Engine::AssetRegistry::Add("sprite/bar/background", new Engine::Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_background")));
+	AssetRegistry::Add("sprite/selection", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_selection")));
+	AssetRegistry::Add("sprite/bar/frame", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_frame")));
+	AssetRegistry::Add("sprite/bar/fill/neutral", new Sprite("shader/sprite", "atlas", Vec4(1.0f, 1.0f, 1.0f, 1.0f), atlas->FindSubTexIndex("tower_bar_fill")));
+	AssetRegistry::Add("sprite/bar/fill/red", new Sprite("shader/sprite", "atlas", Vec4(233.0f/255.0f, 125.0f/255.0f, 85.0f/255.0f, 1.0f), atlas->FindSubTexIndex("tower_bar_fill")));
+	AssetRegistry::Add("sprite/bar/fill/blue", new Sprite("shader/sprite", "atlas", Vec4(85.0f/255.0f, 173.0f/255.0f, 233.0f/255.0f, 1.0f), atlas->FindSubTexIndex("tower_bar_fill")));
+	AssetRegistry::Add("sprite/bar/background", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_background")));
 
 	CreateCamera();
 	CreateSelection();
@@ -188,6 +216,7 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
 	m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
 	m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
+	m_Scene->ExecuteSystem<UnitBar, Engine::Components::Transform>(deltaTime, UnitBarUISystem);
 	m_Scene->Update(deltaTime);
 }
 
@@ -373,7 +402,8 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(49.0f, 3.0f, 1.0f)  // scale
 		);
-	bar_fill.AddComponent<Renderable2D>("sprite/bar/fill");
+	bar_fill.AddComponent<Renderable2D>(GetUnitBarSprite(faction));
+	bar_fill.AddComponent<UnitBar>(49.0f, position.x - 49.0f/2.0f, tower);
 
 	auto bar_background = m_Scene->CreateEntity();
 	bar_background.AddComponent<Transform>(

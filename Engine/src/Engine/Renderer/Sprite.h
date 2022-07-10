@@ -22,6 +22,7 @@ namespace Engine
 	{
 	public:
 		Sprite(const std::string& shaderID, const std::string& atlasID, int index = 0);
+		Sprite(const std::string& shaderID, const std::string& atlasID, Vec4 color, int index = 0);
 
 		inline const std::string& GetShaderID() const { return m_ShaderID; }
 		inline const std::string& GetAtlasID() const { return m_AtlasID; }

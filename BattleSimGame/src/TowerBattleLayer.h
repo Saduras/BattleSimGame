@@ -31,6 +31,13 @@ struct AIStrategist
 	float TimeUntilAction = 0.0f;
 };
 
+struct UnitBar
+{
+	float MaxWidth;
+	float X;
+	Engine::Entity TowerEntity;
+};
+
 struct QuadCollider
 {
 	Engine::Vec2 Center;
