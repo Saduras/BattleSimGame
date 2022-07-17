@@ -53,14 +53,17 @@ static std::string GetUnitBarSprite(Faction faction)
 	return "";
 }
 
-static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
+static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, QuadCollider& collider, Engine::Components::Transform& transform)
 {
 	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
 	Engine::Vec3 currentPosition = transform.Position;
 	Engine::Vec3 distance = targetPosition - currentPosition;
 
-	if (Engine::Magnitude(distance) > 0.1f)
+	if (Engine::Magnitude(distance) > 0.1f) 
+	{
 		transform.Position += Engine::Normalize(distance) * unit.Speed * deltaTime;
+		collider.Center = transform.Position;
+	}
 }
 
 static void UnitAttackSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
@@ -158,6 +161,13 @@ static void AIStrategistSystem(float deltaTime, Engine::Entity entity, AIStrateg
 	TowerBattleLayer::Attack(own_tower_entites[src_index], other_tower_entities[target_index]);
 }
 
+static void DrawCollidersSystem(float deltaTime, Engine::Entity entity, QuadCollider& collider)
+{
+	Engine::Vec2 offset(collider.Width / 2.0f, collider.Height / 2.0f);		
+	Engine::Vec3 color(1.0f, 0.8f, 0.3f);
+	Engine::Debug::DrawRect(collider.Center - offset, collider.Center + offset, color, 1.0f);
+}
+
 bool TowerBattleLayer::m_GameRunning = false;
 Engine::Scene* TowerBattleLayer::m_Scene = nullptr;
 
@@ -189,6 +199,8 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	AssetRegistry::Add("sprite/bar/fill/blue", new Sprite("shader/sprite", "atlas", Vec4(85.0f/255.0f, 173.0f/255.0f, 233.0f/255.0f, 1.0f), atlas->FindSubTexIndex("tower_bar_fill")));
 	AssetRegistry::Add("sprite/bar/background", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_background")));
 
+	Debug::SetShader("res/shader/debug.shader");
+
 	CreateCamera();
 	CreateSelection();
 
@@ -216,12 +228,16 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	if (!m_GameRunning)
 		return;
 
-	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitMoveSystem);
+	m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Components::Transform>(deltaTime, UnitMoveSystem);
 	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitAttackSystem);
 	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
 	m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
 	m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
 	m_Scene->ExecuteSystem<UnitBar, Engine::Components::Transform>(deltaTime, UnitBarUISystem);
+
+	// Debug
+	m_Scene->ExecuteSystem<QuadCollider>(deltaTime, DrawCollidersSystem);
+
 	m_Scene->Update(deltaTime);
 }
 
@@ -323,8 +339,8 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 	unit.AddComponent<Renderable2D>(GetUnitSpriteID(faction));
 	unit.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
-		50.0f, // width
-		100.0f // height
+		18.0f, // width
+		25.0f // height
 	);
 }
 

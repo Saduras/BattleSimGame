@@ -52,6 +52,17 @@ namespace Engine::Debug
 		});
 	}
 
+	void DrawRect(Vec2 bottomLeft, Vec2 topRight, Vec3 color, float lineWidth)
+	{
+		Vec2 topLeft = Vec2(bottomLeft.x, topRight.y);
+		Vec2 bottomRight = Vec2(topRight.x, bottomLeft.y);
+
+		DrawLine(topLeft, topRight, color, lineWidth);
+		DrawLine(topRight, bottomRight, color, lineWidth);
+		DrawLine(bottomRight, bottomLeft, color, lineWidth);
+		DrawLine(bottomLeft, topLeft, color, lineWidth);
+	}
+
 	void Render()
 	{
 		Shader& shader = AssetRegistry::Get<Shader>("debug");
