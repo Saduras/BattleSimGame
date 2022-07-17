@@ -9,7 +9,7 @@
 
 namespace Engine
 {
-MeshData GetMeshDataForSubTexture(const TextureAtlas& atlas, int index)
+MeshData GetMeshDataForSubTexture(const TextureAtlas& atlas, size_t index)
 {
 	SubTexture subTexture = atlas.GetSubTexture(index);
 	Vec2 size = atlas.GetSize();
@@ -101,7 +101,7 @@ TextureAtlas::~TextureAtlas()
 	glDeleteTextures(1, &m_RendererID);
 }
 
-int TextureAtlas::FindSubTexIndex(std::string name)
+size_t TextureAtlas::FindSubTexIndex(std::string name)
 {
 	for (size_t i = 0; i < m_SubTextures.size(); i++)
 		if (m_SubTextures[i].Name == name)

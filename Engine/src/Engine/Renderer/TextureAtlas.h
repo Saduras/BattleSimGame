@@ -21,7 +21,7 @@ namespace Engine
 		int Height;
 	};
 
-	MeshData GetMeshDataForSubTexture(const TextureAtlas& atlas, int index);
+	MeshData GetMeshDataForSubTexture(const TextureAtlas& atlas, size_t index);
 
 	class TextureAtlas : public Asset
 	{
@@ -43,14 +43,14 @@ namespace Engine
 		/// </summary>
 		/// <param name="name">Name to search for.</param>
 		/// <returns>Index of the subtexture with matching name. Returns -1 if no match was found.</returns>
-		int FindSubTexIndex(std::string name);
+		size_t FindSubTexIndex(std::string name);
 
 		void Bind(unsigned int slot = 0) const;
 		void Unbind() const;
 
 		inline Vec2 GetSize() const { return Vec2(m_Width, m_Height); }
 		inline size_t GetSubTextureCount() const { return m_SubTextures.size(); }
-		inline const SubTexture& GetSubTexture(int index) const { return m_SubTextures[index]; }
+		inline const SubTexture& GetSubTexture(size_t index) const { return m_SubTextures[index]; }
 	private:
 		std::string m_FilePath;
 		std::vector<SubTexture> m_SubTextures;

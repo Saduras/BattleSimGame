@@ -461,9 +461,9 @@ Engine::Entity TowerBattleLayer::CreateSelection()
 
 void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
 {
-	for (int x = -width / 2.0f; x <= width / 2.0f; x += tileSize)
+	for (int x = int(- width / 2.0f); x <= int(width / 2.0f); x += tileSize)
 	{
-		for (int y = -height / 2.0f; y <= height / 2.0f; y += tileSize)
+		for (int y = int(- height / 2.0f); y <= int(height / 2.0f); y += tileSize)
 		{
 			Engine::Entity tile = m_Scene->CreateEntity();
 			tile.AddComponent<Engine::Components::Transform>(

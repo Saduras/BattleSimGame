@@ -57,11 +57,11 @@ namespace Engine
 		meshData.Verticies[texCoordIndex + 3 * vertexLength + 1] = texCoords.EndY;
 	}
 
-	Sprite::Sprite(const std::string& shaderID, const std::string& atlasID, int index /* = 0 */) 
+	Sprite::Sprite(const std::string& shaderID, const std::string& atlasID, size_t index /* = 0 */) 
 		: Sprite(shaderID, atlasID, Vec4(1.0f, 1.0f, 1.0f, 1.0f), index)
 	{ }
 
-	Sprite::Sprite(const std::string& shaderID, const std::string& atlasID, Vec4 color, int index /* = 0 */)
+	Sprite::Sprite(const std::string& shaderID, const std::string& atlasID, Vec4 color, size_t index /* = 0 */)
 		: m_ShaderID(shaderID), m_AtlasID(atlasID), m_Color(color), m_Index(index)
 	{
 		Shader& shader = AssetRegistry::Get<Shader>(shaderID);
