@@ -15,7 +15,10 @@ namespace Engine
 		template<class T>
 		static T& Get(const std::string& id)
 		{
-			auto asset = s_Instance->m_AssetMap.at(id);
+			if (s_Instance->m_AssetMap.find(id) == s_Instance->m_AssetMap.end())
+				ENG_CORE_ERROR("No asset with id: {0}", id);
+
+			auto asset = s_Instance->m_AssetMap[id];
 			T* typed_pointer = static_cast<T*>(asset);
 			return *typed_pointer;
 		}
