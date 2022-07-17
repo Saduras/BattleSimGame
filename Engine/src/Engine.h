@@ -17,6 +17,7 @@
 #include "Engine/String.h"
 #include "Engine/Time.h"
 #include "Engine/Random.h"
+#include "Engine/DebugTool.h"
 
 // ---Rendering--------------------------
 #include "Engine/Renderer/Renderer.h"

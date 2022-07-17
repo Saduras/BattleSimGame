@@ -6,6 +6,7 @@
 #include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/DebugTool.h"
 
 namespace Engine::Systems {
 	void Render3DSystem::Execute(float deltaTime)
@@ -23,6 +24,8 @@ namespace Engine::Systems {
 			// Render all entities with transform, mesh and material
 			auto renderableView = m_Scene->GetView<Components::Transform, Components::Renderable3D>();
 			renderableView.each(Render3DSystem::RenderRenderable);
+
+			Debug::Render();
 
 			Engine::Renderer::EndScene();
 			});

@@ -155,13 +155,42 @@ static void CreatePixelShaderExample(Engine::Scene* scene)
 	scene->AddSystem<Engine::Systems::Render2DSystem>();
 }
 
-ExampleLayer::ExampleLayer(ExampleScene example)
+static void CreateDebugDrawingExample(Engine::Scene* scene)
+{
+	Engine::Debug::SetShader("res/shader/debug.shader");
+
+	// Prepare camera
+	auto camera = scene->CreateEntity();
+	camera.AddComponent<Engine::Components::Transform>(
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
+		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
+		Engine::Vec3(1.0f, 1.0f, 1.0f)  // scale
+	);
+	camera.AddComponent<Engine::Components::OrthographicCamera>(
+		(float)-1280 / 2, // left
+		(float)1280 / 2, // right
+		(float)-720 / 2, // bottom
+		(float)720 / 2  // top
+	);
+
+	// Setup systems
+	scene->AddSystem<Engine::Systems::Render2DSystem>();
+}
+
+static void UpdateDebugDrawingExample(float deltaTime)
+{
+	Engine::Debug::DrawLine(Engine::Vec2(0.0f, 0.0f), Engine::Vec2(50.0f, 50.0f), Engine::Vec3(1.0f, 0.0f, 0.0f), 10.0f);
+}
+
+ExampleLayer::ExampleLayer(ExampleId example)
 {
 	m_Scene = new Engine::Scene();
-	switch (example) {
-		case ExampleScene::QuadRender:		CreateQuadRenderExample(m_Scene);	break;
-		case ExampleScene::SpriteRender:	CreateSpriteRenderExample(m_Scene);	break;
-		case ExampleScene::PixelShader:		CreatePixelShaderExample(m_Scene);	break;
+	m_ExampleId = example;
+	switch (m_ExampleId) {
+		case ExampleId::QuadRender:		CreateQuadRenderExample(m_Scene);	break;
+		case ExampleId::SpriteRender:	CreateSpriteRenderExample(m_Scene);	break;
+		case ExampleId::PixelShader:		CreatePixelShaderExample(m_Scene);	break;
+		case ExampleId::DebugDrawings:	CreateDebugDrawingExample(m_Scene); break;
 		default:
 			ENG_FATAL("Unknown example value!");
 	}
@@ -177,4 +206,7 @@ void ExampleLayer::OnUpdate(float deltaTime)
 {
 	if (m_Scene != nullptr)
 		m_Scene->Update(deltaTime);
+
+	if (m_ExampleId == ExampleId::DebugDrawings)
+		UpdateDebugDrawingExample(deltaTime);
 }

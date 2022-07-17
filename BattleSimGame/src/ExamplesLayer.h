@@ -2,20 +2,22 @@
 
 #include <Engine.h>
 
-enum class ExampleScene
+enum class ExampleId
 {
 	QuadRender,
 	SpriteRender,
 	PixelShader,
+	DebugDrawings,
 };
 
 class ExampleLayer : public Engine::Layer
 {
 public:
-	ExampleLayer(ExampleScene example);
+	ExampleLayer(ExampleId example);
 	~ExampleLayer();
 
 	void OnUpdate(float deltaTime) override;
 private:
 	Engine::Scene* m_Scene = nullptr;
+	ExampleId m_ExampleId;
 };

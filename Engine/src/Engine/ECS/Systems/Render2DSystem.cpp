@@ -11,6 +11,7 @@
 #include "Engine/Renderer/TextureAtlas.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/DebugTool.h"
 
 namespace Engine::Systems {
 	void Render2DSystem::Execute(float deltaTime)
@@ -43,6 +44,8 @@ namespace Engine::Systems {
 					Render2DSystem::RenderRenderable(transform, entity.GetComponent<Components::Renderable2D>());
 				}
 			);
+
+			Debug::Render();
 
 			Engine::Renderer::EndScene();
 			});
