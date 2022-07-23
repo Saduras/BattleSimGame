@@ -1,6 +1,7 @@
 #include "TowerBattleLayer.h"
 
 #include <algorithm> 
+#include <limits>
 
 #include <Engine/Renderer/Material.h>
 #include <Engine/Renderer/Mesh.h>
@@ -65,13 +66,33 @@ static void CollisionDetectionSystem(float deltaTime, Engine::Scene* scene, Engi
 	});
 }
 
-static bool HasCollisionWithEnemyUnit(Unit& unit, QuadCollider& collider)
+static void EnemyContactSystem(float deltaTime, Engine::Entity entity, EnemyContact& contact, Unit& unit, QuadCollider& collider)
 {
+	contact.HasContact = false;
+	contact.Enemies.clear();
+	contact.ClosestEnemy = Engine::Entity();
+
+	float min_distance = std::numeric_limits<float>::max();
+
 	for (Engine::Entity other : collider.Collisions)
 		if (other.HasComponent<Unit>() && other.GetComponent<Unit>().Faction != unit.Faction)
-			return true;
+		{
+			contact.HasContact = true;
+			contact.Enemies.push_back(other);
 
-	return false;
+			QuadCollider& otherCollider = other.GetComponent<QuadCollider>();
+			float distance = Engine::Magnitude(otherCollider.Center - collider.Center);
+			if (distance < min_distance)
+			{
+				min_distance = distance;
+				contact.ClosestEnemy = other;
+			}
+		}
+}
+
+static bool HasCollisionWithEnemyUnit(Engine::Entity entity)
+{
+	return entity.HasComponent<EnemyContact>() && entity.GetComponent<EnemyContact>().HasContact;
 }
 
 static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, QuadCollider& collider, Engine::Components::Transform& transform)
@@ -80,14 +101,14 @@ static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, Q
 	Engine::Vec3 currentPosition = transform.Position;
 	Engine::Vec3 distance = targetPosition - currentPosition;
 
-	if (Engine::Magnitude(distance) > 0.1f && !HasCollisionWithEnemyUnit(unit, collider))
+	if (Engine::Magnitude(distance) > 0.1f && !HasCollisionWithEnemyUnit(entity))
 	{
 		transform.Position += Engine::Normalize(distance) * unit.Speed * deltaTime;
 		collider.Center = transform.Position;
 	}
 }
 
-static void UnitAttackSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
+static void UnitAttackTowerSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
 {
 	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
 	Engine::Vec3 distance = targetPosition - transform.Position;
@@ -187,7 +208,7 @@ static void DrawCollidersSystem(float deltaTime, Engine::Entity entity, QuadColl
 	Engine::Vec2 offset(collider.Width / 2.0f, collider.Height / 2.0f);		
 	Engine::Vec3 color(1.0f, 0.8f, 0.3f);
 
-	if (entity.HasComponent<Unit>() && HasCollisionWithEnemyUnit(entity.GetComponent<Unit>(), collider))
+	if (entity.HasComponent<Unit>() && HasCollisionWithEnemyUnit(entity))
 		color = Engine::Vec3(1.0f, 0.0f, 0.0f);
 
 	Engine::Debug::DrawRect(collider.Center - offset, collider.Center + offset, color, 1.0f);
@@ -254,8 +275,9 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 		return;
 
 	m_Scene->ExecuteSystem<QuadCollider>(deltaTime, CollisionDetectionSystem);
+	m_Scene->ExecuteSystem<EnemyContact, Unit, QuadCollider>(deltaTime, EnemyContactSystem);
 	m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Components::Transform>(deltaTime, UnitMoveSystem);
-	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitAttackSystem);
+	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitAttackTowerSystem);
 	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
 	m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
 	m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
@@ -362,6 +384,7 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 		Engine::Vec3(faceDirection * 18.0f, 25.0f, 1.0f)  // scale
 		);
 	unit.AddComponent<Unit>(faction, targetTower);
+	unit.AddComponent<EnemyContact>();
 	unit.AddComponent<Renderable2D>(GetUnitSpriteID(faction));
 	unit.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },

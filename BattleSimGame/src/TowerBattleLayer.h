@@ -60,6 +60,13 @@ struct QuadCollider
 	}
 };
 
+struct EnemyContact
+{
+	bool HasContact;
+	std::vector<Engine::Entity> Enemies;
+	Engine::Entity ClosestEnemy;
+};
+
 class TowerBattleLayer : public Engine::Layer
 {
 public:
