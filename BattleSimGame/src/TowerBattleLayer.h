@@ -43,6 +43,10 @@ struct QuadCollider
 	Engine::Vec2 Center;
 	float Width;
 	float Height;
+	std::vector<Engine::Entity> Collisions;
+
+	Engine::Vec2 GetTopRight() { return Engine::Vec2(Center.x + Width / 2, Center.y + Height / 2); }
+	Engine::Vec2 GetBottomLeft() { return Engine::Vec2(Center.x - Width / 2, Center.y - Height / 2); }
 
 	bool IsInside(Engine::Vec2 position)
 	{

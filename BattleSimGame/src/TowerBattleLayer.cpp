@@ -53,13 +53,34 @@ static std::string GetUnitBarSprite(Faction faction)
 	return "";
 }
 
+static void CollisionDetectionSystem(float deltaTime, Engine::Scene* scene, Engine::Entity entity, QuadCollider& collider)
+{
+	collider.Collisions.clear();
+
+	auto view = scene->GetView<QuadCollider>();
+	view.each([scene, entity, &collider](entt::entity otherId, QuadCollider& otherCollider) {
+		// Test if the top-right corner is inside the other collider (both ways)
+		if (otherCollider.IsInside(collider.GetTopRight()) || collider.IsInside(otherCollider.GetTopRight()))
+			collider.Collisions.push_back(Engine::Entity(otherId, scene));
+	});
+}
+
+static bool HasCollisionWithEnemyUnit(Unit& unit, QuadCollider& collider)
+{
+	for (Engine::Entity other : collider.Collisions)
+		if (other.HasComponent<Unit>() && other.GetComponent<Unit>().Faction != unit.Faction)
+			return true;
+
+	return false;
+}
+
 static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, QuadCollider& collider, Engine::Components::Transform& transform)
 {
 	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
 	Engine::Vec3 currentPosition = transform.Position;
 	Engine::Vec3 distance = targetPosition - currentPosition;
 
-	if (Engine::Magnitude(distance) > 0.1f) 
+	if (Engine::Magnitude(distance) > 0.1f && !HasCollisionWithEnemyUnit(unit, collider))
 	{
 		transform.Position += Engine::Normalize(distance) * unit.Speed * deltaTime;
 		collider.Center = transform.Position;
@@ -165,6 +186,10 @@ static void DrawCollidersSystem(float deltaTime, Engine::Entity entity, QuadColl
 {
 	Engine::Vec2 offset(collider.Width / 2.0f, collider.Height / 2.0f);		
 	Engine::Vec3 color(1.0f, 0.8f, 0.3f);
+
+	if (entity.HasComponent<Unit>() && HasCollisionWithEnemyUnit(entity.GetComponent<Unit>(), collider))
+		color = Engine::Vec3(1.0f, 0.0f, 0.0f);
+
 	Engine::Debug::DrawRect(collider.Center - offset, collider.Center + offset, color, 1.0f);
 }
 
@@ -228,6 +253,7 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	if (!m_GameRunning)
 		return;
 
+	m_Scene->ExecuteSystem<QuadCollider>(deltaTime, CollisionDetectionSystem);
 	m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Components::Transform>(deltaTime, UnitMoveSystem);
 	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitAttackSystem);
 	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
