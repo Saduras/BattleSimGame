@@ -88,6 +88,21 @@ namespace Engine
 		}
 
 		/// <summary>
+		/// Executes a system function on the view of all entities with the specified components.
+		/// </summary>
+		/// <typeparam name="...Component">Components each entity must have.</typeparam>
+		/// <param name="deltaTime">Time since last update in seconds</param>
+		/// <param name="system">Function to be executed for each entity</param>
+		template<typename... Component>
+		void ExecuteSystem(float deltaTime, void (*system)(float, Scene*, Entity, Component&...))
+		{
+			auto view = GetView<Component...>();
+			view.each([this, deltaTime, system](entt::entity entity, Component&... components) {
+				system(deltaTime, this, Entity(entity, this), components...);
+				});
+		}
+
+		/// <summary>
 		/// Returns count of (alive) entities in this scene.
 		/// </summary>
 		/// <returns></returns>
