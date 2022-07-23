@@ -23,6 +23,10 @@ struct Unit
 	Faction Faction = Faction::None;
 	Engine::Entity Target;
 	float Speed = 20.0f;
+	float Health = 5.0f;
+	float Attack = 1.0f;
+	float AttackSpeed = 1.0f;
+	float NextAttackTime = 0.0f;
 };
 
 struct AIStrategist

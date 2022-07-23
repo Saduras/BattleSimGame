@@ -108,6 +108,29 @@ static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, Q
 	}
 }
 
+static void UnitAttackUnitSystem(float deltaTime, Engine::Entity, Unit& unit, EnemyContact& contact)
+{
+	unit.NextAttackTime = std::max(0.0f, unit.NextAttackTime - deltaTime);
+
+	if (!contact.HasContact)
+		return;
+
+	if (unit.NextAttackTime == 0.0f)
+	{
+		Unit& enemy = contact.ClosestEnemy.GetComponent<Unit>();
+		enemy.Health = std::max(0.0f, enemy.Health - unit.Attack);
+
+		// One attack per second
+		unit.NextAttackTime = 1.0f;
+	}
+}
+
+static void UnitDeathSystem(float deltaTime, Engine::Entity entity, Unit& unit)
+{
+	if (unit.Health <= 0.0f)
+		entity.Destroy();
+}
+
 static void UnitAttackTowerSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
 {
 	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
@@ -274,13 +297,20 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	if (!m_GameRunning)
 		return;
 
+	// Update collision detection
 	m_Scene->ExecuteSystem<QuadCollider>(deltaTime, CollisionDetectionSystem);
+	// Update units
 	m_Scene->ExecuteSystem<EnemyContact, Unit, QuadCollider>(deltaTime, EnemyContactSystem);
+	m_Scene->ExecuteSystem<Unit, EnemyContact>(deltaTime, UnitAttackUnitSystem);
+	m_Scene->ExecuteSystem<Unit>(deltaTime, UnitDeathSystem);
 	m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Components::Transform>(deltaTime, UnitMoveSystem);
 	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitAttackTowerSystem);
+	// Update towers
 	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
 	m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
+	// Update AI
 	m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
+	// Update UI
 	m_Scene->ExecuteSystem<UnitBar, Engine::Components::Transform>(deltaTime, UnitBarUISystem);
 
 	// Debug
