@@ -56,7 +56,8 @@ namespace Engine {
 		/// <returns>True if entity has this component already.</returns>
 		template<typename Component>
 		bool HasComponent() {
-			return m_ContextScene->m_Registry.has<Component>(m_EntityID);
+			return m_ContextScene->m_Registry.valid(m_EntityID) 
+				&& m_ContextScene->m_Registry.has<Component>(m_EntityID);
 		}
 
 		/// <summary>
