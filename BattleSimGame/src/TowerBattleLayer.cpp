@@ -208,22 +208,25 @@ static void AIStrategistSystem(float deltaTime, Engine::Entity entity, AIStrateg
 
 	ai.TimeUntilAction = 7.0f + 2.0f * Engine::GetRandomFloat();
 
-	std::vector<Engine::Entity> own_tower_entites;
+	std::vector<Engine::Entity> own_tower_entities;
 	std::vector<Engine::Entity> other_tower_entities;
 
 	// Gather towers for each faction
 	Engine::Scene* scene = TowerBattleLayer::GetScene();
-	scene->GetView<Tower>().each([&own_tower_entites, &other_tower_entities, &ai, scene](entt::entity entity, Tower& tower) {
+	scene->GetView<Tower>().each([&own_tower_entities, &other_tower_entities, &ai, scene](entt::entity entity, Tower& tower) {
 		if (tower.Faction == ai.Faction)
-			own_tower_entites.push_back(Engine::Entity(entity, scene));
+			own_tower_entities.push_back(Engine::Entity(entity, scene));
 		else
 			other_tower_entities.push_back(Engine::Entity(entity, scene));
 	});
 
-	int src_index = Engine::GetRandomIndex(own_tower_entites.size());
+	// Reduce action time when controling more towers
+	ai.TimeUntilAction /= own_tower_entities.size();
+
+	int src_index = Engine::GetRandomIndex(own_tower_entities.size());
 	int target_index = Engine::GetRandomIndex(other_tower_entities.size());
 
-	TowerBattleLayer::Attack(own_tower_entites[src_index], other_tower_entities[target_index]);
+	TowerBattleLayer::Attack(own_tower_entities[src_index], other_tower_entities[target_index]);
 }
 
 static void DrawCollidersSystem(float deltaTime, Engine::Entity entity, QuadCollider& collider)
