@@ -107,6 +107,7 @@ size_t TextureAtlas::FindSubTexIndex(std::string name)
 		if (m_SubTextures[i].Name == name)
 			return i;
 
+	ENG_CORE_ASSERT_FMT(false, "Unable to find sub texture {}!", name)
 	return -1;
 }
 
