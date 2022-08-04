@@ -11,8 +11,6 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace RandomTests
 {
-	static int s_SystemExecuteCount = 0;
-
 	TEST_CLASS(RandomTests)
 	{
 	public:

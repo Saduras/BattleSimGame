@@ -9,8 +9,6 @@ using namespace Engine;
 
 namespace GridTests
 {
-	static int s_SystemExecuteCount = 0;
-
 	TEST_CLASS(GridTests)
 	{
 	public:
