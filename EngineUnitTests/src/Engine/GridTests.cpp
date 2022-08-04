@@ -33,6 +33,24 @@ namespace GridTests
 			Assert::AreEqual(grid(3, 4), 2);
 		}
 
+		TEST_METHOD(WideGridTest)
+		{
+			Grid<int> grid(10, 1);
+
+			grid(9, 0) = 4;
+
+			Assert::AreEqual(grid(9, 0), 4);
+		}
+
+		TEST_METHOD(HeighGridTest)
+		{
+			Grid<int> grid(1, 10);
+
+			grid(0, 9) = 4;
+
+			Assert::AreEqual(grid(0, 9), 4);
+		}
+
 		TEST_METHOD(InvalidIndexTest)
 		{
 			Grid<int> grid(4, 5);

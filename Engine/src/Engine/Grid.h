@@ -24,14 +24,14 @@ namespace Engine
 			ENG_CORE_ASSERT_FMT(x < m_Width, "Invalid index x! value: {} allowed range: [0, {}]", x , m_Width - 1);
 			ENG_CORE_ASSERT_FMT(y < m_Height, "Invalid index y! value: {} allowed range: [0, {}]", y, m_Height - 1);
 
-			return m_Data[x * m_Width + y];
+			return m_Data[x * m_Height + y];
 		}
 
 		inline T operator() (size_t x, size_t y) const
 		{
 			ENG_CORE_ASSERT_FMT(x < m_Width, "Invalid index x! value: %i allowed range: [0, %i]", x, m_Width - 1);
 			ENG_CORE_ASSERT_FMT(y < m_Height, "Invalid index y! value: %i allowed range: [0, %i]", y, m_Height - 1);
-			return m_Data[x * m_Width + y];
+			return m_Data[x * m_Height + y];
 		}
 
 	private:
