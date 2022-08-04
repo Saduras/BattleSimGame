@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 namespace Engine
 {
 	/// <summary>
@@ -22,4 +24,15 @@ namespace Engine
 	/// <param name="length"></param>
 	/// <returns></returns>
 	int GetRandomIndex(size_t length);
+
+	/// <summary>
+	/// Returns a random entry from the given collection.
+	/// </summary>
+	/// <param name="collection">Collection to draw a random entry from.</param>
+	/// <returns>Random entry.</returns>
+	template<class T>
+	T GetRandomEntry(std::vector<T> collection)
+	{
+		return collection[GetRandomIndex(collection.size())];
+	}
 }
