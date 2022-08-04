@@ -20,6 +20,8 @@
 #include "Engine/Random.h"
 #include "Engine/DebugTool.h"
 
+#include "Engine/WavefunctionCollapse/WavefunctionCollapse.h"
+
 // ---Rendering--------------------------
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/RenderCommand.h"

@@ -4,7 +4,7 @@
 namespace Engine::WFC {
 	void PropagateCell(const std::vector<int>& source, std::vector<int>& target, const RuleSet& rules)
 	{
-		for (int i = target.size() - 1; i >= 0; i--)
+		for (int i = (int)target.size() - 1; i >= 0; i--)
 		{
 			const int target_option = target[i];
 			bool is_valid = false;
@@ -22,15 +22,27 @@ namespace Engine::WFC {
 		}
 	}
 
-	void UpdateAdjecentCells(Grid<std::vector<int>>& options, int x, int y, const RuleSet& rules)
+	int UpdateAdjecentCells(Grid<std::vector<int>>& options, int x, int y, const RuleSet& rules)
 	{
-		if (x > 0)
-			PropagateCell(options(x, y), options(x - 1, y), rules);
-		if (x < options.GetWidth() - 1)
-			PropagateCell(options(x, y), options(x + 1, y), rules);
-		if (y > 0)
-			PropagateCell(options(x, y), options(x, y - 1), rules);
-		if (y < options.GetHeight() - 1)
-			PropagateCell(options(x, y), options(x, y + 1), rules);
+		static GridPoint neighbours[4] = { {x - 1, y}, {x + 1, y}, {x, y - 1}, {x, y + 1} };
+		
+		int collapsed = 0;
+		bool error = false;
+
+		for (GridPoint neighbour : neighbours)
+		{
+			// Check if neighbour is inside grid bounds.
+			if (neighbour.x >= 0 && neighbour.x < options.GetWidth()
+				&& neighbour.y >= 0 && neighbour.y < options.GetHeight())
+			{
+				int size_before = (int)options.Get(neighbour).size();
+				PropagateCell(options.Get(x, y), options.Get(neighbour), rules);
+				if (size_before != 1 && (int)options.Get(neighbour).size() == 1)
+					collapsed++;
+				error |= options.Get(neighbour).size() == 0;
+			}
+		}
+
+		return collapsed;
 	}
 }

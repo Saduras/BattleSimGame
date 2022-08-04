@@ -31,10 +31,10 @@ namespace WavefunctionCollapseTests
 		TEST_METHOD(UpdateAdjecentCellsTest)
 		{
 			Grid<std::vector<int>> grid(2, 2);
-			grid(0, 0) = { 0 };
-			grid(1, 0) = { 0, 1, 2 };
-			grid(0, 1) = { 1, 2 };
-			grid(1, 1) = { 0, 1, 2, 3 };
+			grid.Get(0, 0) = { 0 };
+			grid.Get(1, 0) = { 0, 1, 2 };
+			grid.Get(0, 1) = { 1, 2 };
+			grid.Get(1, 1) = { 0, 1, 2, 3 };
 
 			WFC::RuleSet rules = {
 				{0, { 0, 1 } },
@@ -43,12 +43,13 @@ namespace WavefunctionCollapseTests
 				{3, {} }
 			};
 
-			WFC::UpdateAdjecentCells(grid, 0, 0, rules);
+			int collapsed = WFC::UpdateAdjecentCells(grid, 0, 0, rules);
 
-			Assert::AreEqual(grid(0, 0), { 0 });
-			Assert::AreEqual(grid(1, 0), { 0, 1 });
-			Assert::AreEqual(grid(0, 1), { 1 });
-			Assert::AreEqual(grid(1, 1), { 0, 1, 2 ,3 });
+			Assert::AreEqual(grid.Get(0, 0), { 0 });
+			Assert::AreEqual(grid.Get(1, 0), { 0, 1 });
+			Assert::AreEqual(grid.Get(0, 1), { 1 });
+			Assert::AreEqual(grid.Get(1, 1), { 0, 1, 2 ,3 });
+			Assert::AreEqual(collapsed, 1);
 		}
 	};
 }
