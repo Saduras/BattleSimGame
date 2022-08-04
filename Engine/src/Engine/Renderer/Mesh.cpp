@@ -87,7 +87,7 @@ namespace Engine
 			case PrimitiveMesh::TextureQuad:	return GetTexturedQuadMeshData();
 		}
 
-		ENG_CORE_ASSERT(false, "Unsupported PrimitiveMesh type {0}!", primitive);
+		ENG_CORE_ASSERT_FMT(false, "Unsupported PrimitiveMesh type {0}!", primitive);
 		return {};
 	}
 

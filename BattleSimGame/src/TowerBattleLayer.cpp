@@ -14,7 +14,7 @@ static std::string GetFactionSpriteID(Faction faction)
 	case Faction::None: return "sprite/tower/none";
 	}
 
-	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
+	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
 	return "";
 }
 
@@ -25,7 +25,7 @@ static std::string GetUnitSpriteID(Faction faction)
 	case Faction::Blue: return "sprite/unit/blue";
 	}
 
-	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
+	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
 	return "";
 }
 
@@ -37,7 +37,7 @@ static std::string GetFactionSpritePath(Faction faction)
 	case Faction::None: return "res/sprite/Tower_None.png";
 	}
 
-	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
+	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
 	return "";
 }
 
@@ -50,7 +50,7 @@ static std::string GetUnitBarSprite(Faction faction)
 	case Faction::None: return "sprite/bar/fill/neutral";
 	}
 
-	ENG_ASSERT(false, "Unsupported Faction {0}", faction);
+	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
 	return "";
 }
 
