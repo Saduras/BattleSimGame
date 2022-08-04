@@ -283,8 +283,16 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	CreateAI(Faction::Blue);
 	CreateAI(Faction::Red);
 
-	AssetRegistry::Add("sprite/grass01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_01")));
-	AssetRegistry::Add("sprite/grass02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_02")));
+	AssetRegistry::Add("sprite/grass_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_01")));
+	AssetRegistry::Add("sprite/grass_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_02")));
+	AssetRegistry::Add("sprite/leaf_forest_light_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_light_01")));
+	AssetRegistry::Add("sprite/leaf_forest_light_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_light_02")));
+	AssetRegistry::Add("sprite/leaf_forest_dense_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_dense_01")));
+	AssetRegistry::Add("sprite/leaf_forest_dense_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_dense_02")));
+	AssetRegistry::Add("sprite/needle_forest_light_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_light_01")));
+	AssetRegistry::Add("sprite/needle_forest_light_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_light_02")));
+	AssetRegistry::Add("sprite/needle_forest_dense_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_01")));
+	AssetRegistry::Add("sprite/needle_forest_dense_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_02")));
 
 	CreateBackground(1280, 720, 64);
 
@@ -557,30 +565,113 @@ Engine::Entity TowerBattleLayer::CreateSelection()
 	return m_Selection;
 }
 
+enum class CellType : int
+{
+	Invalid = -1,
+	Grass = 0,
+	LeafForestLight,
+	LeafForestDense,
+	NeedleForestLight,
+	NeedleForestDense,
+
+	Length
+};
+
+static Engine::Grid<int> GenerateBackground(int width, int height, const Engine::WFC::RuleSet& rules)
+{
+	const int length = static_cast<size_t>(CellType::Length);
+
+	// Initialize grid
+	Engine::Grid<int> grid(width, height);
+	Engine::Grid<std::vector<int>> options(width, height);
+	for (int x = 0; x < width; x += 1)
+	{
+		for (int y = 0; y < height; y += 1)
+		{
+			grid.Get(x, y) = -1;
+			options.Get(x, y) = std::vector<int>(length);
+			for (int i = 0; i < length; i++)
+				options.Get(x, y)[i] = i;
+		}
+	}
+
+	// Collapse random cell
+	int start_x = Engine::GetRandomIndex(width);
+	int start_y = Engine::GetRandomIndex(height);
+	grid.Get(start_x, start_y) = 0;
+	options.Get(start_x, start_y) = { 0 };
+	int collapsed = 1 + Engine::WFC::UpdateAdjecentCells(options, start_x, start_y, rules);
+
+	
+	while (collapsed < width * height)
+	{
+		Engine::GridPoint lowest_entropy_pt = { -1, -1 };
+		int lowest_entropy = (int)CellType::Length + 1;
+		for (int x = 0; x < width; x += 1)
+		{
+			for (int y = 0; y < height; y += 1)
+			{
+				int size = (int)options.Get(x, y).size();
+				if (size != 1 && size < lowest_entropy)
+				{
+					lowest_entropy = size;
+					lowest_entropy_pt = { x, y };
+				}
+			}
+		}
+
+		ENG_ASSERT(lowest_entropy_pt.x != -1, "Failed to find a point to collapse!");
+
+		std::vector<int>& cell = options.Get(lowest_entropy_pt);
+
+		if (cell.size() == 0)
+		{
+			// TODO backpropagate from here
+			ENG_ERROR("Waveform Collapse failed! No more options!");
+			break;
+		}
+
+		cell = { Engine::GetRandomEntry(cell) };
+		collapsed += 1 + Engine::WFC::UpdateAdjecentCells(options, lowest_entropy_pt.x, lowest_entropy_pt.y, rules);
+	}
+
+	return grid;
+}
+
 void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
 {
 	int grid_width = width / tileSize + 1;
 	int grid_height = height / tileSize + 1;
 
-	Engine::Grid<int> grid(grid_width, grid_height);
-	for (int x = 0; x < grid_width; x += 1)
-	{
-		for (int y = 0; y < grid_height; y += 1)
-		{
-			grid(x, y) = 0;
-		}
-	}
+	Engine::WFC::RuleSet rules = {
+		{(int)CellType::Grass,
+			{(int)CellType::Grass, (int)CellType::LeafForestLight, (int)CellType::NeedleForestLight}},
+		{(int)CellType::LeafForestLight,
+			{(int)CellType::Grass, (int)CellType::LeafForestLight, (int)CellType::LeafForestDense}},
+		{(int)CellType::LeafForestDense,
+			{(int)CellType::LeafForestLight, (int)CellType::LeafForestDense}},
+		{(int)CellType::NeedleForestLight,
+			{(int)CellType::Grass, (int)CellType::NeedleForestLight, (int)CellType::NeedleForestDense}},
+		{(int)CellType::NeedleForestDense,
+			{(int)CellType::NeedleForestLight, (int)CellType::NeedleForestDense}}
+	};
 
-	std::vector<std::string> map[1] = {
-		{ "sprite/grass01", "sprite/grass02" }
+	Engine::Grid<int> grid = GenerateBackground(grid_width, grid_height, rules);
+
+	std::vector<std::string> map[static_cast<size_t>(CellType::Length)] = {
+		{ "sprite/grass_01", "sprite/grass_02" },
+		{ "sprite/leaf_forest_light_01", "sprite/leaf_forest_light_02" },
+		{ "sprite/leaf_forest_dense_01", "sprite/leaf_forest_dense_02" },
+		{ "sprite/needle_forest_light_01", "sprite/needle_forest_light_02" },
+		{ "sprite/needle_forest_dense_01", "sprite/needle_forest_dense_02" }
 	};
 
 	for (int x = 0; x < grid_width; x += 1)
 	{
 		for (int y = 0; y < grid_height; y += 1)
 		{
-			int pixel_x = x * tileSize - width / 2.0f;
-			int pixel_y = y * tileSize - height / 2.0f;
+			int pixel_x = int(x * tileSize - width / 2.0f);
+			int pixel_y = int(y * tileSize - height / 2.0f);
 
 
 			Engine::Entity tile = m_Scene->CreateEntity();
@@ -589,7 +680,8 @@ void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
 				Engine::Vec3(0.0f, 0.0f, 0.0f),			// rotation
 				Engine::Vec3(tileSize+1, tileSize+1, 1.0f)	// scale
 			);
-			tile.AddComponent<Engine::Components::Renderable2D>(Engine::GetRandomEntry(map[grid(x, y)]));
+
+			tile.AddComponent<Engine::Components::Renderable2D>(Engine::GetRandomEntry(map[grid.Get(x, y)]));
 		}
 	}
 }
