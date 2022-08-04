@@ -14,6 +14,7 @@
 #include "Engine/Assets/AssetRegistry.h"
 
 #include "Engine/Math.h"
+#include "Engine/Grid.h"
 #include "Engine/String.h"
 #include "Engine/Time.h"
 #include "Engine/Random.h"
