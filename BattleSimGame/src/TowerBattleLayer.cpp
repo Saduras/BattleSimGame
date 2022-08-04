@@ -559,17 +559,37 @@ Engine::Entity TowerBattleLayer::CreateSelection()
 
 void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
 {
-	for (int x = int(- width / 2.0f); x <= int(width / 2.0f); x += tileSize)
+	int grid_width = width / tileSize + 1;
+	int grid_height = height / tileSize + 1;
+
+	Engine::Grid<int> grid(grid_width, grid_height);
+	for (int x = 0; x < grid_width; x += 1)
 	{
-		for (int y = int(- height / 2.0f); y <= int(height / 2.0f); y += tileSize)
+		for (int y = 0; y < grid_height; y += 1)
 		{
+			grid(x, y) = 0;
+		}
+	}
+
+	std::vector<std::string> map[1] = {
+		{ "sprite/grass01", "sprite/grass02" }
+	};
+
+	for (int x = 0; x < grid_width; x += 1)
+	{
+		for (int y = 0; y < grid_height; y += 1)
+		{
+			int pixel_x = x * tileSize - width / 2.0f;
+			int pixel_y = y * tileSize - height / 2.0f;
+
+
 			Engine::Entity tile = m_Scene->CreateEntity();
 			tile.AddComponent<Engine::Components::Transform>(
-				Engine::Vec3(x, y, 3.0f),				// position
+				Engine::Vec3(pixel_x, pixel_y, 3.0f),				// position
 				Engine::Vec3(0.0f, 0.0f, 0.0f),			// rotation
 				Engine::Vec3(tileSize+1, tileSize+1, 1.0f)	// scale
 			);
-			tile.AddComponent<Engine::Components::Renderable2D>(Engine::GetRandomFloat() < 0.5f ? "sprite/grass01" : "sprite/grass02");
+			tile.AddComponent<Engine::Components::Renderable2D>(Engine::GetRandomEntry(map[grid(x, y)]));
 		}
 	}
 }
