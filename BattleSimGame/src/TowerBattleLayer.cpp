@@ -283,8 +283,8 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	CreateAI(Faction::Blue);
 	CreateAI(Faction::Red);
 
-	AssetRegistry::Add("sprite/grass01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("medievalTile_57")));
-	AssetRegistry::Add("sprite/grass02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("medievalTile_58")));
+	AssetRegistry::Add("sprite/grass01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_01")));
+	AssetRegistry::Add("sprite/grass02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_02")));
 
 	CreateBackground(1280, 720, 64);
 
