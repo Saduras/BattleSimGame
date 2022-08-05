@@ -5,6 +5,12 @@
 namespace Engine
 {
 	/// <summary>
+	/// Sets the seed of the random generator.
+	/// </summary>
+	/// <param name="seed"></param>
+	void SetSeed(unsigned int seed);
+
+	/// <summary>
 	/// Returns a uniform random number in the range 0.0f and 1.0f.
 	/// </summary>
 	/// <returns></returns>
