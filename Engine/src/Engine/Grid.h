@@ -2,13 +2,17 @@
 
 #include "Engine/Log.h"
 
-
 namespace Engine
 {
 	struct GridPoint
 	{
 		int x;
 		int y;
+
+		bool operator==(const GridPoint& other) const
+		{
+			return x == other.x && y == other.y;
+		}
 	};
 
 
@@ -54,5 +58,17 @@ namespace Engine
 		int m_Width;
 		int m_Height;
 		std::vector<T> m_Data;
+	};
+}
+
+namespace std
+{
+	template<>
+	struct hash<Engine::GridPoint>
+	{
+		std::size_t operator()(const Engine::GridPoint& point) const
+		{
+			return std::hash<int>()(point.x) ^ (std::hash<int>()(point.y) << 1);
+		}
 	};
 }
