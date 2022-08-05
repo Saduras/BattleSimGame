@@ -246,6 +246,7 @@ Engine::Scene* TowerBattleLayer::m_Scene = nullptr;
 TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	: Layer("TowerBattle")
 {
+	Engine::SetSeed(42);
 	m_Scene = scene;
 
 	using namespace Engine;
@@ -276,9 +277,7 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	CreateCamera();
 	CreateSelection();
 
-	CreateTower({ 100.0f, 0.0f, 0.0f }, Faction::None);
-	CreateTower({ 200.0f, 50.0f, 0.0f }, Faction::Red);
-	CreateTower({ -50.0f, 75.0f, 0.0f }, Faction::Blue);
+	CreateLevel(1280, 720, 64);
 
 	CreateAI(Faction::Blue);
 	CreateAI(Faction::Red);
@@ -294,7 +293,6 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	AssetRegistry::Add("sprite/needle_forest_dense_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_01")));
 	AssetRegistry::Add("sprite/needle_forest_dense_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_02")));
 
-	CreateBackground(1280, 720, 64);
 
 	m_GameRunning = true;
 }
@@ -325,7 +323,7 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	m_Scene->ExecuteSystem<UnitBar, Engine::Components::Transform>(deltaTime, UnitBarUISystem);
 
 	// Debug
-	m_Scene->ExecuteSystem<QuadCollider>(deltaTime, DrawCollidersSystem);
+	//m_Scene->ExecuteSystem<QuadCollider>(deltaTime, DrawCollidersSystem);
 
 	m_Scene->Update(deltaTime);
 }
@@ -577,33 +575,14 @@ enum class CellType : int
 	Length
 };
 
-static Engine::Grid<int> GenerateBackground(int width, int height, const Engine::WFC::RuleSet& rules)
+static void PlaceTower(int x, int y, Faction faction, std::unordered_map<Engine::GridPoint, Faction> & tower_factions, Engine::Grid<std::vector<int>>& grid, const Engine::WFC::RuleSet& rules)
 {
-	const int length = static_cast<size_t>(CellType::Length);
-	std::vector<int> values(length);
-	for (int i = 0; i < length; i++)
-		values[i] = i;
-
-	Engine::Grid<std::vector<int>> options(width, height, values);
-
-	// Collapse random cell
-	int start_x = Engine::GetRandomIndex(width);
-	int start_y = Engine::GetRandomIndex(height);
-	options.Get(start_x, start_y) = { 0 };
-	Engine::WFC::UpdateAdjecentCells(options, start_x, start_y, rules);
-
-	Engine::WFC::CollapseGrid(options, rules);
-
-	// Copy collapsed grid values
-	Engine::Grid<int> grid(width, height);
-	for (int x = 0; x < width; x++)
-		for (int y = 0; y < height; y++)
-			grid.Get(x, y) = options.Get(x, y)[0];
-
-	return grid;
+	grid.Get(x, y) = { (int)CellType::Grass };
+	Engine::WFC::UpdateAdjecentCells(grid, x, y, rules);
+	tower_factions[{x, y}] = faction;
 }
 
-void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
+void TowerBattleLayer::CreateLevel(int width, int height, int tileSize)
 {
 	int grid_width = width / tileSize + 1;
 	int grid_height = height / tileSize + 1;
@@ -621,7 +600,25 @@ void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
 			{(int)CellType::NeedleForestLight, (int)CellType::NeedleForestDense}}
 	};
 
-	Engine::Grid<int> grid = GenerateBackground(grid_width, grid_height, rules);
+	// Allow any cell type except towers
+	const int length = static_cast<size_t>(CellType::Length);
+	std::vector<int> values(length);
+	for (int i = (int)CellType::Grass; i < length; i++)
+		values[i] = i;
+
+	Engine::Grid<std::vector<int>> grid(grid_width, grid_height, values);
+
+	// Place towers
+	std::unordered_map<Engine::GridPoint, Faction> tower_factions;
+	// Blue faction
+	PlaceTower(5, 5, Faction::Blue, tower_factions, grid, rules);
+	// Red faction
+	PlaceTower(15, 7, Faction::Red, tower_factions, grid, rules);
+	// Neutral
+	PlaceTower(10, 5, Faction::None, tower_factions, grid, rules);
+	PlaceTower(10, 8, Faction::None, tower_factions, grid, rules);
+
+	Engine::WFC::CollapseGrid(grid, rules);
 
 	std::vector<std::string> map[static_cast<size_t>(CellType::Length)] = {
 		{ "sprite/grass_01", "sprite/grass_02" },
@@ -631,6 +628,7 @@ void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
 		{ "sprite/needle_forest_dense_01", "sprite/needle_forest_dense_02" }
 	};
 
+	// Spawn tiles for grid cells
 	for (int x = 0; x < grid_width; x += 1)
 	{
 		for (int y = 0; y < grid_height; y += 1)
@@ -638,15 +636,18 @@ void TowerBattleLayer::CreateBackground(int width, int height, int tileSize)
 			int pixel_x = int(x * tileSize - width / 2.0f);
 			int pixel_y = int(y * tileSize - height / 2.0f);
 
-
+			// Add tile
 			Engine::Entity tile = m_Scene->CreateEntity();
 			tile.AddComponent<Engine::Components::Transform>(
 				Engine::Vec3(pixel_x, pixel_y, 3.0f),				// position
 				Engine::Vec3(0.0f, 0.0f, 0.0f),			// rotation
 				Engine::Vec3(tileSize+1, tileSize+1, 1.0f)	// scale
 			);
+			int cell_type = grid.Get(x, y)[0];
+			tile.AddComponent<Engine::Components::Renderable2D>(Engine::GetRandomEntry(map[cell_type]));
 
-			tile.AddComponent<Engine::Components::Renderable2D>(Engine::GetRandomEntry(map[grid.Get(x, y)]));
+			if(tower_factions.find({x, y}) != tower_factions.end())
+				CreateTower({ pixel_x, pixel_y, 0.0f }, tower_factions[{x, y}]);
 		}
 	}
 }
