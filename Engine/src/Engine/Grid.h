@@ -22,8 +22,14 @@ namespace Engine
 			ENG_CORE_ASSERT(width > 0 && height > 0, "Width and height must be greater than 0!");
 		}
 
-		int GetWidth() { return m_Width; }
-		int GetHeight() { return m_Height; }
+		Grid(int width, int height, const T& initialValue)
+			: m_Width(width), m_Height(height), m_Data(width* height, initialValue)
+		{
+			ENG_CORE_ASSERT(width > 0 && height > 0, "Width and height must be greater than 0!");
+		}
+
+		int GetWidth() const { return m_Width; }
+		int GetHeight() const { return m_Height; }
 
 		inline T& Get(int x, int y)
 		{

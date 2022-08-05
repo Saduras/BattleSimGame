@@ -57,5 +57,14 @@ namespace GridTests
 				grid.Get(4, 5);
 			});
 		}
+
+		TEST_METHOD(InitialValueTest)
+		{
+			Grid<int> grid(4, 5, 7);
+
+			for (int i = 0; i < 4; i++)
+				for (int j = 0; j < 5; j++)
+					Assert::AreEqual(grid.Get(i, j), 7);
+		}
 	};
 }
