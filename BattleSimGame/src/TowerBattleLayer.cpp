@@ -580,60 +580,25 @@ enum class CellType : int
 static Engine::Grid<int> GenerateBackground(int width, int height, const Engine::WFC::RuleSet& rules)
 {
 	const int length = static_cast<size_t>(CellType::Length);
+	std::vector<int> values(length);
+	for (int i = 0; i < length; i++)
+		values[i] = i;
 
-	// Initialize grid
-	Engine::Grid<int> grid(width, height);
-	Engine::Grid<std::vector<int>> options(width, height);
-	for (int x = 0; x < width; x += 1)
-	{
-		for (int y = 0; y < height; y += 1)
-		{
-			grid.Get(x, y) = -1;
-			options.Get(x, y) = std::vector<int>(length);
-			for (int i = 0; i < length; i++)
-				options.Get(x, y)[i] = i;
-		}
-	}
+	Engine::Grid<std::vector<int>> options(width, height, values);
 
 	// Collapse random cell
 	int start_x = Engine::GetRandomIndex(width);
 	int start_y = Engine::GetRandomIndex(height);
-	grid.Get(start_x, start_y) = 0;
 	options.Get(start_x, start_y) = { 0 };
-	int collapsed = 1 + Engine::WFC::UpdateAdjecentCells(options, start_x, start_y, rules);
+	Engine::WFC::UpdateAdjecentCells(options, start_x, start_y, rules);
 
-	
-	while (collapsed < width * height)
-	{
-		Engine::GridPoint lowest_entropy_pt = { -1, -1 };
-		int lowest_entropy = (int)CellType::Length + 1;
-		for (int x = 0; x < width; x += 1)
-		{
-			for (int y = 0; y < height; y += 1)
-			{
-				int size = (int)options.Get(x, y).size();
-				if (size != 1 && size < lowest_entropy)
-				{
-					lowest_entropy = size;
-					lowest_entropy_pt = { x, y };
-				}
-			}
-		}
+	Engine::WFC::CollapseGrid(options, rules);
 
-		ENG_ASSERT(lowest_entropy_pt.x != -1, "Failed to find a point to collapse!");
-
-		std::vector<int>& cell = options.Get(lowest_entropy_pt);
-
-		if (cell.size() == 0)
-		{
-			// TODO backpropagate from here
-			ENG_ERROR("Waveform Collapse failed! No more options!");
-			break;
-		}
-
-		cell = { Engine::GetRandomEntry(cell) };
-		collapsed += 1 + Engine::WFC::UpdateAdjecentCells(options, lowest_entropy_pt.x, lowest_entropy_pt.y, rules);
-	}
+	// Copy collapsed grid values
+	Engine::Grid<int> grid(width, height);
+	for (int x = 0; x < width; x++)
+		for (int y = 0; y < height; y++)
+			grid.Get(x, y) = options.Get(x, y)[0];
 
 	return grid;
 }
