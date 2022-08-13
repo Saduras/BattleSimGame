@@ -272,16 +272,6 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	AssetRegistry::Add("sprite/bar/fill/blue", new Sprite("shader/sprite", "atlas", Vec4(85.0f/255.0f, 173.0f/255.0f, 233.0f/255.0f, 1.0f), atlas->FindSubTexIndex("tower_bar_fill")));
 	AssetRegistry::Add("sprite/bar/background", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_background")));
 
-	Debug::SetShader("res/shader/debug.shader");
-
-	CreateCamera();
-	CreateSelection();
-
-	CreateLevel(1280, 720, 64);
-
-	CreateAI(Faction::Blue);
-	CreateAI(Faction::Red);
-
 	AssetRegistry::Add("sprite/grass_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_01")));
 	AssetRegistry::Add("sprite/grass_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_02")));
 	AssetRegistry::Add("sprite/leaf_forest_light_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_light_01")));
@@ -293,6 +283,30 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	AssetRegistry::Add("sprite/needle_forest_dense_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_01")));
 	AssetRegistry::Add("sprite/needle_forest_dense_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_02")));
 
+	AssetRegistry::Add("animation/walk", new Animation(
+		{ 
+			{
+				0.2f, // duration
+				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, -10.0f }, { 1.0f, 1.0f, 1.0f } }, // start transform
+				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f,  10.0f }, { 1.0f, 1.0f, 1.0f } }, // end transform
+			},
+			{
+				0.2f, // duration
+				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f,  10.0f }, { 1.0f, 1.0f, 1.0f } }, // start transform
+				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, -10.0f }, { 1.0f, 1.0f, 1.0f } }, // end transform
+			},
+		}
+	));
+
+	Debug::SetShader("res/shader/debug.shader");
+
+	CreateCamera();
+	CreateSelection();
+
+	CreateLevel(1280, 720, 64);
+
+	CreateAI(Faction::Blue);
+	CreateAI(Faction::Red);
 
 	m_GameRunning = true;
 }
@@ -317,6 +331,8 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
 	// Update UI
 	m_Scene->ExecuteSystem<UnitBar, Engine::Transform>(deltaTime, UnitBarUISystem);
+	// Update Animations
+	m_Scene->ExecuteSystem<Engine::Components::Animator>(deltaTime, Engine::Systems::TransformAnimationSystem);
 
 	// Debug
 	//m_Scene->ExecuteSystem<QuadCollider>(deltaTime, DrawCollidersSystem);
@@ -426,6 +442,7 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 		18.0f, // width
 		25.0f // height
 	);
+	unit.AddComponent<Animator>("animation/walk", Engine::Transform(), 0.0f);
 }
 
 void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)

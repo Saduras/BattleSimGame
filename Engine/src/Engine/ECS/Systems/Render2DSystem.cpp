@@ -12,6 +12,7 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/DebugTool.h"
 #include "Engine/Math.h"
+#include "Engine/ECS/Systems/TransformAnimationSystem.h"
 
 namespace Engine::Systems {
 	void Render2DSystem::Execute(float deltaTime)
@@ -41,7 +42,7 @@ namespace Engine::Systems {
 					if (!entity.HasComponent<Components::Renderable2D>())
 						return;
 
-					Render2DSystem::RenderRenderable(transform, entity.GetComponent<Components::Renderable2D>());
+					Render2DSystem::RenderRenderable(entity, transform, entity.GetComponent<Components::Renderable2D>());
 				}
 			);
 
@@ -51,7 +52,7 @@ namespace Engine::Systems {
 			});
 	}
 
-	void Render2DSystem::RenderRenderable(const Transform& transform, const Components::Renderable2D& renderable)
+	void Render2DSystem::RenderRenderable(Entity entity, const Transform& transform, const Components::Renderable2D& renderable)
 	{
 		for (const Components::Renderable2D::RenderData2D& data : renderable.Data)
 		{
@@ -64,6 +65,10 @@ namespace Engine::Systems {
 			atlas.Bind();
 			Renderer::SetShader(&shader);
 			Mat4 modelMatrix = TransformToMatrix(transform);
+
+			if (entity.HasComponent<Components::Animator>())
+				modelMatrix = modelMatrix * TransformToMatrix(entity.GetComponent<Components::Animator>().Offset);
+
 			shader.SetProperty("u_Model", modelMatrix);
 			shader.SetProperty("u_Color", sprite.GetColor());
 			shader.SetProperty("u_TextureSize", atlas.GetSize());

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "Engine/Math.h"
 #include "Engine/String.h"
 
 
@@ -38,6 +39,13 @@ namespace Microsoft
 						ss << ", ";
 					ss << vec[i];
 				}
+				return ss.str();
+			}
+
+			template<> static std::wstring ToString<Engine::Transform>(const Engine::Transform& transform)
+			{
+				std::wstringstream ss;
+				ss << Engine::String::ToString(transform).c_str();
 				return ss.str();
 			}
 		}
