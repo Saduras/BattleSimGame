@@ -8,7 +8,7 @@
 
 namespace Engine::String
 {
-	ALIAS_TEMPLATE_FUNCTION(FormatString, fmt::format);
+	ALIAS_TEMPLATE_FUNCTION(Format, fmt::format);
 
 	std::string ToString(const Transform& transform);
 }

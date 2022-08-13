@@ -2,9 +2,7 @@
 #include "WavefunctionCollapse.h"
 
 #include "Engine/Random.h"
-
-#include <spdlog/fmt/bundled/core.h>
-#include <spdlog/fmt/bundled/format.h>
+#include "Engine/String.h"
 
 #include <climits>
 #include <vector>
@@ -29,7 +27,7 @@ namespace Engine::WFC {
 				for (int i = 0; i < cell_value_count; i++)
 				{
 					if (i < cell.size())
-						ss << fmt::format("{}, ", cell[i]);
+						ss << String::Format("{}, ", cell[i]);
 					else
 						ss << "   ";
 				}

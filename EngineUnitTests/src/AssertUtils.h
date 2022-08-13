@@ -3,9 +3,10 @@
 #include "CppUnitTest.h"
 
 #include <glm/glm.hpp>
-#include <spdlog/fmt/fmt.h>
 
 #include <string>
+
+#include "Engine/String.h"
 
 
 static const float epsilon = 0.0001f;
@@ -13,7 +14,7 @@ static const float epsilon = 0.0001f;
 namespace AssertUtils {
 	template<typename T>
 	static void glmAreEqual(const T lhs, const T rhs) {
-		std::string message = fmt::format("{0} != {1}", glm::to_string(lhs), glm::to_string(rhs));
+		std::string message = Engine::String::Format("{0} != {1}", glm::to_string(lhs), glm::to_string(rhs));
 		Assert::IsTrue(glm::all(glm::epsilonEqual(lhs, rhs, epsilon)), ToWString(message).c_str());
 	}
 
