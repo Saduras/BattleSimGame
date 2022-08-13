@@ -287,13 +287,13 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 		{ 
 			{
 				0.2f, // duration
-				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, -10.0f }, { 1.0f, 1.0f, 1.0f } }, // start transform
-				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f,  10.0f }, { 1.0f, 1.0f, 1.0f } }, // end transform
+				{ { 0.1f, 0.0f, 0.0f}, { 0.0f, 0.0f, -10.0f }, { 1.0f, 1.0f, 1.0f } }, // start transform
+				{ { -0.1f, 0.0f, 0.0f}, { 0.0f, 0.0f,  10.0f }, { 1.0f, 1.0f, 1.0f } }, // end transform
 			},
 			{
 				0.2f, // duration
-				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f,  10.0f }, { 1.0f, 1.0f, 1.0f } }, // start transform
-				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, -10.0f }, { 1.0f, 1.0f, 1.0f } }, // end transform
+				{ { -0.1f, 0.0f, 0.0f}, { 0.0f, 0.0f,  10.0f }, { 1.0f, 1.0f, 1.0f } }, // start transform
+				{ { 0.1f, 0.0f, 0.0f}, { 0.0f, 0.0f, -10.0f }, { 1.0f, 1.0f, 1.0f } }, // end transform
 			},
 		}
 	));
