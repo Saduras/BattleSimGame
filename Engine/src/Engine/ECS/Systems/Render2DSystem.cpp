@@ -4,7 +4,6 @@
 #include "Engine/Application.h"
 #include "Engine/ECS/Components/Camera.h"
 #include "Engine/ECS/Components/Renderable.h"
-#include "Engine/ECS/Components/Transform.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/Assets/AssetRegistry.h"
 #include "Engine/Renderer/Sprite.h"
@@ -12,6 +11,7 @@
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/DebugTool.h"
+#include "Engine/Math.h"
 
 namespace Engine::Systems {
 	void Render2DSystem::Execute(float deltaTime)
@@ -23,7 +23,7 @@ namespace Engine::Systems {
 
 		auto cameras = m_Scene->GetView<Transform, OrthographicCamera>();
 		cameras.each([this](Transform& transform, OrthographicCamera& camera) {
-			Mat4 viewMatrix = transform.GetTransformationMatrix();
+			Mat4 viewMatrix = TransformToMatrix(transform);
 			Mat4 projMatrix = camera.GetProjectionMatrix();
 
 			Engine::Renderer::BeginScene(projMatrix * viewMatrix);
@@ -35,7 +35,7 @@ namespace Engine::Systems {
 
 			// Render all entities with transform, mesh and material
 			auto renderableView = m_Scene->GetView<Transform>();
-			renderableView.each([this](entt::entity entityID, const Components::Transform& transform)
+			renderableView.each([this](entt::entity entityID, const Transform& transform)
 				{
 					Entity entity(entityID, m_Scene);
 					if (!entity.HasComponent<Components::Renderable2D>())
@@ -51,7 +51,7 @@ namespace Engine::Systems {
 			});
 	}
 
-	void Render2DSystem::RenderRenderable(const Components::Transform& transform, const Components::Renderable2D& renderable)
+	void Render2DSystem::RenderRenderable(const Transform& transform, const Components::Renderable2D& renderable)
 	{
 		for (const Components::Renderable2D::RenderData2D& data : renderable.Data)
 		{
@@ -63,7 +63,7 @@ namespace Engine::Systems {
 
 			atlas.Bind();
 			Renderer::SetShader(&shader);
-			Mat4 modelMatrix = transform.GetTransformationMatrix();
+			Mat4 modelMatrix = TransformToMatrix(transform);
 			shader.SetProperty("u_Model", modelMatrix);
 			shader.SetProperty("u_Color", sprite.GetColor());
 			shader.SetProperty("u_TextureSize", atlas.GetSize());

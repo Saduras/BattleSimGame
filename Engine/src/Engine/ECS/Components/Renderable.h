@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Engine/Math.h"
+
 namespace Engine::Components
 {
 	struct Renderable3D

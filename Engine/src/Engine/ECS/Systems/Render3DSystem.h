@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine/ECS/System.h"
-#include "Engine/ECS/Components/Transform.h"
 #include "Engine/ECS/Components/Renderable.h"
 
 namespace Engine::Systems {
@@ -14,6 +13,6 @@ namespace Engine::Systems {
 		std::string GetName() const override { return "Render3DSystem"; }
 
 	private:
-		static void RenderRenderable(const Components::Transform& transform, const Components::Renderable3D& renderable);
+		static void RenderRenderable(const Transform& transform, const Components::Renderable3D& renderable);
 	};
 }

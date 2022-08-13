@@ -5,7 +5,6 @@
 #include "Engine/Scene.h"
 #include "Engine/ECS/Entity.h"
 #include "Engine/ECS/System.h"
-#include "Engine/ECS/Components/Transform.h"
 
 #include <entt/entt.hpp>
 #include <glm/glm.hpp>

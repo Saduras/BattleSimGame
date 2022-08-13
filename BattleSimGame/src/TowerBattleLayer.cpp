@@ -95,9 +95,9 @@ static bool HasCollisionWithEnemyUnit(Engine::Entity entity)
 	return entity.HasComponent<EnemyContact>() && entity.GetComponent<EnemyContact>().HasContact;
 }
 
-static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, QuadCollider& collider, Engine::Components::Transform& transform)
+static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, QuadCollider& collider, Engine::Transform& transform)
 {
-	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
+	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Transform>().Position;
 	Engine::Vec3 currentPosition = transform.Position;
 	Engine::Vec3 distance = targetPosition - currentPosition;
 
@@ -131,9 +131,9 @@ static void UnitDeathSystem(float deltaTime, Engine::Entity entity, Unit& unit)
 		entity.Destroy();
 }
 
-static void UnitAttackTowerSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Transform& transform)
+static void UnitAttackTowerSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Transform& transform)
 {
-	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Components::Transform>().Position;
+	Engine::Vec3 targetPosition = unit.Target.GetComponent<Engine::Transform>().Position;
 	Engine::Vec3 distance = targetPosition - transform.Position;
 
 	// Check if we are close enough to attack
@@ -188,7 +188,7 @@ static void TowerProductionSystem(float deltaTime, Engine::Entity entity, Tower&
 	}
 }
 
-static void UnitBarUISystem(float delta_time, Engine::Entity entity, UnitBar& unitBar, Engine::Components::Transform& transform, Engine::Components::Renderable2D& renderable)
+static void UnitBarUISystem(float delta_time, Engine::Entity entity, UnitBar& unitBar, Engine::Transform& transform, Engine::Components::Renderable2D& renderable)
 {
 	Tower& tower = unitBar.TowerEntity.GetComponent<Tower>();
 	float fraction = tower.Units / (float)tower.MaxUnits;
@@ -312,15 +312,15 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 	m_Scene->ExecuteSystem<EnemyContact, Unit, QuadCollider>(deltaTime, EnemyContactSystem);
 	m_Scene->ExecuteSystem<Unit, EnemyContact>(deltaTime, UnitAttackUnitSystem);
 	m_Scene->ExecuteSystem<Unit>(deltaTime, UnitDeathSystem);
-	m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Components::Transform>(deltaTime, UnitMoveSystem);
-	m_Scene->ExecuteSystem<Unit, Engine::Components::Transform>(deltaTime, UnitAttackTowerSystem);
+	m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Transform>(deltaTime, UnitMoveSystem);
+	m_Scene->ExecuteSystem<Unit, Engine::Transform>(deltaTime, UnitAttackTowerSystem);
 	// Update towers
 	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
 	m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
 	// Update AI
 	m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
 	// Update UI
-	m_Scene->ExecuteSystem<UnitBar, Engine::Components::Transform>(deltaTime, UnitBarUISystem);
+	m_Scene->ExecuteSystem<UnitBar, Engine::Transform>(deltaTime, UnitBarUISystem);
 
 	// Debug
 	//m_Scene->ExecuteSystem<QuadCollider>(deltaTime, DrawCollidersSystem);
@@ -376,7 +376,7 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 		if (tower.Faction == Faction::Blue) 
 		{
 			tower.Selected = true;
-			m_Selection.GetComponent<Transform>().Position = towerEntity.GetComponent<Transform>().Position;
+			m_Selection.GetComponent<Engine::Transform>().Position = towerEntity.GetComponent<Engine::Transform>().Position;
 		}
 	} else {
 		if (m_SourceTower == towerEntity) {
@@ -384,14 +384,14 @@ void TowerBattleLayer::OnTowerClick(Engine::Entity towerEntity)
 			m_SourceTower = Engine::Entity();
 
 			if (tower.Faction == Faction::Blue)
-				m_Selection.GetComponent<Transform>().Position = Engine::Vec3(-1000.0f, 0.0f, 0.0f);
+				m_Selection.GetComponent<Engine::Transform>().Position = Engine::Vec3(-1000.0f, 0.0f, 0.0f);
 		}
 		else {
 			Attack(m_SourceTower, towerEntity);
 
 			Tower& src_tower_comp = m_SourceTower.GetComponent<Tower>();
 			src_tower_comp.Selected = false;
-			m_Selection.GetComponent<Transform>().Position = Engine::Vec3(-1000.0f, 0.0f, 0.0f);
+			m_Selection.GetComponent<Engine::Transform>().Position = Engine::Vec3(-1000.0f, 0.0f, 0.0f);
 			
 			m_SourceTower = Engine::Entity();
 		}
@@ -405,8 +405,8 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 	Faction faction = sourceTower.GetComponent<Tower>().Faction;
 	
 	// Choose position at random point on circle around source tower
-	Engine::Vec3 towerPosition = sourceTower.GetComponent<Transform>().Position;
-	Engine::Vec3 targetPosition = targetTower.GetComponent<Transform>().Position;
+	Engine::Vec3 towerPosition = sourceTower.GetComponent<Engine::Transform>().Position;
+	Engine::Vec3 targetPosition = targetTower.GetComponent<Engine::Transform>().Position;
 	Engine::Vec3 direction = Engine::Normalize(targetPosition - towerPosition);
 
 	int sign = index % 2 == 0 ? 1 : -1;
@@ -417,7 +417,7 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 	float faceDirection = direction.x != 0.0f ? Engine::Sign(direction.x) : 1.0f;
 
 	Engine::Entity unit = scene.CreateEntity();
-	unit.AddComponent<Transform>(
+	unit.AddComponent<Engine::Transform>(
 		position,
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(faceDirection * 18.0f, 25.0f, 1.0f)  // scale
@@ -484,7 +484,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	using namespace Engine::Components;
 	
 	auto tower = m_Scene->CreateEntity();
-	tower.AddComponent<Transform>(
+	tower.AddComponent<Engine::Transform>(
 		position,
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(44.0f, 84.0f, 1.0f)  // scale
@@ -498,7 +498,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	);
 
 	auto bar_frame = m_Scene->CreateEntity();
-	bar_frame.AddComponent<Transform>(
+	bar_frame.AddComponent<Engine::Transform>(
 		position + Engine::Vec3(0.0f, 52.0f, -3.0f),
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(52.0f, 6.0f, 1.0f)  // scale
@@ -506,7 +506,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	bar_frame.AddComponent<Renderable2D>("sprite/bar/frame");
 
 	auto bar_fill = m_Scene->CreateEntity();
-	bar_fill.AddComponent<Transform>(
+	bar_fill.AddComponent<Engine::Transform>(
 		position + Engine::Vec3(0.0f, 52.0f, -2.0f),
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(49.0f, 8.0f, 1.0f)  // scale
@@ -515,7 +515,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 	bar_fill.AddComponent<UnitBar>(49.0f, position.x - 49.0f/2.0f, tower);
 
 	auto bar_background = m_Scene->CreateEntity();
-	bar_background.AddComponent<Transform>(
+	bar_background.AddComponent<Engine::Transform>(
 		position + Engine::Vec3(0.0f, 52.0f, -1.0f),
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(49.0f, 6.0f, 1.0f)  // scale
@@ -536,7 +536,7 @@ Engine::Entity TowerBattleLayer::CreateAI(Faction faction)
 Engine::Entity TowerBattleLayer::CreateCamera()
 {
 	auto camera = m_Scene->CreateEntity();
-	camera.AddComponent<Engine::Components::Transform>(
+	camera.AddComponent<Engine::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(1.0f, 1.0f, 1.0f)  // scale
@@ -553,7 +553,7 @@ Engine::Entity TowerBattleLayer::CreateCamera()
 Engine::Entity TowerBattleLayer::CreateSelection()
 {
 	m_Selection = m_Scene->CreateEntity();
-	m_Selection.AddComponent<Engine::Components::Transform>(
+	m_Selection.AddComponent<Engine::Transform>(
 		Engine::Vec3(-1000.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(60.0f, 98.0f, 1.0f)  // scale
@@ -638,7 +638,7 @@ void TowerBattleLayer::CreateLevel(int width, int height, int tileSize)
 
 			// Add tile
 			Engine::Entity tile = m_Scene->CreateEntity();
-			tile.AddComponent<Engine::Components::Transform>(
+			tile.AddComponent<Engine::Transform>(
 				Engine::Vec3(pixel_x, pixel_y, 3.0f),				// position
 				Engine::Vec3(0.0f, 0.0f, 0.0f),			// rotation
 				Engine::Vec3(tileSize+1, tileSize+1, 1.0f)	// scale

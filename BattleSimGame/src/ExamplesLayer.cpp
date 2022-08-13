@@ -16,7 +16,7 @@ static void CreateQuadRenderExample(Engine::Scene* scene)
 
 	// Setup camera
 	auto camera = scene->CreateEntity();
-	camera.AddComponent<Engine::Components::Transform>(
+	camera.AddComponent<Engine::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(1.0f, 1.0f, 1.0f)  // scale
@@ -30,7 +30,7 @@ static void CreateQuadRenderExample(Engine::Scene* scene)
 
 	// Setup sprite
 	auto entity = scene->CreateEntity();
-	entity.AddComponent<Engine::Components::Transform>(
+	entity.AddComponent<Engine::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// position
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// rotation
 		Engine::Vec3(50.0f, 100.0f, 1.0f)	// scale
@@ -89,7 +89,7 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 
 	// Setup camera
 	auto camera = scene->CreateEntity();
-	camera.AddComponent<Engine::Components::Transform>(
+	camera.AddComponent<Engine::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(1.0f, 1.0f, 1.0f)  // scale
@@ -103,7 +103,7 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 
 	// Setup sprite
 	auto entity = scene->CreateEntity();
-	entity.AddComponent<Engine::Components::Transform>(
+	entity.AddComponent<Engine::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// position
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// rotation
 		Engine::Vec3(100.0f, 100.0f, 1.0f)	// scale
@@ -127,7 +127,7 @@ static void CreatePixelShaderExample(Engine::Scene* scene)
 
 	// Prepare camera
 	auto camera = scene->CreateEntity();
-	camera.AddComponent<Engine::Components::Transform>(
+	camera.AddComponent<Engine::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(1.0f, 1.0f, 1.0f)  // scale
@@ -141,7 +141,7 @@ static void CreatePixelShaderExample(Engine::Scene* scene)
 
 	// Prepare pixel shaded sprite
 	auto tower = scene->CreateEntity();
-	tower.AddComponent<Engine::Components::Transform>(
+	tower.AddComponent<Engine::Transform>(
 		Engine::Vec3(100.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
@@ -161,7 +161,7 @@ static void CreateDebugDrawingExample(Engine::Scene* scene)
 
 	// Prepare camera
 	auto camera = scene->CreateEntity();
-	camera.AddComponent<Engine::Components::Transform>(
+	camera.AddComponent<Engine::Transform>(
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // position
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(1.0f, 1.0f, 1.0f)  // scale

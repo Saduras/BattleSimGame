@@ -41,7 +41,6 @@
 // -------------------------------------
 
 // ---Components-------------------------
-#include "Engine/ECS/Components/Transform.h"
 #include "Engine/ECS/Components/Camera.h"
 #include "Engine/ECS/Components/Renderable.h"
 // --------------------------------------
