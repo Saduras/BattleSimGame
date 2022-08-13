@@ -205,11 +205,7 @@ project "EngineUnitTests"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "ENG_RELEASE"
-		runtime "Release"
-		optimize "on"
+		kind "None"
 
 	filter "configurations:Dist"
-		defines "ENG_DIST"
-		runtime "Release"
-		optimize "on"
+		kind "None"
