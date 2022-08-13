@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #ifdef ENG_PLATFORM_WINDOWS
 #if ENG_DYNAMIC_LINK
 	#ifdef ENG_BUILD_DLL
@@ -21,13 +19,17 @@
 #endif
 
 #ifdef ENG_ENABLE_ASSERTS
+#include <string>
+
 	#define ENG_ASSERT(x, msg) { if(!(x)) { ENG_ERROR("Assertion Failed: {0}", msg); throw std::logic_error("Assertion Failed!");} }
 	#define ENG_ASSERT_FMT(x, format_str, ...) { if(!(x)) { ENG_ERROR(std::string("Assertion Failed: ") + format_str, __VA_ARGS__); throw std::logic_error("Assertion Failed!");} }
 	#define ENG_CORE_ASSERT(x, msg) { if(!(x)) { ENG_CORE_ERROR("Assertion Failed: {0}", msg); throw std::logic_error("Assertion Failed!");} }
 	#define ENG_CORE_ASSERT_FMT(x, format_str, ...) { if(!(x)) { ENG_CORE_ERROR(std::string("Assertion Failed: ") + format_str, __VA_ARGS__); throw std::logic_error("Assertion Failed!");} }
 #else
 	#define ENG_ASSERT(x, ...)
+	#define ENG_ASSERT_FMT(x, format_str, ...) 
 	#define ENG_CORE_ASSERT(x, ...)
+	#define ENG_CORE_ASSERT_FMT(x, format_str, ...)
 #endif
 
 #define BIT(x) (1 << x)

@@ -3,9 +3,7 @@
 #include "CppUnitTest.h"
 
 #include <glm/glm.hpp>
-
-#include <spdlog/fmt/bundled/core.h>
-#include <spdlog/fmt/bundled/format.h>
+#include <spdlog/fmt/fmt.h>
 
 #include <string>
 
