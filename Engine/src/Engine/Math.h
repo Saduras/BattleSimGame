@@ -23,9 +23,11 @@ namespace Engine
 	ALIAS_TEMPLATE_FUNCTION(DegToRad, glm::radians);
 	ALIAS_TEMPLATE_FUNCTION(Ortho, glm::ortho);
 	ALIAS_TEMPLATE_FUNCTION(Inverse, glm::inverse);
-	ALIAS_TEMPLATE_FUNCTION(RotateX, glm::rotateX)
-	ALIAS_TEMPLATE_FUNCTION(RotateY, glm::rotateY)
-	ALIAS_TEMPLATE_FUNCTION(RotateZ, glm::rotateZ)
+	ALIAS_TEMPLATE_FUNCTION(RotateX, glm::rotateX);
+	ALIAS_TEMPLATE_FUNCTION(RotateY, glm::rotateY);
+	ALIAS_TEMPLATE_FUNCTION(RotateZ, glm::rotateZ);
+	ALIAS_TEMPLATE_FUNCTION(Lerp, glm::mix);
+	ALIAS_TEMPLATE_FUNCTION(Mod, glm::mod);
 
 	struct Transform
 	{
@@ -41,6 +43,8 @@ namespace Engine
 
 		Transform(Vec3 position, Vec3 rotation, Vec3 scale)
 			: Position(position), Rotation(rotation), Scale(scale) { }
+
+		bool operator ==(const Transform& other) const;
 	};
 	
 	Mat4 TransformToMatrix(Transform transform);

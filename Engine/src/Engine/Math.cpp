@@ -3,6 +3,13 @@
 
 namespace Engine
 {
+	bool Transform::operator==(const Transform& other) const
+	{
+		return Position == other.Position
+			&& Rotation == other.Rotation
+			&& Scale == other.Scale;
+	}
+
     Mat4 TransformToMatrix(Transform transform)
     {
 		Mat4 transformMat(1.0f);
