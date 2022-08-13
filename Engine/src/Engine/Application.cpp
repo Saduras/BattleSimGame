@@ -22,10 +22,6 @@ namespace Engine
 		m_Window->SetEventCallback(ENG_BIND_EVENT_FN(Application::OnEvent));
 	}
 
-	Application::~Application()
-	{
-	}
-
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);

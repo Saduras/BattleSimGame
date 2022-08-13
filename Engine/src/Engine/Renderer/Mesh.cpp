@@ -20,10 +20,6 @@ namespace Engine
 		m_MeshData = PrimitiveToMeshData(primitive);
 		CreateVertexArray();
 	}
-	
-	Mesh::~Mesh()
-	{
-	}
 
 	MeshData GetQuadMeshData()
 	{

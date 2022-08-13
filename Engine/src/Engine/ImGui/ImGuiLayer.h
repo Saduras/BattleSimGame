@@ -11,7 +11,6 @@ namespace Engine
 	{
 	public:
 		ImGuiLayer();
-		~ImGuiLayer();
 
 		void OnAttach();
 		void OnDetach();

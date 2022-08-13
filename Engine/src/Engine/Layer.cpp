@@ -10,6 +10,4 @@ namespace Engine
 	{
 
 	}
-
-	Layer::~Layer() {}
 }

@@ -75,7 +75,6 @@ class TowerBattleLayer : public Engine::Layer
 {
 public:
 	TowerBattleLayer(Engine::Scene* scene);
-	~TowerBattleLayer();
 
 	void OnUpdate(float deltaTime) override;
 	void OnEvent(Engine::Event& event) override;

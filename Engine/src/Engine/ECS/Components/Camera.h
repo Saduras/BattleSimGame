@@ -7,8 +7,6 @@ namespace Engine::Components
 	class Camera
 	{
 	public:
-		virtual ~Camera() {};
-
 		inline Mat4 GetProjectionMatrix() { return m_Proj; }
 		inline Mat4 GetProjectionMatrixInverse() { return m_ProjInverse; }
 

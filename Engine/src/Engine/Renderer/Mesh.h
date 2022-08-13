@@ -24,11 +24,9 @@ namespace Engine
 	class Mesh : public Asset
 	{
 	public:
-		Mesh();
 		Mesh(MeshData data);
 		Mesh(const Mesh& mesh);
 		Mesh(PrimitiveMesh primitive);
-		~Mesh();
 
 		Mesh& operator=(const Mesh&) { return *this; }
 

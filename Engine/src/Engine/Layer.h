@@ -9,7 +9,7 @@ namespace Engine
 	{
 	public:
 		Layer(const std::string& name = "Layer");
-		virtual ~Layer();
+		virtual ~Layer() { }
 
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}

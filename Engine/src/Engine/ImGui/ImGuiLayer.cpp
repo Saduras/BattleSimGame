@@ -19,10 +19,6 @@ namespace Engine
 	{
 	}
 
-	ImGuiLayer::~ImGuiLayer()
-	{
-	}
-
 	void ImGuiLayer::OnAttach()
 	{
 		ImGui::CreateContext();

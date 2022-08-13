@@ -18,11 +18,6 @@ public:
 		PushLayer(new TowerBattleLayer(scene));
 		//PushOverlay(new Engine::ImGuiLayer());
 	}
-
-	~BattleSimGame()
-	{
-
-	}
 };
 
 Engine::Application* Engine::CreateApplication()

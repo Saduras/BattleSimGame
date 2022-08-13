@@ -297,10 +297,6 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	m_GameRunning = true;
 }
 
-TowerBattleLayer::~TowerBattleLayer()
-{
-}
-
 void TowerBattleLayer::OnUpdate(float deltaTime)
 {
 	if (!m_GameRunning)
