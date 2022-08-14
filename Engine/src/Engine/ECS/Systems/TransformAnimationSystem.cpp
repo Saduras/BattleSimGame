@@ -6,12 +6,26 @@
 
 namespace Engine
 {
-	Animation::Animation(const std::vector<Segment>& segments)
-		: m_Segments(segments)
+	Animation::Animation(PlayMode play_mode, const std::vector<Segment>& segments)
+		: m_PlayMode(play_mode), m_Segments(segments)
 	{
 		m_Duration = 0.0f;
 		for (const Segment& segment : m_Segments)
 			m_Duration += segment.Duration;
+	}
+
+	bool Animation::IsDone(float time) const
+	{
+		switch (m_PlayMode)
+		{
+		case PlayMode::Once:
+			return time >= GetDuration();
+		case PlayMode::Loop:
+			return false;
+		default:
+			ENG_CORE_ERROR("Unsupported play mode {}!", m_PlayMode);
+			return true;
+		}
 	}
 
 	Transform Animation::GetOffset(float time) const
@@ -43,10 +57,25 @@ namespace Engine::Systems
 	{
 		Animation& animation = AssetRegistry::Get<Animation>(animator.CurrentAnimationID);
 
+		if (animation.IsDone(animator.AnimationTime))
+			return;
+
 		// Advance animation time
 		animator.AnimationTime += deltaTime;
 		if (animator.AnimationTime > animation.GetDuration())
-			animator.AnimationTime = Mod(animator.AnimationTime, animation.GetDuration());
+		{
+			switch (animation.GetPlayMode())
+			{
+			case Animation::PlayMode::Once:
+				animator.AnimationTime = animation.GetDuration();
+				break;
+			case Animation::PlayMode::Loop:
+				animator.AnimationTime = Mod(animator.AnimationTime, animation.GetDuration());
+				break;
+			default:
+				break;
+			}
+		}
 
 		// Update offset
 		animator.Offset = animation.GetOffset(animator.AnimationTime);

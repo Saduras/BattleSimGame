@@ -18,14 +18,23 @@ namespace Engine
 			Transform EndTransform;
 		};
 
-		Animation(const std::vector<Segment>& segments);
+		enum class PlayMode
+		{
+			Once = 0,
+			Loop
+		};
 
+		Animation(PlayMode play_mode, const std::vector<Segment>& segments);
+
+		bool IsDone(float time) const;
 		Transform GetOffset(float time) const;
 		float GetDuration() const { return m_Duration; }
+		PlayMode GetPlayMode() const { return m_PlayMode; }
 
 	private: 
 		std::vector<Segment> m_Segments;
 		float m_Duration;
+		PlayMode m_PlayMode;
 	};
 }
 
