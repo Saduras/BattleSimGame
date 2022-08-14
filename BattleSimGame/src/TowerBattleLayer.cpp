@@ -283,7 +283,7 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	AssetRegistry::Add("sprite/needle_forest_dense_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_01")));
 	AssetRegistry::Add("sprite/needle_forest_dense_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_02")));
 
-	AssetRegistry::Add("animation/walk", new Animation(
+	AssetRegistry::Add("animation/walk", new Animation(Animation::PlayMode::Loop,
 		{ 
 			{
 				0.2f, // duration
@@ -294,6 +294,20 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 				0.2f, // duration
 				{ { -0.1f, 0.0f, 0.0f}, { 0.0f, 0.0f,  10.0f }, { 1.0f, 1.0f, 1.0f } }, // start transform
 				{ { 0.1f, 0.0f, 0.0f}, { 0.0f, 0.0f, -10.0f }, { 1.0f, 1.0f, 1.0f } }, // end transform
+			},
+		}
+	));
+	AssetRegistry::Add("animation/spawn", new Animation(Animation::PlayMode::Once,
+		{
+			{
+				0.15f, // duration
+				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f } }, // start transform
+				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f }, { 1.1f, 1.2f, 1.0f } }, // end transform
+			},
+			{
+				0.15f, // duration
+				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f }, { 1.1f, 1.2f, 1.0f } }, // start transform
+				{ { 0.0f, 0.0f, 0.0f}, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f } }, // end transform
 			},
 		}
 	));
@@ -451,13 +465,17 @@ void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
 	ENG_TRACE("Deselected {0}", source);
 	auto& srcTower = source.GetComponent<Tower>();
 
-	// take units from source tower
+	// Take units from source tower
 	int units = std::min((int)srcTower.Units, 5);
 	ChangeTowerUnits(source, -units);
 	ENG_TRACE("{0} units move from source (Faction: {1}, Units: {2})", units, srcTower.Faction, srcTower.Units);
 
 	for (size_t i=0; i<units; i++)
 		SpawnUnit(*m_Scene, source, target, i);
+
+	// Play animation by resetting animation time
+	Engine::Components::Animator& animator = source.GetComponent<Engine::Components::Animator>();
+	animator.AnimationTime = 0.0f;
 }
 
 void TowerBattleLayer::CheckVictoryCondition()
@@ -509,6 +527,8 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		50.0f, // width
 		100.0f // height
 	);
+	Engine::Animation& animation = Engine::AssetRegistry::Get<Engine::Animation>("animation/spawn");
+	tower.AddComponent<Animator>("animation/spawn", Engine::Transform(), animation.GetDuration());
 
 	auto bar_frame = m_Scene->CreateEntity();
 	bar_frame.AddComponent<Engine::Transform>(
