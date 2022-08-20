@@ -5,6 +5,10 @@
 
 namespace Engine
 {
+	/// <summary>
+	/// Get current time in seconds.
+	/// </summary>
+	/// <returns></returns>
 	float Time::GetTime()
 	{
 		return (float)glfwGetTime();
