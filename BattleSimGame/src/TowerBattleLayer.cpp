@@ -254,6 +254,10 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	// Prepare assets
 	TextureAtlas* atlas = new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png");
 	AssetRegistry::Add("atlas", atlas);
+	for (size_t i = 0; i < atlas->GetSubTextureCount(); i++)
+		AssetRegistry::Add(Engine::String::Format("mesh/atlas/{}", i), new Mesh (GetMeshDataForSubTexture(*atlas, i)));
+
+
 	Shader* shader = new Shader("res/shader/pixel_sprite.shader");
 	shader->SetProperty("u_TexelPerPixel", 50.0f);
 	AssetRegistry::Add("shader/sprite", shader);

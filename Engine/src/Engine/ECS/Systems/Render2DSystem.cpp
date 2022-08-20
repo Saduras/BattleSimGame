@@ -13,6 +13,7 @@
 #include "Engine/DebugTool.h"
 #include "Engine/Math.h"
 #include "Engine/ECS/Systems/TransformAnimationSystem.h"
+#include "Engine/String.h"
 
 namespace Engine::Systems {
 	void Render2DSystem::Execute(float deltaTime)
@@ -60,7 +61,7 @@ namespace Engine::Systems {
 			Shader& shader = AssetRegistry::Get<Shader>(sprite.GetShaderID());
 			TextureAtlas& atlas = AssetRegistry::Get<TextureAtlas>(sprite.GetAtlasID());
 
-			Mesh mesh(GetMeshDataForSubTexture(atlas, sprite.GetIndex()));
+			Mesh& mesh = AssetRegistry::Get<Mesh>(String::Format("mesh/{}/{}", sprite.GetAtlasID(), sprite.GetIndex()));
 
 			atlas.Bind();
 			Renderer::SetShader(&shader);
