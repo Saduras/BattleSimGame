@@ -71,8 +71,9 @@ namespace Engine
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui::NewFrame();
 
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
+		ShowPerformanceOverlay(deltaTime);
+		//static bool show = true;
+		//ImGui::ShowDemoWindow(&show);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -89,6 +90,23 @@ namespace Engine
 		dispatcher.Dispatch<KeyReleasedEvent>(ENG_BIND_EVENT_FN(ImGuiLayer::OnKeyReleasedEvent));
 		dispatcher.Dispatch<KeyTypedEvent>(ENG_BIND_EVENT_FN(ImGuiLayer::OnKeyTypedEvent));
 		dispatcher.Dispatch<WindowResizeEvent>(ENG_BIND_EVENT_FN(ImGuiLayer::OnWindowResizedEvent));
+	}
+
+	void ImGuiLayer::ShowPerformanceOverlay(float deltaTime)
+	{
+		const float DISTANCE = 10.0f;
+		ImGuiIO& io = ImGui::GetIO();
+		ImVec2 window_pos = ImVec2(DISTANCE, DISTANCE);
+		ImVec2 window_pos_pivot = ImVec2(0.0f, 0.0f);
+		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+		ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+		bool open = true;
+		if (ImGui::Begin("Performance", &open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+		{
+			ImGui::Text("Delta Time: %.2fms", deltaTime * 1000.0f);
+			ImGui::Text("FPS: %.1f", 1/deltaTime);
+		}
+		ImGui::End();
 	}
 
 	bool ImGuiLayer::OnMousePressedEvent(MouseButtonPressedEvent& e)

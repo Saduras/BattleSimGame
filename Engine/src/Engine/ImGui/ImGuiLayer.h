@@ -17,6 +17,7 @@ namespace Engine
 		void OnUpdate(float deltaTime);
 		void OnEvent(Event& event);
 	private:
+		void ShowPerformanceOverlay(float deltaTime);
 		bool OnMousePressedEvent(MouseButtonPressedEvent& e);
 		bool OnMouseReleasedEvent(MouseButtonReleasedEvent& e);
 		bool OnMouseMovedEvent(MouseMovedEvent& e);
