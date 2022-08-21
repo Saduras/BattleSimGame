@@ -34,9 +34,9 @@ namespace Engine::Systems {
 
 	void Render3DSystem::RenderRenderable(const Transform& transform, const Components::Renderable3D& renderable)
 	{
-		Material& material = AssetRegistry::Get<Material>(renderable.MaterialID);
-		Mesh& mesh = Engine::AssetRegistry::Get<Mesh>(renderable.MeshID);
-		Shader& shader = AssetRegistry::Get<Shader>(material.GetShaderID());
+		Material& material = AssetRegistry::Get<Material>(renderable.MateriaUUID);
+		Mesh& mesh = Engine::AssetRegistry::Get<Mesh>(renderable.MeshUUID);
+		Shader& shader = AssetRegistry::Get<Shader>(material.GetShaderUUID());
 
 		Renderer::SetShader(&shader);
 		auto modelMatrix = TransformToMatrix(transform);

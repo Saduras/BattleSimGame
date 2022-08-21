@@ -87,17 +87,47 @@ public:
 	static void ChangeTowerUnits(Engine::Entity towerEntity, int unitDelta);
 
 	static Engine::Scene* GetScene() { return m_Scene; };
+	static Engine::UUID GetFactionSpriteID(Faction faction);
+	static Engine::UUID GetUnitSpriteID(Faction faction);
+	static Engine::UUID GetUnitBarSprite(Faction faction);
+	static Engine::UUID GetWalkAnimUUID() { return m_AnimWalkUUID; }
 private:
+	Engine::Entity CreateTower(Engine::Vec3 position, Faction faction);
+	Engine::Entity CreateAI(Faction faction);
+	Engine::Entity CreateCamera();
+	Engine::Entity CreateSelection();
+	void CreateLevel(int width, int height, int tileSize);
+
 	static bool m_GameRunning;
 	static Engine::Scene* m_Scene;
 
 	Engine::Entity m_SourceTower;
 	Engine::Entity m_Selection;
 
-	Engine::Entity CreateTower(Engine::Vec3 position, Faction faction);
-	Engine::Entity CreateAI(Faction faction);
-	Engine::Entity CreateCamera();
-	Engine::Entity CreateSelection();
-	void CreateLevel(int width, int height, int tileSize);
+	static Engine::UUID m_TowerSpriteRedUUID;
+	static Engine::UUID m_TowerSpriteBlueUUID;
+	static Engine::UUID m_TowerSpriteNoneUUID;
+	static Engine::UUID m_UnitSpriteRedUUID;
+	static Engine::UUID m_UnitSpriteBlueUUID;
+	static Engine::UUID m_TowerBarFillSpriteRedUUID;
+	static Engine::UUID m_TowerBarFillSpriteBlueUUID;
+	static Engine::UUID m_TowerBarFillSpriteNoneUUID;
+	static Engine::UUID m_TowerBarFrameSpriteUUID;
+	static Engine::UUID m_TowerBarBackgroundSpriteUUID;
+	static Engine::UUID m_SelectionSpriteUUID;
+
+	static Engine::UUID m_GrassSprite01UUID;
+	static Engine::UUID m_GrassSprite02UUID;
+	static Engine::UUID m_LeafForestLightSprite01UUID;
+	static Engine::UUID m_LeafForestLightSprite02UUID;
+	static Engine::UUID m_LeafForestDenseSprite01UUID;
+	static Engine::UUID m_LeafForestDenseSprite02UUID;
+	static Engine::UUID m_NeedleForestLightSprite01UUID;
+	static Engine::UUID m_NeedleForestLightSprite02UUID;
+	static Engine::UUID m_NeedleForestDenseSprite01UUID;
+	static Engine::UUID m_NeedleForestDenseSprite02UUID;
+
+	static Engine::UUID m_AnimWalkUUID;
+	static Engine::UUID m_AnimSpawnUUID;
 };
 

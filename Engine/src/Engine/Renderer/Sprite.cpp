@@ -57,14 +57,14 @@ namespace Engine
 		meshData.Verticies[texCoordIndex + 3 * vertexLength + 1] = texCoords.EndY;
 	}
 
-	Sprite::Sprite(const std::string& shaderID, const std::string& atlasID, size_t index /* = 0 */) 
-		: Sprite(shaderID, atlasID, Vec4(1.0f, 1.0f, 1.0f, 1.0f), index)
+	Sprite::Sprite(const UUID& shaderUUID, const UUID& atlasUUID, const UUID& meshUUID) 
+		: Sprite(shaderUUID, atlasUUID, meshUUID, Vec4(1.0f, 1.0f, 1.0f, 1.0f))
 	{ }
 
-	Sprite::Sprite(const std::string& shaderID, const std::string& atlasID, Vec4 color, size_t index /* = 0 */)
-		: m_ShaderID(shaderID), m_AtlasID(atlasID), m_Color(color), m_Index(index)
+	Sprite::Sprite(const UUID& shaderUUID, const UUID& atlasUUID, const UUID& meshUUID, Vec4 color)
+		: m_ShaderUUID(shaderUUID), m_AtlasUUID(atlasUUID), m_MeshUUID(meshUUID), m_Color(color)
 	{
-		Shader& shader = AssetRegistry::Get<Shader>(shaderID);
+		Shader& shader = AssetRegistry::Get<Shader>(shaderUUID);
 		shader.SetProperty("u_Texture", 0);
 	}
 }

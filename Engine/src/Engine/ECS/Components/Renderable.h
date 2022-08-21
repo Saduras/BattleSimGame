@@ -3,25 +3,26 @@
 #include <string>
 
 #include "Engine/Math.h"
+#include "Engine/UUID.h"
 
 namespace Engine::Components
 {
 	struct Renderable3D
 	{
-		std::string MaterialID;
-		std::string MeshID;
+		UUID MateriaUUID;
+		UUID MeshUUID;
 	};
 
 	struct Renderable2D
 	{
 		struct RenderData2D
 		{
-			std::string SpriteID;
+			UUID SpriteUUID;
 			Vec2 offset;
 		};
 
 		Renderable2D(const std::vector<RenderData2D>& data) : Data(data) { }
-		Renderable2D(std::string spriteID, Vec2 offset = Vec2(0.0f, 0.0f)) : Data{ { spriteID, offset } } {}
+		Renderable2D(UUID spriteUUID, Vec2 offset = Vec2(0.0f, 0.0f)) : Data{ { spriteUUID, offset } } {}
 
 		std::vector<RenderData2D> Data;
 	};

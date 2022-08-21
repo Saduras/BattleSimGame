@@ -5,12 +5,13 @@ namespace Engine
 {
 	AssetRegistry* AssetRegistry::s_Instance = new AssetRegistry();
 
-	void AssetRegistry::Add(const std::string& id, Asset* asset)
+	UUID AssetRegistry::Add(Asset* asset)
 	{
-		s_Instance->m_AssetMap.emplace(id, asset);
+		s_Instance->m_AssetMap.emplace(asset->GetUUID(), asset);
+		return asset->GetUUID();
 	}
 
-	void AssetRegistry::Delete(const std::string& id)
+	void AssetRegistry::Delete(const UUID& id)
 	{
 		s_Instance->m_AssetMap.erase(id);
 	}

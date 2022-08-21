@@ -42,7 +42,7 @@ namespace Engine::Components
 {
 	struct Animator
 	{
-		std::string CurrentAnimationID;
+		UUID CurrentAnimationUUID;
 		Transform Offset = Transform();
 		float AnimationTime = 0.0f;
 	};

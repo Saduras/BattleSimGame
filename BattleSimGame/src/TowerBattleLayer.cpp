@@ -6,52 +6,40 @@
 #include <Engine/Renderer/Material.h>
 #include <Engine/Renderer/Mesh.h>
 
-static std::string GetFactionSpriteID(Faction faction)
+Engine::UUID TowerBattleLayer::GetFactionSpriteID(Faction faction)
 {
 	switch (faction) {
-	case Faction::Red: return "sprite/tower/red";
-	case Faction::Blue: return "sprite/tower/blue";
-	case Faction::None: return "sprite/tower/none";
+	case Faction::Red: return m_TowerSpriteRedUUID;
+	case Faction::Blue: return m_TowerSpriteBlueUUID;
+	case Faction::None: return m_TowerSpriteNoneUUID;
 	}
 
 	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
-	return "";
+	return Engine::UUID();
 }
 
-static std::string GetUnitSpriteID(Faction faction)
+Engine::UUID TowerBattleLayer::GetUnitSpriteID(Faction faction)
 {
 	switch (faction) {
-	case Faction::Red: return "sprite/unit/red";
-	case Faction::Blue: return "sprite/unit/blue";
+	case Faction::Red: return m_UnitSpriteRedUUID;
+	case Faction::Blue: return m_UnitSpriteBlueUUID;
 	}
 
 	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
-	return "";
+	return Engine::UUID();
 }
 
-static std::string GetFactionSpritePath(Faction faction)
-{
-	switch (faction) {
-	case Faction::Red:  return "res/sprite/Tower_Red.png";
-	case Faction::Blue: return "res/sprite/Tower_Blue.png";
-	case Faction::None: return "res/sprite/Tower_None.png";
-	}
-
-	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
-	return "";
-}
-
-static std::string GetUnitBarSprite(Faction faction)
+Engine::UUID TowerBattleLayer::GetUnitBarSprite(Faction faction)
 {
 	switch (faction)
 	{
-	case Faction::Red:  return "sprite/bar/fill/red";
-	case Faction::Blue: return "sprite/bar/fill/blue";
-	case Faction::None: return "sprite/bar/fill/neutral";
+	case Faction::Red:  return m_TowerBarFillSpriteRedUUID;
+	case Faction::Blue: return m_TowerBarFillSpriteBlueUUID;
+	case Faction::None: return m_TowerBarFillSpriteNoneUUID;
 	}
 
 	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
-	return "";
+	return Engine::UUID();
 }
 
 static void CollisionDetectionSystem(float deltaTime, Engine::Scene* scene, Engine::Entity entity, QuadCollider& collider)
@@ -170,7 +158,7 @@ static void TowerViewSystem(float deltaTime, Engine::Entity entity, Tower& tower
 	if (!tower.ViewUpdateRequested)
 		return;
 
-	renderable.Data[0].SpriteID = GetFactionSpriteID(tower.Faction);
+	renderable.Data[0].SpriteUUID = TowerBattleLayer::GetFactionSpriteID(tower.Faction);
 	tower.ViewUpdateRequested = false;
 }
 
@@ -196,7 +184,7 @@ static void UnitBarUISystem(float delta_time, Engine::Entity entity, UnitBar& un
 	transform.Scale.x = unitBar.MaxWidth * fraction;
 	transform.Position.x = unitBar.X + unitBar.MaxWidth / 2.0f * fraction;
 
-	renderable.Data[0].SpriteID = GetUnitBarSprite(tower.Faction);
+	renderable.Data[0].SpriteUUID = TowerBattleLayer::GetUnitBarSprite(tower.Faction);
 }
 
 static void AIStrategistSystem(float deltaTime, Engine::Entity entity, AIStrategist& ai)
@@ -243,6 +231,32 @@ static void DrawCollidersSystem(float deltaTime, Engine::Entity entity, QuadColl
 bool TowerBattleLayer::m_GameRunning = false;
 Engine::Scene* TowerBattleLayer::m_Scene = nullptr;
 
+Engine::UUID TowerBattleLayer::m_TowerSpriteRedUUID;
+Engine::UUID TowerBattleLayer::m_TowerSpriteBlueUUID;
+Engine::UUID TowerBattleLayer::m_TowerSpriteNoneUUID;
+Engine::UUID TowerBattleLayer::m_UnitSpriteRedUUID;
+Engine::UUID TowerBattleLayer::m_UnitSpriteBlueUUID;
+Engine::UUID TowerBattleLayer::m_TowerBarFillSpriteRedUUID;
+Engine::UUID TowerBattleLayer::m_TowerBarFillSpriteBlueUUID;
+Engine::UUID TowerBattleLayer::m_TowerBarFillSpriteNoneUUID;
+Engine::UUID TowerBattleLayer::m_TowerBarFrameSpriteUUID;
+Engine::UUID TowerBattleLayer::m_TowerBarBackgroundSpriteUUID;
+Engine::UUID TowerBattleLayer::m_SelectionSpriteUUID;
+
+Engine::UUID TowerBattleLayer::m_GrassSprite01UUID;
+Engine::UUID TowerBattleLayer::m_GrassSprite02UUID;
+Engine::UUID TowerBattleLayer::m_LeafForestLightSprite01UUID;
+Engine::UUID TowerBattleLayer::m_LeafForestLightSprite02UUID;
+Engine::UUID TowerBattleLayer::m_LeafForestDenseSprite01UUID;
+Engine::UUID TowerBattleLayer::m_LeafForestDenseSprite02UUID;
+Engine::UUID TowerBattleLayer::m_NeedleForestLightSprite01UUID;
+Engine::UUID TowerBattleLayer::m_NeedleForestLightSprite02UUID;
+Engine::UUID TowerBattleLayer::m_NeedleForestDenseSprite01UUID;
+Engine::UUID TowerBattleLayer::m_NeedleForestDenseSprite02UUID;
+
+Engine::UUID TowerBattleLayer::m_AnimWalkUUID;
+Engine::UUID TowerBattleLayer::m_AnimSpawnUUID;
+
 TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	: Layer("TowerBattle")
 {
@@ -252,42 +266,41 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	using namespace Engine;
 
 	// Prepare assets
-	TextureAtlas* atlas = new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png");
-	AssetRegistry::Add("atlas", atlas);
-	for (size_t i = 0; i < atlas->GetSubTextureCount(); i++)
-		AssetRegistry::Add(Engine::String::Format("mesh/atlas/{}", i), new Mesh (GetMeshDataForSubTexture(*atlas, i)));
+	TextureAtlas* atlas = new TextureAtlas("res/sprite/medieval_sprite_pack.png");
+	Engine::UUID atlasUUID = AssetRegistry::Add(atlas);
+	std::vector<Engine::UUID> subtexMeshUUIDs = CreateMeshesForAtlas(*atlas);
 
 
 	Shader* shader = new Shader("res/shader/pixel_sprite.shader");
 	shader->SetProperty("u_TexelPerPixel", 50.0f);
-	AssetRegistry::Add("shader/sprite", shader);
+	Engine::UUID shaderUUID = AssetRegistry::Add(shader);
 
-	AssetRegistry::Add(GetFactionSpriteID(Faction::Blue), new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_blue")));
-	AssetRegistry::Add(GetFactionSpriteID(Faction::Red), new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_red")));
-	AssetRegistry::Add(GetFactionSpriteID(Faction::None), new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_neutral")));
+	m_TowerSpriteBlueUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_blue")]));
+	m_TowerSpriteRedUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_red")]));
+	m_TowerSpriteNoneUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_neutral")]));
 
-	AssetRegistry::Add("sprite/unit/blue", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_blue")));
-	AssetRegistry::Add("sprite/unit/red", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("spearman_red")));
+	m_UnitSpriteBlueUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("spearman_blue")]));
+	m_UnitSpriteRedUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("spearman_red")]));
 
-	AssetRegistry::Add("sprite/selection", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_selection")));
-	AssetRegistry::Add("sprite/bar/frame", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_frame")));
-	AssetRegistry::Add("sprite/bar/fill/neutral", new Sprite("shader/sprite", "atlas", Vec4(1.0f, 1.0f, 1.0f, 1.0f), atlas->FindSubTexIndex("tower_bar_fill")));
-	AssetRegistry::Add("sprite/bar/fill/red", new Sprite("shader/sprite", "atlas", Vec4(233.0f/255.0f, 125.0f/255.0f, 85.0f/255.0f, 1.0f), atlas->FindSubTexIndex("tower_bar_fill")));
-	AssetRegistry::Add("sprite/bar/fill/blue", new Sprite("shader/sprite", "atlas", Vec4(85.0f/255.0f, 173.0f/255.0f, 233.0f/255.0f, 1.0f), atlas->FindSubTexIndex("tower_bar_fill")));
-	AssetRegistry::Add("sprite/bar/background", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("tower_bar_background")));
+	m_SelectionSpriteUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_selection")]));
+	m_TowerBarFrameSpriteUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_bar_frame")]));
+	m_TowerBarFillSpriteNoneUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_bar_fill")], Vec4(1.0f, 1.0f, 1.0f, 1.0f)));
+	m_TowerBarFillSpriteRedUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_bar_fill")], Vec4(233.0f / 255.0f, 125.0f / 255.0f, 85.0f / 255.0f, 1.0f)));
+	m_TowerBarFillSpriteBlueUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_bar_fill")], Vec4(85.0f / 255.0f, 173.0f / 255.0f, 233.0f / 255.0f, 1.0f)));
+	m_TowerBarBackgroundSpriteUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_bar_background")]));
 
-	AssetRegistry::Add("sprite/grass_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_01")));
-	AssetRegistry::Add("sprite/grass_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("grass_02")));
-	AssetRegistry::Add("sprite/leaf_forest_light_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_light_01")));
-	AssetRegistry::Add("sprite/leaf_forest_light_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_light_02")));
-	AssetRegistry::Add("sprite/leaf_forest_dense_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_dense_01")));
-	AssetRegistry::Add("sprite/leaf_forest_dense_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("leaf_forest_dense_02")));
-	AssetRegistry::Add("sprite/needle_forest_light_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_light_01")));
-	AssetRegistry::Add("sprite/needle_forest_light_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_light_02")));
-	AssetRegistry::Add("sprite/needle_forest_dense_01", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_01")));
-	AssetRegistry::Add("sprite/needle_forest_dense_02", new Sprite("shader/sprite", "atlas", atlas->FindSubTexIndex("needle_forest_dense_02")));
+	m_GrassSprite01UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("grass_01")]));
+	m_GrassSprite02UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("grass_02")]));
+	m_LeafForestLightSprite01UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("leaf_forest_light_01")]));
+	m_LeafForestLightSprite02UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("leaf_forest_light_02")]));
+	m_LeafForestDenseSprite01UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("leaf_forest_dense_01")]));
+	m_LeafForestDenseSprite02UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("leaf_forest_dense_02")]));
+	m_NeedleForestLightSprite01UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("needle_forest_light_01")]));
+	m_NeedleForestLightSprite02UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("needle_forest_light_02")]));
+	m_NeedleForestDenseSprite01UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("needle_forest_dense_01")]));
+	m_NeedleForestDenseSprite02UUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("needle_forest_dense_02")]));
 
-	AssetRegistry::Add("animation/walk", new Animation(Animation::PlayMode::Loop,
+	m_AnimWalkUUID = AssetRegistry::Add(new Animation(Animation::PlayMode::Loop,
 		{ 
 			{
 				0.2f, // duration
@@ -301,7 +314,7 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 			},
 		}
 	));
-	AssetRegistry::Add("animation/spawn", new Animation(Animation::PlayMode::Once,
+	m_AnimSpawnUUID = AssetRegistry::Add(new Animation(Animation::PlayMode::Once,
 		{
 			{
 				0.15f, // duration
@@ -454,13 +467,13 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 		);
 	unit.AddComponent<Unit>(faction, targetTower);
 	unit.AddComponent<EnemyContact>();
-	unit.AddComponent<Renderable2D>(GetUnitSpriteID(faction));
+	unit.AddComponent<Renderable2D>(TowerBattleLayer::GetUnitSpriteID(faction));
 	unit.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
 		18.0f, // width
 		25.0f // height
 	);
-	unit.AddComponent<Animator>("animation/walk", Engine::Transform(), 0.0f);
+	unit.AddComponent<Animator>(TowerBattleLayer::GetWalkAnimUUID(), Engine::Transform(), 0.0f);
 }
 
 void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
@@ -531,8 +544,8 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		50.0f, // width
 		100.0f // height
 	);
-	Engine::Animation& animation = Engine::AssetRegistry::Get<Engine::Animation>("animation/spawn");
-	tower.AddComponent<Animator>("animation/spawn", Engine::Transform(), animation.GetDuration());
+	Engine::Animation& animation = Engine::AssetRegistry::Get<Engine::Animation>(m_AnimSpawnUUID);
+	tower.AddComponent<Animator>(animation.GetUUID(), Engine::Transform(), animation.GetDuration());
 
 	auto bar_frame = m_Scene->CreateEntity();
 	bar_frame.AddComponent<Engine::Transform>(
@@ -540,7 +553,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(52.0f, 6.0f, 1.0f)  // scale
 	);
-	bar_frame.AddComponent<Renderable2D>("sprite/bar/frame");
+	bar_frame.AddComponent<Renderable2D>(m_TowerBarFrameSpriteUUID);
 
 	auto bar_fill = m_Scene->CreateEntity();
 	bar_fill.AddComponent<Engine::Transform>(
@@ -557,7 +570,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(49.0f, 6.0f, 1.0f)  // scale
 		);
-	bar_background.AddComponent<Renderable2D>("sprite/bar/background");
+	bar_background.AddComponent<Renderable2D>(m_TowerBarBackgroundSpriteUUID);
 	
 	return tower;
 }
@@ -595,7 +608,7 @@ Engine::Entity TowerBattleLayer::CreateSelection()
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(60.0f, 98.0f, 1.0f)  // scale
 		);
-	m_Selection.AddComponent<Engine::Components::Renderable2D>("sprite/selection");
+	m_Selection.AddComponent<Engine::Components::Renderable2D>(m_SelectionSpriteUUID);
 
 	return m_Selection;
 }
@@ -657,12 +670,12 @@ void TowerBattleLayer::CreateLevel(int width, int height, int tileSize)
 
 	Engine::WFC::CollapseGrid(grid, rules);
 
-	std::vector<std::string> map[static_cast<size_t>(CellType::Length)] = {
-		{ "sprite/grass_01", "sprite/grass_02" },
-		{ "sprite/leaf_forest_light_01", "sprite/leaf_forest_light_02" },
-		{ "sprite/leaf_forest_dense_01", "sprite/leaf_forest_dense_02" },
-		{ "sprite/needle_forest_light_01", "sprite/needle_forest_light_02" },
-		{ "sprite/needle_forest_dense_01", "sprite/needle_forest_dense_02" }
+	std::vector<Engine::UUID> map[static_cast<size_t>(CellType::Length)] = {
+		{ m_GrassSprite01UUID, m_GrassSprite02UUID },
+		{ m_LeafForestLightSprite01UUID, m_LeafForestLightSprite02UUID },
+		{ m_LeafForestDenseSprite01UUID, m_LeafForestDenseSprite02UUID },
+		{ m_NeedleForestLightSprite01UUID, m_NeedleForestLightSprite02UUID },
+		{ m_NeedleForestDenseSprite01UUID, m_NeedleForestDenseSprite02UUID }
 	};
 
 	// Spawn tiles for grid cells

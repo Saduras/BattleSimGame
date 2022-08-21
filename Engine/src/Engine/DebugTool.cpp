@@ -8,6 +8,8 @@
 
 namespace Engine::Debug
 {
+	static UUID s_DebugShaderUUID;
+
 	static MeshData s_MeshData = {
 		{},
 		{ 
@@ -25,7 +27,7 @@ namespace Engine::Debug
 
 	void SetShader(const std::string& path)
 	{
-		AssetRegistry::Add("debug", new Shader(path));
+		s_DebugShaderUUID = AssetRegistry::Add(new Shader(path));
 	}
 
 	void DrawLine(Vec2 start, Vec2 end, Vec3 color, float width)
@@ -65,7 +67,10 @@ namespace Engine::Debug
 
 	void Render()
 	{
-		Shader& shader = AssetRegistry::Get<Shader>("debug");
+		if (!s_DebugShaderUUID.IsValid())
+			return;
+
+		Shader& shader = AssetRegistry::Get<Shader>(s_DebugShaderUUID);
 		Mesh mesh(s_MeshData);
 
 		Renderer::SetShader(&shader);

@@ -7,12 +7,12 @@ static void CreateQuadRenderExample(Engine::Scene* scene)
 	ENG_TRACE("QuadRenderExample");
 
 	// Create resources
-	Engine::AssetRegistry::Add("mesh/quad", new Engine::Mesh(Engine::PrimitiveMesh::Quad));
-	Engine::AssetRegistry::Add("shader/default", new Engine::Shader("res/shader/default.shader"));
+	Engine::UUID meshUUID = Engine::AssetRegistry::Add(new Engine::Mesh(Engine::PrimitiveMesh::Quad));
+	Engine::UUID shaderUUID = Engine::AssetRegistry::Add(new Engine::Shader("res/shader/default.shader"));
 
-	auto material = new Engine::Material("shader/default");
+	auto material = new Engine::Material(shaderUUID);
 	material->SetColor({ 1.0f, 1.0f, 1.0f, 1.0f });
-	Engine::AssetRegistry::Add("mat/default", material);
+	Engine::UUID materialUUID = Engine::AssetRegistry::Add(material);
 
 	// Setup camera
 	auto camera = scene->CreateEntity();
@@ -35,11 +35,13 @@ static void CreateQuadRenderExample(Engine::Scene* scene)
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// rotation
 		Engine::Vec3(50.0f, 100.0f, 1.0f)	// scale
 	);
-	entity.AddComponent<Engine::Components::Renderable3D>("mat/default", "mesh/quad");
+	entity.AddComponent<Engine::Components::Renderable3D>(materialUUID, meshUUID);
 
 	// Setup systems
 	scene->AddSystem<Engine::Systems::Render3DSystem>();
 }
+
+static std::vector<Engine::UUID> s_SpriteMeshUUIDs;
 
 struct SpriteAnimation
 {
@@ -61,10 +63,10 @@ public:
 			float now = Engine::Time::GetTime();
 			if (now - spriteAnimation.LastUpdate > spriteAnimation.AnimationStepTime)
 			{
-				Engine::Sprite& sprite = Engine::AssetRegistry::Get<Engine::Sprite>(renderable.Data[0].SpriteID);
-				Engine::TextureAtlas& atlas = Engine::AssetRegistry::Get<Engine::TextureAtlas>(sprite.GetAtlasID());
+				Engine::Sprite& sprite = Engine::AssetRegistry::Get<Engine::Sprite>(renderable.Data[0].SpriteUUID);
+				Engine::TextureAtlas& atlas = Engine::AssetRegistry::Get<Engine::TextureAtlas>(sprite.GetAtlasUUID());
 				int newIndex = (spriteAnimation.CurrentIndex + 1) % atlas.GetSubTextureCount();
-				sprite.SetIndex(newIndex);
+				sprite.SetMeshUUID(s_SpriteMeshUUIDs[newIndex]);
 
 				spriteAnimation.LastUpdate = now;
 				spriteAnimation.CurrentIndex = newIndex;
@@ -79,13 +81,14 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 	ENG_TRACE("SpriteRenderExample");
 
 	// Create resources
-	Engine::AssetRegistry::Add("shader/unlit_texture", new Engine::Shader("res/shader/unlit_texture.shader"));
+	Engine::UUID shaderUUID = Engine::AssetRegistry::Add(new Engine::Shader("res/shader/unlit_texture.shader"));
 
 	Engine::TextureAtlas* atlas = new Engine::TextureAtlas("res/sprite/animation-test.png");
-	Engine::AssetRegistry::Add("atlas", atlas);
-	auto sprite = new Engine::Sprite("shader/unlit_texture", "atlas");
+	s_SpriteMeshUUIDs = Engine::CreateMeshesForAtlas(*atlas);
+	Engine::UUID atlasUUID = Engine::AssetRegistry::Add(atlas);
+	auto sprite = new Engine::Sprite(shaderUUID, atlasUUID, s_SpriteMeshUUIDs[0]);
 	sprite->SetColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-	Engine::AssetRegistry::Add("sprite", sprite);
+	Engine::UUID spriteUUID = Engine::AssetRegistry::Add(sprite);
 
 	// Setup camera
 	auto camera = scene->CreateEntity();
@@ -108,7 +111,7 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 		Engine::Vec3(0.0f, 0.0f, 0.0f),		// rotation
 		Engine::Vec3(100.0f, 100.0f, 1.0f)	// scale
 		);
-	entity.AddComponent<Engine::Components::Renderable2D>("sprite");
+	entity.AddComponent<Engine::Components::Renderable2D>(spriteUUID);
 	entity.AddComponent<SpriteAnimation>(0, 0.0f, 0.5f);
 
 	// Setup systems
@@ -119,11 +122,12 @@ static void CreateSpriteRenderExample(Engine::Scene* scene)
 static void CreatePixelShaderExample(Engine::Scene* scene)
 {
 	// Prepare assets
-	Engine::AssetRegistry::Add("shader/sprite", new Engine::Shader("res/shader/pixel_sprite.shader"));
-	Engine::AssetRegistry::Add("atlas", new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png"));
-	Engine::Sprite* sprite = new Engine::Sprite("shader/sprite", "atlas");
-	sprite->SetIndex(102);
-	Engine::AssetRegistry::Add("sprite", sprite);
+	Engine::UUID shaderUUID = Engine::AssetRegistry::Add(new Engine::Shader("res/shader/pixel_sprite.shader"));
+	Engine::TextureAtlas* atlas = new Engine::TextureAtlas("res/sprite/medieval_sprite_pack.png");
+	Engine::UUID atlasUUID = Engine::AssetRegistry::Add(atlas);
+	std::vector<Engine::UUID> meshUUIDs = Engine::CreateMeshesForAtlas(*atlas);;
+	Engine::Sprite* sprite = new Engine::Sprite(shaderUUID, atlasUUID, meshUUIDs[102]);
+	Engine::UUID spriteUUID = Engine::AssetRegistry::Add(sprite);
 
 	// Prepare camera
 	auto camera = scene->CreateEntity();
@@ -146,9 +150,9 @@ static void CreatePixelShaderExample(Engine::Scene* scene)
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(100.0f, 100.0f, 1.0f)  // scale
 		);
-	tower.AddComponent<Engine::Components::Renderable2D>("sprite");
+	tower.AddComponent<Engine::Components::Renderable2D>(spriteUUID);
 
-	Engine::Shader& shader = Engine::AssetRegistry::Get<Engine::Shader>("shader/sprite");
+	Engine::Shader& shader = Engine::AssetRegistry::Get<Engine::Shader>(shaderUUID);
 	shader.SetProperty("u_TexelPerPixel", 5.0f); // Controls the mix between nearest neighbor and bilinear filtering
 
 	// Setup systems

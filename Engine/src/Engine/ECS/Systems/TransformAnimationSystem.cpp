@@ -55,7 +55,7 @@ namespace Engine::Systems
 {
 	void TransformAnimationSystem(float deltaTime, Entity entity, Components::Animator& animator)
 	{
-		Animation& animation = AssetRegistry::Get<Animation>(animator.CurrentAnimationID);
+		Animation& animation = AssetRegistry::Get<Animation>(animator.CurrentAnimationUUID);
 
 		if (animation.IsDone(animator.AnimationTime))
 			return;

@@ -21,6 +21,7 @@ namespace Engine
 		int Height;
 	};
 
+	std::vector<UUID> CreateMeshesForAtlas(const TextureAtlas& atlas);
 	MeshData GetMeshDataForSubTexture(const TextureAtlas& atlas, size_t index);
 
 	class TextureAtlas : public Asset

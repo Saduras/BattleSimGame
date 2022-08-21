@@ -11,6 +11,7 @@
 #include "Engine/MouseButtonCodes.h"
 #include "Engine/KeyCodes.h"
 
+#include "Engine/UUID.h"
 #include "Engine/Assets/AssetRegistry.h"
 
 #include "Engine/Math.h"

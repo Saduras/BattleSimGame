@@ -57,11 +57,10 @@ namespace Engine::Systems {
 	{
 		for (const Components::Renderable2D::RenderData2D& data : renderable.Data)
 		{
-			Sprite& sprite = AssetRegistry::Get<Sprite>(data.SpriteID);
-			Shader& shader = AssetRegistry::Get<Shader>(sprite.GetShaderID());
-			TextureAtlas& atlas = AssetRegistry::Get<TextureAtlas>(sprite.GetAtlasID());
-
-			Mesh& mesh = AssetRegistry::Get<Mesh>(String::Format("mesh/{}/{}", sprite.GetAtlasID(), sprite.GetIndex()));
+			Sprite& sprite = AssetRegistry::Get<Sprite>(data.SpriteUUID);
+			Shader& shader = AssetRegistry::Get<Shader>(sprite.GetShaderUUID());
+			TextureAtlas& atlas = AssetRegistry::Get<TextureAtlas>(sprite.GetAtlasUUID());
+			Mesh& mesh = AssetRegistry::Get<Mesh>(sprite.GetMeshUUID());
 
 			atlas.Bind();
 			Renderer::SetShader(&shader);

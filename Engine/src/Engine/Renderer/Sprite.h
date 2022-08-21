@@ -21,19 +21,21 @@ namespace Engine
 	class Sprite : public Asset
 	{
 	public:
-		Sprite(const std::string& shaderID, const std::string& atlasID, size_t index = 0);
-		Sprite(const std::string& shaderID, const std::string& atlasID, Vec4 color, size_t index = 0);
+		Sprite(const UUID& shaderUUID, const UUID& atlasUUID, const UUID& meshUUID);
+		Sprite(const UUID& shaderUUID, const UUID& atlasUUID, const UUID& meshUUID, Vec4 color);
 
-		inline const std::string& GetShaderID() const { return m_ShaderID; }
-		inline const std::string& GetAtlasID() const { return m_AtlasID; }
-		inline size_t GetIndex() { return m_Index; }
-		inline void SetIndex(size_t index) { m_Index = index; }
+		inline const UUID& GetShaderUUID() const { return m_ShaderUUID; }
+		inline const UUID& GetAtlasUUID() const { return m_AtlasUUID; }
+
+		inline const UUID& GetMeshUUID() const { return m_MeshUUID; }
+		inline void SetMeshUUID(UUID meshUUID) { m_MeshUUID = meshUUID; }
+
 		inline Vec4 GetColor() const { return m_Color; }
 		inline void SetColor(Vec4 color) { m_Color = color; }
 	private:
-		std::string m_ShaderID;
-		std::string m_AtlasID;
-		size_t m_Index;
+		UUID m_ShaderUUID;
+		UUID m_AtlasUUID;
+		UUID m_MeshUUID;
 		Vec4 m_Color;
 	};
 }

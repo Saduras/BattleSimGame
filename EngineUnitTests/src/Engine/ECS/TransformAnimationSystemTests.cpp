@@ -23,9 +23,9 @@ namespace TransformAnimationSystemTests
 						{ { 0.0f, 0.0f, 0.0f}, { 15.0f, 13.0f, 0.0f }, { 1.3f, 0.2f, 1.0f } }, // end transform
 					},
 			};
-			AssetRegistry::Add("animation", new Animation(Animation::PlayMode::Once, segments));
+			Engine::UUID animationUUID = AssetRegistry::Add(new Animation(Animation::PlayMode::Once, segments));
 			Engine::Entity entity;
-			Engine::Components::Animator animator{ "animation", Transform(), 0.0f };
+			Engine::Components::Animator animator{ animationUUID, Transform(), 0.0f };
 
 			// move to start of animation
 			Engine::Systems::TransformAnimationSystem(0.0f, entity, animator);
@@ -37,7 +37,7 @@ namespace TransformAnimationSystemTests
 
 			Assert::AreEqual(segments[0].EndTransform, animator.Offset, L"End doesn't match!");
 
-			AssetRegistry::Delete("animation");
+			AssetRegistry::Delete(animationUUID);
 		}
 
 		TEST_METHOD(WrapLoopTest)
@@ -49,9 +49,9 @@ namespace TransformAnimationSystemTests
 						{ { 0.0f, 0.0f, 0.0f}, { 15.0f, 13.0f, 0.0f }, { 1.3f, 0.2f, 1.0f } }, // end transform
 					},
 			};
-			AssetRegistry::Add("animation", new Animation(Animation::PlayMode::Loop, segments));
+			Engine::UUID animationUUID = AssetRegistry::Add(new Animation(Animation::PlayMode::Loop, segments));
 			Engine::Entity entity;
-			Engine::Components::Animator animator{ "animation", Transform(), 0.0f };
+			Engine::Components::Animator animator{ animationUUID, Transform(), 0.0f };
 
 			// wrap once
 			Engine::Systems::TransformAnimationSystem(1.0f, entity, animator);
@@ -63,7 +63,7 @@ namespace TransformAnimationSystemTests
 
 			Assert::AreEqual(0.3f, animator.AnimationTime, 0.01f);
 
-			AssetRegistry::Delete("animation");
+			AssetRegistry::Delete(animationUUID);
 		}
 
 		TEST_METHOD(WrapOnceTest)
@@ -75,9 +75,9 @@ namespace TransformAnimationSystemTests
 						{ { 0.0f, 0.0f, 0.0f}, { 15.0f, 13.0f, 0.0f }, { 1.3f, 0.2f, 1.0f } }, // end transform
 					},
 			};
-			AssetRegistry::Add("animation", new Animation(Animation::PlayMode::Once, segments));
+			Engine::UUID animationUUID = AssetRegistry::Add(new Animation(Animation::PlayMode::Once, segments));
 			Engine::Entity entity;
-			Engine::Components::Animator animator{ "animation", Transform(), 0.0f };
+			Engine::Components::Animator animator{ animationUUID, Transform(), 0.0f };
 
 			// wrap once
 			Engine::Systems::TransformAnimationSystem(1.0f, entity, animator);
@@ -91,7 +91,7 @@ namespace TransformAnimationSystemTests
 			Assert::AreEqual(0.7f, animator.AnimationTime, 0.01f);
 			Assert::AreEqual(segments[0].EndTransform, animator.Offset, L"End doesn't match!");
 
-			AssetRegistry::Delete("animation");
+			AssetRegistry::Delete(animationUUID);
 		}
 
 		TEST_METHOD(AnimationDoneTest)
