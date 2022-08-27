@@ -6,9 +6,9 @@
 #include "Platform/OpenGL/ImGuiOpenGLRenderer.h"
 
 #include "Engine/Events/Event.h"
+#include "Engine/KeyCodes.h"
 
 // TEMPORARY
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
 namespace Engine
@@ -28,28 +28,27 @@ namespace Engine
 		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
 		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos; 
 
-		// TEMPORARY: should eventuallty use Engine key codes
-		io.KeyMap[ImGuiKey_Tab] = GLFW_KEY_TAB;
-		io.KeyMap[ImGuiKey_LeftArrow] = GLFW_KEY_LEFT;
-		io.KeyMap[ImGuiKey_RightArrow] = GLFW_KEY_RIGHT;
-		io.KeyMap[ImGuiKey_UpArrow] = GLFW_KEY_UP;
-		io.KeyMap[ImGuiKey_DownArrow] = GLFW_KEY_DOWN;
-		io.KeyMap[ImGuiKey_PageUp] = GLFW_KEY_PAGE_UP;
-		io.KeyMap[ImGuiKey_PageDown] = GLFW_KEY_PAGE_DOWN;
-		io.KeyMap[ImGuiKey_Home] = GLFW_KEY_HOME;
-		io.KeyMap[ImGuiKey_End] = GLFW_KEY_END;
-		io.KeyMap[ImGuiKey_Insert] = GLFW_KEY_INSERT;
-		io.KeyMap[ImGuiKey_Delete] = GLFW_KEY_DELETE;
-		io.KeyMap[ImGuiKey_Backspace] = GLFW_KEY_BACKSPACE;
-		io.KeyMap[ImGuiKey_Space] = GLFW_KEY_SPACE;
-		io.KeyMap[ImGuiKey_Enter] = GLFW_KEY_ENTER;
-		io.KeyMap[ImGuiKey_Escape] = GLFW_KEY_ESCAPE;
-		io.KeyMap[ImGuiKey_A] = GLFW_KEY_A;
-		io.KeyMap[ImGuiKey_C] = GLFW_KEY_C;
-		io.KeyMap[ImGuiKey_V] = GLFW_KEY_V;
-		io.KeyMap[ImGuiKey_X] = GLFW_KEY_X;
-		io.KeyMap[ImGuiKey_Y] = GLFW_KEY_Y;
-		io.KeyMap[ImGuiKey_Z] = GLFW_KEY_Z;
+		io.KeyMap[ImGuiKey_Tab] = ENG_KEY_TAB;
+		io.KeyMap[ImGuiKey_LeftArrow] = ENG_KEY_LEFT;
+		io.KeyMap[ImGuiKey_RightArrow] = ENG_KEY_RIGHT;
+		io.KeyMap[ImGuiKey_UpArrow] = ENG_KEY_UP;
+		io.KeyMap[ImGuiKey_DownArrow] = ENG_KEY_DOWN;
+		io.KeyMap[ImGuiKey_PageUp] = ENG_KEY_PAGE_UP;
+		io.KeyMap[ImGuiKey_PageDown] = ENG_KEY_PAGE_DOWN;
+		io.KeyMap[ImGuiKey_Home] = ENG_KEY_HOME;
+		io.KeyMap[ImGuiKey_End] = ENG_KEY_END;
+		io.KeyMap[ImGuiKey_Insert] = ENG_KEY_INSERT;
+		io.KeyMap[ImGuiKey_Delete] = ENG_KEY_DELETE;
+		io.KeyMap[ImGuiKey_Backspace] = ENG_KEY_BACKSPACE;
+		io.KeyMap[ImGuiKey_Space] = ENG_KEY_SPACE;
+		io.KeyMap[ImGuiKey_Enter] = ENG_KEY_ENTER;
+		io.KeyMap[ImGuiKey_Escape] = ENG_KEY_ESCAPE;
+		io.KeyMap[ImGuiKey_A] = ENG_KEY_A;
+		io.KeyMap[ImGuiKey_C] = ENG_KEY_C;
+		io.KeyMap[ImGuiKey_V] = ENG_KEY_V;
+		io.KeyMap[ImGuiKey_X] = ENG_KEY_X;
+		io.KeyMap[ImGuiKey_Y] = ENG_KEY_Y;
+		io.KeyMap[ImGuiKey_Z] = ENG_KEY_Z;
 
 		ImGui_ImplOpenGL3_Init("#version 410");
 	}
@@ -63,10 +62,7 @@ namespace Engine
 		ImGuiIO& io = ImGui::GetIO();
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
-
-		float time = (float)glfwGetTime();
-		io.DeltaTime = m_Time > 0.0 ? (time - m_Time) : (1.0f / 60.0f);
-		m_Time = time;
+		io.DeltaTime = deltaTime;
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui::NewFrame();
@@ -147,10 +143,10 @@ namespace Engine
 		ImGuiIO& io = ImGui::GetIO();
 		io.KeysDown[e.GetKeyCode()] = true;
 
-		io.KeyCtrl = io.KeysDown[GLFW_KEY_LEFT_CONTROL] || io.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-		io.KeyShift = io.KeysDown[GLFW_KEY_LEFT_SHIFT] || io.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-		io.KeyAlt = io.KeysDown[GLFW_KEY_LEFT_ALT] || io.KeysDown[GLFW_KEY_RIGHT_ALT];
-		io.KeySuper = io.KeysDown[GLFW_KEY_LEFT_SUPER] || io.KeysDown[GLFW_KEY_RIGHT_SUPER];
+		io.KeyCtrl = io.KeysDown[ENG_KEY_LEFT_CONTROL] || io.KeysDown[ENG_KEY_RIGHT_CONTROL];
+		io.KeyShift = io.KeysDown[ENG_KEY_LEFT_SHIFT] || io.KeysDown[ENG_KEY_RIGHT_SHIFT];
+		io.KeyAlt = io.KeysDown[ENG_KEY_LEFT_ALT] || io.KeysDown[ENG_KEY_RIGHT_ALT];
+		io.KeySuper = io.KeysDown[ENG_KEY_LEFT_SUPER] || io.KeysDown[ENG_KEY_RIGHT_SUPER];
 
 		return false;
 	}
