@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/rotate_vector.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include <glm/common.hpp>
 
 namespace Engine
@@ -17,10 +18,13 @@ namespace Engine
 	ALIAS_TEMPLATE_FUNCTION(Sign, glm::sign);
 	ALIAS_TEMPLATE_FUNCTION(Magnitude, glm::length);
 	ALIAS_TEMPLATE_FUNCTION(Normalize, glm::normalize);
+	ALIAS_TEMPLATE_FUNCTION(Angle, glm::angle);
+	ALIAS_TEMPLATE_FUNCTION(OrientedAngle, glm::orientedAngle);
 	ALIAS_TEMPLATE_FUNCTION(Translate, glm::translate);
 	ALIAS_TEMPLATE_FUNCTION(Rotate, glm::rotate);
 	ALIAS_TEMPLATE_FUNCTION(Scale, glm::scale);
 	ALIAS_TEMPLATE_FUNCTION(DegToRad, glm::radians);
+	ALIAS_TEMPLATE_FUNCTION(RadToDeg, glm::degrees);
 	ALIAS_TEMPLATE_FUNCTION(Ortho, glm::ortho);
 	ALIAS_TEMPLATE_FUNCTION(Inverse, glm::inverse);
 	ALIAS_TEMPLATE_FUNCTION(RotateX, glm::rotateX);

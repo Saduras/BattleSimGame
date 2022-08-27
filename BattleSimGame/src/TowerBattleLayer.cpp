@@ -48,8 +48,12 @@ static void CollisionDetectionSystem(float deltaTime, Engine::Scene* scene, Engi
 
 	auto view = scene->GetView<QuadCollider>();
 	view.each([scene, entity, &collider](entt::entity otherId, QuadCollider& otherCollider) {
+		Engine::Entity other(otherId, scene);
 		// Test if the top-right corner is inside the other collider (both ways)
-		if (otherCollider.IsInside(collider.GetTopRight()) || collider.IsInside(otherCollider.GetTopRight()))
+		if (other.IsValid() && 
+			(otherCollider.IsInside(collider.GetTopRight()) 
+				|| collider.IsInside(otherCollider.GetTopRight())
+			))
 			collider.Collisions.push_back(Engine::Entity(otherId, scene));
 	});
 }
@@ -81,6 +85,66 @@ static void EnemyContactSystem(float deltaTime, Engine::Entity entity, EnemyCont
 static bool HasCollisionWithEnemyUnit(Engine::Entity entity)
 {
 	return entity.HasComponent<EnemyContact>() && entity.GetComponent<EnemyContact>().HasContact;
+}
+
+static void UnitAnimationSystem(float deltaTime, Engine::Entity entity, Unit& unit, Engine::Components::Animator& animator)
+{
+	Engine::UUID prevAnimation = animator.CurrentAnimationUUID;
+
+	if (HasCollisionWithEnemyUnit(entity))
+	{
+		// Disable automatic animation playbackk
+		animator.CurrentAnimationUUID = Engine::UUID::Invalid();
+		if (prevAnimation != animator.CurrentAnimationUUID)
+			animator.AnimationTime = 0.0f;
+
+		
+		// Play a procedural animation based on the direction to the enemy
+		using namespace Engine;
+		// Compute direction towards enemy
+		EnemyContact& contact = entity.GetComponent<EnemyContact>();
+		Transform ownTransform = entity.GetComponent<Transform>();
+		Transform enemyTransform = contact.ClosestEnemy.GetComponent<Transform>();
+		Vec3 direction = Normalize(enemyTransform.Position - ownTransform.Position);
+
+		Vec3 startTranslation = direction * -0.1f;;
+		Vec3 endTranslation = direction * 0.3f;
+		float hitTime = 0.05f;
+		float recoverTime = 0.3f;
+		float totalDuration = hitTime + recoverTime;
+
+		// Update animation time
+		animator.AnimationTime = Mod(animator.AnimationTime + deltaTime, totalDuration);
+
+		// Compute translation
+		Vec3 translation;
+		if (animator.AnimationTime <= hitTime)
+		{
+			float t = animator.AnimationTime / hitTime;
+			translation = Lerp(startTranslation, endTranslation, t);
+		}
+		else
+		{
+			float t = (animator.AnimationTime - hitTime) / recoverTime;
+			translation = Lerp(endTranslation, startTranslation, t);
+		}
+
+		// Mirror animation if sprite is flipped
+		float spriteDirection = Sign(ownTransform.Scale.x);
+		translation.x = spriteDirection * translation.x;
+
+		animator.Offset = Transform(translation, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+	}
+	else
+	{
+		animator.CurrentAnimationUUID = TowerBattleLayer::GetWalkAnimUUID();
+
+		if (prevAnimation != animator.CurrentAnimationUUID)
+		{
+			animator.Offset = Engine::Transform();
+			animator.AnimationTime = 0.0f;
+		}
+	}
 }
 
 static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, QuadCollider& collider, Engine::Transform& transform)
@@ -351,7 +415,6 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 		// Update units
 		m_Scene->ExecuteSystem<EnemyContact, Unit, QuadCollider>(deltaTime, EnemyContactSystem);
 		m_Scene->ExecuteSystem<Unit, EnemyContact>(deltaTime, UnitAttackUnitSystem);
-		m_Scene->ExecuteSystem<Unit>(deltaTime, UnitDeathSystem);
 		m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Transform>(deltaTime, UnitMoveSystem);
 		m_Scene->ExecuteSystem<Unit, Engine::Transform>(deltaTime, UnitAttackTowerSystem);
 		// Update towers
@@ -362,7 +425,10 @@ void TowerBattleLayer::OnUpdate(float deltaTime)
 		// Update UI
 		m_Scene->ExecuteSystem<UnitBar, Engine::Transform>(deltaTime, UnitBarUISystem);
 		// Update Animations
+		m_Scene->ExecuteSystem<Unit, Engine::Components::Animator>(deltaTime, UnitAnimationSystem);
 		m_Scene->ExecuteSystem<Engine::Components::Animator>(deltaTime, Engine::Systems::TransformAnimationSystem);
+		// Clean up
+		m_Scene->ExecuteSystem<Unit>(deltaTime, UnitDeathSystem);
 	}
 
 	// Debug
@@ -473,7 +539,7 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 		18.0f, // width
 		25.0f // height
 	);
-	unit.AddComponent<Animator>(TowerBattleLayer::GetWalkAnimUUID(), Engine::Transform(), 0.0f);
+	unit.AddComponent<Animator>(TowerBattleLayer::GetWalkAnimUUID());
 }
 
 void TowerBattleLayer::Attack(Engine::Entity source, Engine::Entity target)
@@ -545,7 +611,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		100.0f // height
 	);
 	Engine::Animation& animation = Engine::AssetRegistry::Get<Engine::Animation>(m_AnimSpawnUUID);
-	tower.AddComponent<Animator>(animation.GetUUID(), Engine::Transform(), animation.GetDuration());
+	tower.AddComponent<Animator>(animation.GetUUID());
 
 	auto bar_frame = m_Scene->CreateEntity();
 	bar_frame.AddComponent<Engine::Transform>(

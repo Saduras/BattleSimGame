@@ -25,7 +25,7 @@ namespace TransformAnimationSystemTests
 			};
 			Engine::UUID animationUUID = AssetRegistry::Add(new Animation(Animation::PlayMode::Once, segments));
 			Engine::Entity entity;
-			Engine::Components::Animator animator{ animationUUID, Transform(), 0.0f };
+			Engine::Components::Animator animator{ animationUUID };
 
 			// move to start of animation
 			Engine::Systems::TransformAnimationSystem(0.0f, entity, animator);
@@ -51,7 +51,7 @@ namespace TransformAnimationSystemTests
 			};
 			Engine::UUID animationUUID = AssetRegistry::Add(new Animation(Animation::PlayMode::Loop, segments));
 			Engine::Entity entity;
-			Engine::Components::Animator animator{ animationUUID, Transform(), 0.0f };
+			Engine::Components::Animator animator{ animationUUID };
 
 			// wrap once
 			Engine::Systems::TransformAnimationSystem(1.0f, entity, animator);
@@ -77,7 +77,7 @@ namespace TransformAnimationSystemTests
 			};
 			Engine::UUID animationUUID = AssetRegistry::Add(new Animation(Animation::PlayMode::Once, segments));
 			Engine::Entity entity;
-			Engine::Components::Animator animator{ animationUUID, Transform(), 0.0f };
+			Engine::Components::Animator animator{ animationUUID };
 
 			// wrap once
 			Engine::Systems::TransformAnimationSystem(1.0f, entity, animator);
