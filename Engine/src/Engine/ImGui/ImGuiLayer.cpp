@@ -90,6 +90,17 @@ namespace Engine
 
 	void ImGuiLayer::ShowPerformanceOverlay(float deltaTime)
 	{
+		// Record deltaTime history
+		m_FrameTimeHistory[m_FrameTimeInsertIndex] = deltaTime;
+		m_FrameTimeInsertIndex = (m_FrameTimeInsertIndex + 1) % c_FrameTimeHistoryLength;
+
+		// Calculate average deltaTime over available history
+		float avgDeltaTime = 0.0f;
+		for (size_t i = 0; i < c_FrameTimeHistoryLength; i++)
+			avgDeltaTime += m_FrameTimeHistory[i];
+		avgDeltaTime /= (float)c_FrameTimeHistoryLength;
+
+		// Display performance metrics in overlay
 		const float DISTANCE = 10.0f;
 		ImGuiIO& io = ImGui::GetIO();
 		ImVec2 window_pos = ImVec2(DISTANCE, DISTANCE);
@@ -99,8 +110,8 @@ namespace Engine
 		bool open = true;
 		if (ImGui::Begin("Performance", &open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
 		{
-			ImGui::Text("Delta Time: %.2fms", deltaTime * 1000.0f);
-			ImGui::Text("FPS: %.1f", 1/deltaTime);
+			ImGui::Text("Delta Time: %.2fms", avgDeltaTime * 1000.0f);
+			ImGui::Text("FPS: %.1f", 1.0f / avgDeltaTime);
 		}
 		ImGui::End();
 	}

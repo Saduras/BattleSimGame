@@ -26,5 +26,9 @@ namespace Engine
 		bool OnKeyReleasedEvent(KeyReleasedEvent& e);
 		bool OnKeyTypedEvent(KeyTypedEvent& e);
 		bool OnWindowResizedEvent(WindowResizeEvent& e);
+
+		const static int c_FrameTimeHistoryLength = 30;
+		float m_FrameTimeHistory[c_FrameTimeHistoryLength] = { 0 };
+		int m_FrameTimeInsertIndex = 0;
 	};
 }
