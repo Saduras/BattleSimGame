@@ -344,26 +344,26 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 
 void TowerBattleLayer::OnUpdate(float deltaTime)
 {
-	if (!m_GameRunning)
-		return;
-
-	// Update collision detection
-	m_Scene->ExecuteSystem<QuadCollider>(deltaTime, CollisionDetectionSystem);
-	// Update units
-	m_Scene->ExecuteSystem<EnemyContact, Unit, QuadCollider>(deltaTime, EnemyContactSystem);
-	m_Scene->ExecuteSystem<Unit, EnemyContact>(deltaTime, UnitAttackUnitSystem);
-	m_Scene->ExecuteSystem<Unit>(deltaTime, UnitDeathSystem);
-	m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Transform>(deltaTime, UnitMoveSystem);
-	m_Scene->ExecuteSystem<Unit, Engine::Transform>(deltaTime, UnitAttackTowerSystem);
-	// Update towers
-	m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
-	m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
-	// Update AI
-	m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
-	// Update UI
-	m_Scene->ExecuteSystem<UnitBar, Engine::Transform>(deltaTime, UnitBarUISystem);
-	// Update Animations
-	m_Scene->ExecuteSystem<Engine::Components::Animator>(deltaTime, Engine::Systems::TransformAnimationSystem);
+	if (m_GameRunning)
+	{
+		// Update collision detection
+		m_Scene->ExecuteSystem<QuadCollider>(deltaTime, CollisionDetectionSystem);
+		// Update units
+		m_Scene->ExecuteSystem<EnemyContact, Unit, QuadCollider>(deltaTime, EnemyContactSystem);
+		m_Scene->ExecuteSystem<Unit, EnemyContact>(deltaTime, UnitAttackUnitSystem);
+		m_Scene->ExecuteSystem<Unit>(deltaTime, UnitDeathSystem);
+		m_Scene->ExecuteSystem<Unit, QuadCollider, Engine::Transform>(deltaTime, UnitMoveSystem);
+		m_Scene->ExecuteSystem<Unit, Engine::Transform>(deltaTime, UnitAttackTowerSystem);
+		// Update towers
+		m_Scene->ExecuteSystem<Tower>(deltaTime, TowerProductionSystem);
+		m_Scene->ExecuteSystem<Tower, Engine::Components::Renderable2D>(deltaTime, TowerViewSystem);
+		// Update AI
+		m_Scene->ExecuteSystem<AIStrategist>(deltaTime, AIStrategistSystem);
+		// Update UI
+		m_Scene->ExecuteSystem<UnitBar, Engine::Transform>(deltaTime, UnitBarUISystem);
+		// Update Animations
+		m_Scene->ExecuteSystem<Engine::Components::Animator>(deltaTime, Engine::Systems::TransformAnimationSystem);
+	}
 
 	// Debug
 	//m_Scene->ExecuteSystem<QuadCollider>(deltaTime, DrawCollidersSystem);
