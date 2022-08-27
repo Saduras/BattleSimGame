@@ -17,6 +17,11 @@ namespace Engine
 	UUID::UUID(uint64_t uuid) : m_UUID(uuid)
 	{ }
 
+	UUID UUID::Invalid()
+	{
+		return UUID(0);
+	}
+
 	bool UUID::IsValid()
 	{
 		return m_UUID != 0;

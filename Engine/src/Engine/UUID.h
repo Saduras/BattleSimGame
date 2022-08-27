@@ -12,6 +12,7 @@ namespace Engine
 		UUID(uint64_t uuid);
 		UUID(const UUID&) = default;
 
+		static UUID Invalid();
 		bool IsValid();
 
 		operator uint64_t() const { return m_UUID; }
