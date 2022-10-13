@@ -65,6 +65,17 @@ namespace Engine::Debug
 		DrawLine(bottomLeft, topLeft, color, lineWidth);
 	}
 
+	void DrawCross(Vec2 position, float size, Vec3 color, float lineWidth)
+	{
+		Vec2 top = Vec2(position.x, position.y + size / 2.0f);
+		Vec2 bottom = Vec2(position.x , position.y - size / 2.0f);
+		Vec2 left = Vec2(position.x - size / 2.0f, position.y);
+		Vec2 right = Vec2(position.x + size / 2.0f, position.y);
+
+		DrawLine(top, bottom, color, lineWidth);
+		DrawLine(left, right, color, lineWidth);
+	}
+
 	void Render()
 	{
 		if (!s_DebugShaderUUID.IsValid())
