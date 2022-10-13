@@ -49,11 +49,19 @@ static void CollisionDetectionSystem(float deltaTime, Engine::Scene* scene, Engi
 	auto view = scene->GetView<QuadCollider>();
 	view.each([scene, entity, &collider](entt::entity otherId, QuadCollider& otherCollider) {
 		Engine::Entity other(otherId, scene);
-		// Test if the top-right corner is inside the other collider (both ways)
-		if (other.IsValid() && 
-			(otherCollider.IsInside(collider.GetTopRight()) 
-				|| collider.IsInside(otherCollider.GetTopRight())
-			))
+
+		if (entt::entity(entity) == otherId || !other.IsValid())
+			return;
+
+		Engine::Vec2 bottom_left = collider.GetBottomLeft();
+		Engine::Vec2 top_right = collider.GetTopRight();
+		Engine::Vec2 other_bottom_left = otherCollider.GetBottomLeft();
+		Engine::Vec2 other_top_right = otherCollider.GetTopRight();
+
+		if (bottom_left.x < other_top_right.x
+			&& top_right.x > other_bottom_left.x
+			&& bottom_left.y < other_top_right.y
+			&& top_right.y > other_bottom_left.y)
 			collider.Collisions.push_back(Engine::Entity(otherId, scene));
 	});
 }
