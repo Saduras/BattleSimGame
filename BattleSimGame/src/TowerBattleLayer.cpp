@@ -6,24 +6,24 @@
 #include <Engine/Renderer/Material.h>
 #include <Engine/Renderer/Mesh.h>
 
+unsigned int UnitKey(Faction faction, SoldierType type)
+{
+	return (unsigned int)faction + (unsigned int)Faction::COUNT * (unsigned int)type;
+}
+
 Engine::UUID TowerBattleLayer::GetFactionSpriteID(Faction faction)
 {
-	switch (faction) {
-	case Faction::Red: return m_TowerSpriteRedUUID;
-	case Faction::Blue: return m_TowerSpriteBlueUUID;
-	case Faction::None: return m_TowerSpriteNoneUUID;
-	}
+	if(m_TowerSpriteIdMap.find(faction) != m_TowerSpriteIdMap.end())
+		return m_TowerSpriteIdMap[faction];
 
 	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
 	return Engine::UUID();
 }
 
-Engine::UUID TowerBattleLayer::GetUnitSpriteID(Faction faction)
+Engine::UUID TowerBattleLayer::GetUnitSpriteID(Faction faction, SoldierType soldierType)
 {
-	switch (faction) {
-	case Faction::Red: return m_UnitSpriteRedUUID;
-	case Faction::Blue: return m_UnitSpriteBlueUUID;
-	}
+	if (m_UnitSpriteIdMap.find(UnitKey(faction, soldierType)) != m_UnitSpriteIdMap.end())
+		return m_UnitSpriteIdMap[UnitKey(faction, soldierType)];
 
 	ENG_ASSERT_FMT(false, "Unsupported Faction {0}", faction);
 	return Engine::UUID();
@@ -295,11 +295,30 @@ static void DrawCollidersSystem(float deltaTime, Engine::Entity entity, QuadColl
 bool TowerBattleLayer::m_GameRunning = false;
 Engine::Scene* TowerBattleLayer::m_Scene = nullptr;
 
-Engine::UUID TowerBattleLayer::m_TowerSpriteRedUUID;
-Engine::UUID TowerBattleLayer::m_TowerSpriteBlueUUID;
-Engine::UUID TowerBattleLayer::m_TowerSpriteNoneUUID;
-Engine::UUID TowerBattleLayer::m_UnitSpriteRedUUID;
-Engine::UUID TowerBattleLayer::m_UnitSpriteBlueUUID;
+std::unordered_map<Faction, Engine::UUID> TowerBattleLayer::m_TowerSpriteIdMap;
+std::unordered_map<unsigned int, Engine::UUID> TowerBattleLayer::m_UnitSpriteIdMap;
+std::unordered_map<SoldierType, Unit> m_SoldierConfiguration =
+{
+	{ SoldierType::Light, {
+			Faction::None,
+			Engine::Entity(),
+			40.0f, // Speed
+			5.0f, // Health
+			1.0f, // Attack
+			1.0f, // Attack Speed
+		}
+	},
+	{ SoldierType::Heavy, {
+			Faction::None,
+			Engine::Entity(),
+			20.0f, // Speed
+			20.0f, // Health
+			3.0f, // Attack
+			0.5f, // Attack Speed
+		}
+	},
+};
+
 Engine::UUID TowerBattleLayer::m_TowerBarFillSpriteRedUUID;
 Engine::UUID TowerBattleLayer::m_TowerBarFillSpriteBlueUUID;
 Engine::UUID TowerBattleLayer::m_TowerBarFillSpriteNoneUUID;
@@ -339,12 +358,14 @@ TowerBattleLayer::TowerBattleLayer(Engine::Scene* scene)
 	shader->SetProperty("u_TexelPerPixel", 50.0f);
 	Engine::UUID shaderUUID = AssetRegistry::Add(shader);
 
-	m_TowerSpriteBlueUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_blue")]));
-	m_TowerSpriteRedUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_red")]));
-	m_TowerSpriteNoneUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_neutral")]));
+	m_TowerSpriteIdMap[Faction::Blue] = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_blue")]));
+	m_TowerSpriteIdMap[Faction::Red]  = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_red")]));
+	m_TowerSpriteIdMap[Faction::None] = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_neutral")]));
 
-	m_UnitSpriteBlueUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("spearman_blue")]));
-	m_UnitSpriteRedUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("spearman_red")]));
+	m_UnitSpriteIdMap[UnitKey(Faction::Blue, SoldierType::Light)] = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("spearman_blue")]));
+	m_UnitSpriteIdMap[UnitKey(Faction::Blue, SoldierType::Heavy)] = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("spearman_armored_blue")]));
+	m_UnitSpriteIdMap[UnitKey(Faction::Red, SoldierType::Light)]  = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("spearman_red")]));
+	m_UnitSpriteIdMap[UnitKey(Faction::Red, SoldierType::Heavy)] = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("spearman_armored_red")]));
 
 	m_SelectionSpriteUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_selection")]));
 	m_TowerBarFrameSpriteUUID = AssetRegistry::Add(new Sprite(shaderUUID, atlasUUID, subtexMeshUUIDs[atlas->FindSubTexIndex("tower_bar_frame")]));
@@ -511,7 +532,9 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 {
 	using namespace Engine::Components;
 
-	Faction faction = sourceTower.GetComponent<Tower>().Faction;
+	Tower& sourceTowerComponent = sourceTower.GetComponent<Tower>();
+	Faction faction = sourceTowerComponent.Faction;
+	SoldierType type = sourceTowerComponent.SoldierType;
 	
 	// Choose position at random point on circle around source tower
 	Engine::Vec3 towerPosition = sourceTower.GetComponent<Engine::Transform>().Position;
@@ -531,9 +554,16 @@ static void SpawnUnit(Engine::Scene& scene, Engine::Entity sourceTower, Engine::
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(faceDirection * 18.0f, 25.0f, 1.0f)  // scale
 		);
-	unit.AddComponent<Unit>(faction, targetTower);
+	unit.AddComponent<Unit>(
+		faction, 
+		targetTower,
+		m_SoldierConfiguration[type].Speed,
+		m_SoldierConfiguration[type].Health,
+		m_SoldierConfiguration[type].Attack,
+		m_SoldierConfiguration[type].AttackSpeed
+	);
 	unit.AddComponent<EnemyContact>();
-	unit.AddComponent<Renderable2D>(TowerBattleLayer::GetUnitSpriteID(faction));
+	unit.AddComponent<Renderable2D>(TowerBattleLayer::GetUnitSpriteID(faction, type));
 	unit.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
 		18.0f, // width
@@ -593,7 +623,7 @@ void TowerBattleLayer::ChangeTowerUnits(Engine::Entity towerEntity, int unitDelt
 	tower.ViewUpdateRequested = true;
 }
 
-Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction faction)
+Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Tower towerConfig)
 {
 	using namespace Engine::Components;
 	
@@ -603,8 +633,8 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(44.0f, 84.0f, 1.0f)  // scale
 	);
-	tower.AddComponent<Renderable2D>(GetFactionSpriteID(faction));
-	tower.AddComponent<Tower>(faction, (unsigned int)0, (unsigned int)36, 1.0f, 0.0f);
+	tower.AddComponent<Renderable2D>(GetFactionSpriteID(towerConfig.Faction));
+	tower.AddComponent<Tower>(towerConfig.Faction, towerConfig.SoldierType, (unsigned int)0, (unsigned int)36, 1.0f, 0.0f);
 	tower.AddComponent<QuadCollider>(
 		Engine::Vec2{ position.x, position.y },
 		50.0f, // width
@@ -627,7 +657,7 @@ Engine::Entity TowerBattleLayer::CreateTower(Engine::Vec3 position, Faction fact
 		Engine::Vec3(0.0f, 0.0f, 0.0f), // rotation
 		Engine::Vec3(49.0f, 8.0f, 1.0f)  // scale
 		);
-	bar_fill.AddComponent<Renderable2D>(GetUnitBarSprite(faction));
+	bar_fill.AddComponent<Renderable2D>(GetUnitBarSprite(towerConfig.Faction));
 	bar_fill.AddComponent<UnitBar>(49.0f, position.x - 49.0f/2.0f, tower);
 
 	auto bar_background = m_Scene->CreateEntity();
@@ -691,11 +721,11 @@ enum class CellType : int
 	Length
 };
 
-static void PlaceTower(int x, int y, Faction faction, std::unordered_map<Engine::GridPoint, Faction> & tower_factions, Engine::Grid<std::vector<int>>& grid, const Engine::WFC::RuleSet& rules)
+static void PlaceTower(int x, int y, Faction faction, SoldierType soldierType, std::unordered_map<Engine::GridPoint, Tower> & tower_configs, Engine::Grid<std::vector<int>>& grid, const Engine::WFC::RuleSet& rules)
 {
 	grid.Get(x, y) = { (int)CellType::Grass };
 	Engine::WFC::UpdateAdjecentCells(grid, x, y, rules);
-	tower_factions[{x, y}] = faction;
+	tower_configs[{x, y}] = { faction, soldierType };
 }
 
 void TowerBattleLayer::CreateLevel(int width, int height, int tileSize)
@@ -725,14 +755,14 @@ void TowerBattleLayer::CreateLevel(int width, int height, int tileSize)
 	Engine::Grid<std::vector<int>> grid(grid_width, grid_height, values);
 
 	// Place towers
-	std::unordered_map<Engine::GridPoint, Faction> tower_factions;
+	std::unordered_map<Engine::GridPoint, Tower> tower_configs;
 	// Blue faction
-	PlaceTower(5, 5, Faction::Blue, tower_factions, grid, rules);
+	PlaceTower(5, 5, Faction::Blue, SoldierType::Light, tower_configs, grid, rules);
 	// Red faction
-	PlaceTower(15, 7, Faction::Red, tower_factions, grid, rules);
+	PlaceTower(15, 7, Faction::Red, SoldierType::Light, tower_configs, grid, rules);
 	// Neutral
-	PlaceTower(10, 5, Faction::None, tower_factions, grid, rules);
-	PlaceTower(10, 8, Faction::None, tower_factions, grid, rules);
+	PlaceTower(10, 5, Faction::None, SoldierType::Heavy, tower_configs, grid, rules);
+	PlaceTower(10, 8, Faction::None, SoldierType::Heavy, tower_configs, grid, rules);
 
 	Engine::WFC::CollapseGrid(grid, rules);
 
@@ -762,8 +792,8 @@ void TowerBattleLayer::CreateLevel(int width, int height, int tileSize)
 			int cell_type = grid.Get(x, y)[0];
 			tile.AddComponent<Engine::Components::Renderable2D>(Engine::GetRandomEntry(map[cell_type]));
 
-			if(tower_factions.find({x, y}) != tower_factions.end())
-				CreateTower({ pixel_x, pixel_y, 0.0f }, tower_factions[{x, y}]);
+			if(tower_configs.find({x, y}) != tower_configs.end())
+				CreateTower({ pixel_x, pixel_y, 0.0f }, tower_configs[{x, y}]);
 		}
 	}
 }

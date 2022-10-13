@@ -2,14 +2,28 @@
 
 #include <Engine.h>
 
+#include <unordered_map>
+
 enum class Faction
 {
-	None, Red, Blue
+	None, Red, Blue, COUNT
 };
+
+enum class SoldierType
+{
+	None,
+	Light,
+	Heavy,
+	Range,
+	COUNT,
+};
+
+unsigned int UnitKey(Faction faction, SoldierType type);
 
 struct Tower
 {
 	Faction Faction = Faction::None;
+	SoldierType SoldierType = SoldierType::None;
 	unsigned int Units = 0;
 	unsigned int MaxUnits = 10;
 	float ProductionIntervall = 1.0f;
@@ -88,11 +102,11 @@ public:
 
 	static Engine::Scene* GetScene() { return m_Scene; };
 	static Engine::UUID GetFactionSpriteID(Faction faction);
-	static Engine::UUID GetUnitSpriteID(Faction faction);
+	static Engine::UUID GetUnitSpriteID(Faction faction, SoldierType soldierType);
 	static Engine::UUID GetUnitBarSprite(Faction faction);
 	static Engine::UUID GetWalkAnimUUID() { return m_AnimWalkUUID; }
 private:
-	Engine::Entity CreateTower(Engine::Vec3 position, Faction faction);
+	Engine::Entity CreateTower(Engine::Vec3 position, Tower towerConfig);
 	Engine::Entity CreateAI(Faction faction);
 	Engine::Entity CreateCamera();
 	Engine::Entity CreateSelection();
@@ -104,11 +118,10 @@ private:
 	Engine::Entity m_SourceTower;
 	Engine::Entity m_Selection;
 
-	static Engine::UUID m_TowerSpriteRedUUID;
-	static Engine::UUID m_TowerSpriteBlueUUID;
-	static Engine::UUID m_TowerSpriteNoneUUID;
-	static Engine::UUID m_UnitSpriteRedUUID;
-	static Engine::UUID m_UnitSpriteBlueUUID;
+	static std::unordered_map<Faction, Engine::UUID> m_TowerSpriteIdMap;
+	static std::unordered_map<unsigned int, Engine::UUID> m_UnitSpriteIdMap;
+	static std::unordered_map<SoldierType, Unit> m_SoldierConfiguration;
+
 	static Engine::UUID m_TowerBarFillSpriteRedUUID;
 	static Engine::UUID m_TowerBarFillSpriteBlueUUID;
 	static Engine::UUID m_TowerBarFillSpriteNoneUUID;
