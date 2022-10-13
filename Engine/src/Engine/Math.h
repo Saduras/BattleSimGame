@@ -32,6 +32,9 @@ namespace Engine
 	ALIAS_TEMPLATE_FUNCTION(RotateZ, glm::rotateZ);
 	ALIAS_TEMPLATE_FUNCTION(Lerp, glm::mix);
 	ALIAS_TEMPLATE_FUNCTION(Mod, glm::mod);
+	ALIAS_TEMPLATE_FUNCTION(IsNaN, glm::isnan);
+	ALIAS_TEMPLATE_FUNCTION(All, glm::all);
+	ALIAS_TEMPLATE_FUNCTION(Any, glm::any);
 
 	struct Transform
 	{
