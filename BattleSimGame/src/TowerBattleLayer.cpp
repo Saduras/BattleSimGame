@@ -163,7 +163,28 @@ static void UnitMoveSystem(float deltaTime, Engine::Entity entity, Unit& unit, Q
 
 	if (Engine::Magnitude(distance) > 0.1f && !HasCollisionWithEnemyUnit(entity))
 	{
-		transform.Position += Engine::Normalize(distance) * unit.Speed * deltaTime;
+		Engine::Vec3 direction = Engine::Normalize(distance);
+
+		for (Engine::Entity other : collider.Collisions)
+		{
+			// We know from before that there is enemy collision hence
+			// any unit collision is friendly.
+			if (other.HasComponent<Unit>())
+			{
+				QuadCollider& otherCollider = other.GetComponent<QuadCollider>();
+				Engine::Vec2 collision_direction = collider.Center - otherCollider.Center;
+				if (collision_direction == Engine::Vec2(0.0f, 0.0f))
+					continue;
+
+				collision_direction = Engine::Normalize(collision_direction);
+				direction += Engine::Vec3(collision_direction.x, collision_direction.y, 0.0f);
+			}
+		}
+
+		if (Engine::Any(Engine::IsNaN(direction)) || direction == Engine::Vec3(0.0f, 0.0f, 0.0f))
+			return;
+
+		transform.Position += Engine::Normalize(direction) * unit.Speed * deltaTime;
 		collider.Center = transform.Position;
 	}
 }
@@ -197,7 +218,7 @@ static void UnitAttackTowerSystem(float deltaTime, Engine::Entity entity, Unit& 
 	Engine::Vec3 distance = targetPosition - transform.Position;
 
 	// Check if we are close enough to attack
-	if (Engine::Magnitude(distance) > 1.0f)
+	if (Engine::Magnitude(distance) > 20.0f)
 		return;
 
 
