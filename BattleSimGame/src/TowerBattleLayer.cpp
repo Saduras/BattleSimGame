@@ -294,10 +294,19 @@ static void DrawCollidersSystem(float deltaTime, Engine::Entity entity, QuadColl
 	Engine::Vec2 offset(collider.Width / 2.0f, collider.Height / 2.0f);		
 	Engine::Vec3 color(1.0f, 0.8f, 0.3f);
 
-	if (entity.HasComponent<Unit>() && HasCollisionWithEnemyUnit(entity))
+	if (collider.Collisions.size() > 0)
 		color = Engine::Vec3(1.0f, 0.0f, 0.0f);
 
 	Engine::Debug::DrawRect(collider.Center - offset, collider.Center + offset, color, 1.0f);
+
+	for (Engine::Entity other : collider.Collisions)
+	{
+		if (!other.IsValid())
+			continue;
+
+		QuadCollider otherCollider = other.GetComponent<QuadCollider>();
+		Engine::Debug::DrawLine(collider.Center, otherCollider.Center, color, 1.0f);
+	}
 }
 
 bool TowerBattleLayer::m_GameRunning = false;
